@@ -68,7 +68,7 @@ class Day:
             return 8.0
     
     def dump(self):
-        print(self.date.strftime('%Y-%m-%d, %a:') + \
+        print(self.date.strftime('%Y-%m-%d, %a: ') + \
               formatTimeVal(self.calcWorked(), "worked") + ', ' +\
               formatTimeVal(self.leave, "leave") + ', ' +\
               formatTimeVal(self.ill, "ill"))
@@ -188,13 +188,17 @@ class Reader:
             print('Weird instruction <' + argliststring + '>.')
 
 class Status:
-    def __init__(self):
-        self.workedhours = 0
-        self.illhours = 0
+    def __init__(self, name):
+        self.name = name
+        self.reset()
+
+    def reset(self):
         self.musthours = 0
         self.havehours = 0
         self.leavebalancehours = 0
         self.leavetakenhours = 0
+        self.illhours = 0
+        self.workedhours = 0
 
     def increaseMustHours(self, dt):
         # public holidays?
@@ -214,17 +218,12 @@ class Status:
         self.illhours += day.ill
         self.leavebalancehours -= day.leave
         self.leavetakenhours += day.leave
-
+        
     def processDirective(self, di):
         if di.reset:
-            self.dump('')
-            self.musthours = 0
-            self.havehours = 0
-            self.leavebalancehours = 0
-            self.leavetakenhours = 0
-            self.illhours = 0
-            self.workedhours = 0
-            print('--- reset ---')
+            self.dump()
+            self.reset()
+            #print('--- reset ' + self.name + '---')
         elif di.leave != None:
             self.leavebalancehours += di.leave
         elif di.must != None:
@@ -232,14 +231,15 @@ class Status:
         elif di.have != None:
             self.havehours = di.have
         
-    def dump(self, prefix):
-        print(prefix + ': must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
+    def dump(self):
+        print(self.name + ': must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
               .format(self.musthours, self.workedhours, self.illhours, self.leavetakenhours, self.leavebalancehours, self.havehours))
 
 class Statistics:
     def __init__(self, days):
         self.days = days
-        self.status = Status()
+        self.globalbalance = Status('global')
+        self.weeklybalance = Status('weekly')
         self.previous = None
 
     def processGap(self, d1):
@@ -251,7 +251,7 @@ class Statistics:
 
         while d < end:
             dt = date.fromordinal(d)
-            if self.status.increaseMustHours(dt):
+            if self.globalbalance.increaseMustHours(dt):
                 print('missing weekday record for ' + str(dt))
             d = d + 1
 
@@ -261,14 +261,18 @@ class Statistics:
         for d in self.days:
             self.processGap(d)
             if d.date.isoweekday() == 1:
+                self.weeklybalance.dump()
                 print()
+                self.weeklybalance.reset()
                 
-            self.status.processDay(d)
+            self.weeklybalance.processDay(d)
+            self.globalbalance.processDay(d)
             d.dump()
             self.previous = d
 
-        self.status.dump('')
-        
+        self.weeklybalance.dump()
+        self.globalbalance.dump()
+              
 # ===== ===== ===== Main ===== ===== =====
 
 if __name__ == '__main__':
