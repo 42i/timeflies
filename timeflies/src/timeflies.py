@@ -15,7 +15,52 @@ def formatTimeVal(val, what):
         return '--.-- ' + what
     else:
         return '{0:5.2f} '.format(val) + what
-
+ 
+class Task:
+    def __init__(self, name, desc=None, effort=0):
+        self.name = name
+        self.parent = None
+        self.description = desc
+        self.effort = effort
+        self.subs = {}
+        
+    def calcEffort(self):
+        e = self.effort
+        for s in self.subs.values():
+            e += s.calcEffort()
+        return e
+            
+    def addTask(self, task):
+        self.subs[task.name] = task
+        task.parent = self
+        
+    def getTask(self, pathstr, create=False):
+        path = pathstr.split('.')
+        t = self
+        for c in path:
+            if c in t.subs:
+                t = t.subs[c]
+            else:
+                if not create:
+                    return None
+                else:
+                    newt = Task(c)
+                    t.addTask(newt)
+                    t = newt
+        return t
+    
+    def dump(self, indent=0):
+        indentString = '              '[0:(indent * 2)]
+        if self.description != None:
+            desc = ' -- ' + self.description
+        else:
+            desc = ''
+            
+        print(indentString + self.name + desc)
+        if self.subs != None:
+            for s in self.subs.keys():
+                self.subs[s].dump(indent + 1)
+        
 class Day:
     """A Day object represents a day of work. It has a date,
     hour information and comment information attached to it."""
@@ -96,26 +141,79 @@ class Directive:
     def setReset(self):
         self.reset = True
         return self
+
+class TaskLineBookmark:
+    def __init__(self, task, indent, parent=None):
+        self.indent = indent
+        self.task = task
+        self.parent = parent
         
 class Reader:
     def read(self, inputfile):
         f = open(inputfile)
+        self.linecount = 0
         self.days = {}
+        self.taskroot = Task("mother", "the task of life")
         self.currentday = None
-
+        self.resetTaskStack()
+        
         for line in f:
-            line = re.sub("#.*", "", line).strip()
-            if line.startswith('- '):
-                self.processComment(line[2:])
-            elif line.startswith('todo '):
-                if not self.currentday == None:
-                    print('WARNING: TO DO item found beyond the beginning of the file')
-                else:
-                    print('TO DO: ' + line[5:].strip())
-            elif line.strip() != '':
-                self.processInstructions(line)
+            self.linecount += 1
+            line = re.sub(" *#.*", "", line).rstrip()
+            
+            if line == '':
+                self.resetTaskStack()
+            elif self.inTaskDefinition():
+                self.processTask(line)
+            elif line.startswith('task '):
+                self.processTask(line[5:].strip())
+            else:
+                self.resetTaskStack()
+                    
+                if line.startswith('- '):
+                    self.processComment(line[2:].strip())
+                elif line.startswith('todo '):
+                    if not self.currentday == None:
+                        self.msg('WARNING: TO DO item found beyond the beginning of the file')
+                    else:
+                        self.msg('TO DO: ' + line[5:].strip())
+                elif line.strip() != '':
+                    self.processInstructions(line)
 
+        self.taskroot.dump()
+        
         return sorted(self.days.values(), key = lambda day: day.date)
+
+    def msg(self, text):
+        print('Line ' + str(self.linecount) + ': ' + text)
+        
+    def resetTaskStack(self):
+        self.taskstack = TaskLineBookmark(self.taskroot, -1)
+
+    def inTaskDefinition(self):
+        return self.taskroot != self.taskstack.task
+    
+    #   name.of.the.task [params ...], description
+    def processTask(self, line):
+        items = line.split(',', 1)
+        spec = items[0].strip().split(' ')
+        fullname = spec[0]
+                
+        indent = len(line) - len(line.lstrip())
+        
+        while indent <= self.taskstack.indent:
+            self.taskstack = self.taskstack.parent
+        
+        task = self.taskstack.task.getTask(fullname, create=True)
+        
+        if len(spec) > 1: # effort
+            task.effort = spec[1]
+            
+        if len(items) == 2: # description
+            task.description = items[1].strip()
+        
+        self.taskstack = TaskLineBookmark(task, indent, self.taskstack)
+        
 
     def processComment(self, comment):
         self.currentday.addComment(comment)
@@ -163,7 +261,7 @@ class Reader:
             return
         
         if self.currentday == None:
-            print('No current day for instruction <' + argliststring + '>.')
+            self.msg('No current day for instruction <' + argliststring + '>.')
             return
         
         if instr == 'reset':
@@ -183,9 +281,9 @@ class Reader:
                 self.currentday.addLeave(float(args[0]))
                 self.currentday.addComment('leave: ' + args[1])
             else:
-                print('Weird leave spec <' + argliststring + '>.')
+                self.msg('Weird leave spec <' + argliststring + '>.')
         else:
-            print('Weird instruction <' + argliststring + '>.')
+            self.msg('Weird instruction <' + argliststring + '>.')
 
 class Status:
     def __init__(self, name):
