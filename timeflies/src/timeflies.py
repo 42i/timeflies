@@ -2,6 +2,7 @@
 from datetime import date
 import sys
 import re
+import weakref
 
 def makeDate(dstr):
     datecomps = dstr.split('-')
@@ -22,24 +23,31 @@ class Task:
         self.parent = None
         self.description = desc
         self.effort = effort
-        self.subs = {}
+        self.subs = []
+        self.subsByName = {}
+        self.activities = []
         
     def calcEffort(self):
         e = self.effort
-        for s in self.subs.values():
+        for s in self.subs:
             e += s.calcEffort()
         return e
             
     def addTask(self, task):
-        self.subs[task.name] = task
-        task.parent = self
-        
+        idx = len(self.subs)
+        self.subs.append(task)
+        self.subsByName[task.name] = idx
+        task.parent = weakref.ref(self)
+    
+    def getSubByName(self, name):
+        return self.subs[self.subsByName[name]]
+    
     def getTask(self, pathstr, create=False):
         path = pathstr.split('.')
         t = self
         for c in path:
-            if c in t.subs:
-                t = t.subs[c]
+            if c in t.subsByName:
+                t = t.getSubByName(c)
             else:
                 if not create:
                     return None
@@ -49,17 +57,31 @@ class Task:
                     t = newt
         return t
     
-    def dump(self, indent=0):
-        indentString = '              '[0:(indent * 2)]
+    def addActivity(self, activity):
+        self.activities.append(activity)
+        activity.task = weakref.ref(self)
+
+    def dump(self, indent=''):
         if self.description != None:
             desc = ' -- ' + self.description
         else:
             desc = ''
-            
-        print(indentString + self.name + desc)
+        
+        print(indent + self.name + desc)
+        
+        for a in self.activities:
+            print(indent + '    # ' + str(a.day().date) + ' ' + str(a.duration))
+        
         if self.subs != None:
-            for s in self.subs.keys():
-                self.subs[s].dump(indent + 1)
+            for s in self.subs:
+                s.dump(indent + '    ')
+
+class Activity:
+    def __init__(self, duration, description):
+        self.day = None
+        self.task = None
+        self.duration = duration
+        self.description = description
         
 class Day:
     """A Day object represents a day of work. It has a date,
@@ -74,12 +96,17 @@ class Day:
         self.leave = 0
         self.phol = False
         self.comments = []
-
+        self.activities = []
+        
     def addDirective(self, d):
         if self.directives == None:
             self.directives = [ d ]
         else:
             self.directives.append(d)
+    
+    def addActivity(self, activity):
+        self.activities.append(activity)
+        activity.day = weakref.ref(self)
         
     def addComment(self, comment):
         self.comments.append(comment)
@@ -142,18 +169,27 @@ class Directive:
         self.reset = True
         return self
 
+class Universe:
+    def __init__(self):
+        self.days = {}
+        self.taskroot = Task("mother", "the task of life")
+        
+    def getChronoDays(self):
+        return sorted(self.days.values(), key = lambda day: day.date)
+    
 class TaskLineBookmark:
     def __init__(self, task, indent, parent=None):
         self.indent = indent
         self.task = task
         self.parent = parent
-        
+
 class Reader:
+    def __init__(self, uni):
+        self.universe = uni
+        
     def read(self, inputfile):
         f = open(inputfile)
         self.linecount = 0
-        self.days = {}
-        self.taskroot = Task("mother", "the task of life")
         self.currentday = None
         self.resetTaskStack()
         
@@ -171,7 +207,9 @@ class Reader:
                 self.resetTaskStack()
                     
                 if line.startswith('- '):
-                    self.processComment(line[2:].strip())
+                    self.processActivity(line[2:].strip())
+                elif line.startswith('-- '):
+                    self.processComment(line[3:].strip())
                 elif line.startswith('todo '):
                     if not self.currentday == None:
                         self.msg('WARNING: TO DO item found beyond the beginning of the file')
@@ -180,18 +218,14 @@ class Reader:
                 elif line.strip() != '':
                     self.processInstructions(line)
 
-        self.taskroot.dump()
-        
-        return sorted(self.days.values(), key = lambda day: day.date)
-
     def msg(self, text):
         print('Line ' + str(self.linecount) + ': ' + text)
         
     def resetTaskStack(self):
-        self.taskstack = TaskLineBookmark(self.taskroot, -1)
+        self.taskstack = TaskLineBookmark(self.universe.taskroot, -1)
 
     def inTaskDefinition(self):
-        return self.taskroot != self.taskstack.task
+        return self.universe.taskroot != self.taskstack.task
     
     #   name.of.the.task [params ...], description
     def processTask(self, line):
@@ -214,7 +248,22 @@ class Reader:
         
         self.taskstack = TaskLineBookmark(task, indent, self.taskstack)
         
-
+    def processActivity(self, line):
+        comps = line.split(',', 1)
+        args = comps[0].strip().split(' ')
+        if len(args) < 2:
+            self.msg('an activity must have a task and a duration.')
+        taskname = args[0]
+        duration = args[1]
+        if len(comps) == 2:
+            desc = comps[1]
+        else:
+            desc = None
+        activity = Activity(duration, desc)
+        task = self.universe.taskroot.getTask(taskname, create=True)
+        task.addActivity(activity)
+        self.currentday.addActivity(activity)
+        
     def processComment(self, comment):
         self.currentday.addComment(comment)
 
@@ -241,11 +290,11 @@ class Reader:
             d = d + 1
 
     def newDay(self, datestring):
-        if datestring in self.days:
-            self.currentday = self.days[datestring]
+        if datestring in self.universe.days:
+            self.currentday = self.universe.days[datestring]
         else:
             self.currentday = Day(datestring)
-            self.days[datestring] = self.currentday
+            self.universe.days[datestring] = self.currentday
 
     def processInstruction(self, argliststring):
         arglist = argliststring.split(' ')
@@ -334,8 +383,8 @@ class Status:
               .format(self.musthours, self.workedhours, self.illhours, self.leavetakenhours, self.leavebalancehours, self.havehours))
 
 class Statistics:
-    def __init__(self, days):
-        self.days = days
+    def __init__(self, universe):
+        self.days = universe.getChronoDays()
         self.globalbalance = Status('global')
         self.weeklybalance = Status('weekly')
         self.previous = None
@@ -375,9 +424,10 @@ class Statistics:
 
 if __name__ == '__main__':
     sheetname = sys.argv[1]
-    r = Reader()
-    days = r.read(sheetname)
-    s = Statistics(days);
+    u = Universe()
+    r = Reader(u)
+    r.read(sheetname)
+    s = Statistics(u)
     s.simple();
 
 
