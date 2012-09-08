@@ -217,7 +217,8 @@ class Reader:
                         self.msg('TO DO: ' + line[5:].strip())
                 elif line.strip() != '':
                     self.processInstructions(line)
-
+        f.close()
+        
     def msg(self, text):
         print('Line ' + str(self.linecount) + ': ' + text)
         
