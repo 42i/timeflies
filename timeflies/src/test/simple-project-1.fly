@@ -1,0 +1,16 @@
+
+task project, the big fat project
+	sub1
+		aa 40
+		bb 50
+		cc 60
+	sub2
+		aaa 70
+		bbb 80
+		ccc 90
+	sub3
+		xyz 30
+		
+day 2012-07-14, hours 8 17, off 1
+- project.sub1.aa 2, hee haa aa
+- project.sub2.bbb 4, yayy bbb

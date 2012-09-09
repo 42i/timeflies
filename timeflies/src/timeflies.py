@@ -16,13 +16,25 @@ def formatTimeVal(val, what):
         return '--.-- ' + what
     else:
         return '{0:5.2f} '.format(val) + what
- 
+
+class AllFilter:
+    def passes(self, day):
+        return True
+    
+class MonthFilter:
+    def __init__(self, year, month):
+        self.year = year
+        self.month = month
+    
+    def passes(self, activity):
+        return activity.day().date.year == self.year and activity.day().date.month == self.month
+        
 class Task:
     def __init__(self, name, desc=None, effort=0):
         self.name = name
         self.parent = None
         self.description = desc
-        self.effort = effort
+        self.effort = int(effort)
         self.subs = []
         self.subsByName = {}
         self.activities = []
@@ -32,7 +44,20 @@ class Task:
         for s in self.subs:
             e += s.calcEffort()
         return e
-            
+    
+    def calcActivity(self, timefilter, store, path=None):
+        totals = 0.0;
+        for a in self.activities:
+            if timefilter.passes(a):
+                totals += a.duration
+        fullpath = self.name if path == None else path + '.' + self.name
+        for s in self.subs:
+            totals += s.calcActivity(timefilter, store, fullpath)
+        
+        if totals != 0.0:
+            store[fullpath] = totals
+        return totals
+        
     def addTask(self, task):
         idx = len(self.subs)
         self.subs.append(task)
@@ -80,7 +105,7 @@ class Activity:
     def __init__(self, duration, description):
         self.day = None
         self.task = None
-        self.duration = duration
+        self.duration = float(duration)
         self.description = description
         
 class Day:
@@ -261,8 +286,12 @@ class Reader:
         else:
             desc = None
         activity = Activity(duration, desc)
-        task = self.universe.taskroot.getTask(taskname, create=True)
-        task.addActivity(activity)
+        task = self.universe.taskroot.getTask(taskname)
+        if task == None:
+            self.msg('invalid activity task ' + taskname
+                     + ' on day ' + str(self.currentday.date))
+        else:
+            task.addActivity(activity)
         self.currentday.addActivity(activity)
         
     def processComment(self, comment):
