@@ -26,8 +26,8 @@ class MonthFilter:
         self.year = year
         self.month = month
     
-    def passes(self, activity):
-        return activity.day().date.year == self.year and activity.day().date.month == self.month
+    def passes(self, day):
+        return day.date.year == self.year and day.date.month == self.month
         
 class Task:
     def __init__(self, name, desc=None, effort=0):
@@ -48,7 +48,7 @@ class Task:
     def calcActivity(self, timefilter, store, path=None):
         totals = 0.0;
         for a in self.activities:
-            if timefilter.passes(a):
+            if timefilter.passes(a.day()):
                 totals += a.duration
         fullpath = self.name if path == None else path + '.' + self.name
         for s in self.subs:
@@ -453,12 +453,18 @@ class Statistics:
 # ===== ===== ===== Main ===== ===== =====
 
 if __name__ == '__main__':
-    sheetname = sys.argv[1]
+    sheetname = 'test/simple-project-2.fly' #sys.argv[1]
     u = Universe()
     r = Reader(u)
     r.read(sheetname)
     s = Statistics(u)
     s.simple();
+    print('------------------')
+    act = {}
+    u.taskroot.calcActivity(MonthFilter(2012, 8), act)
+    for tn in sorted(act.keys()):
+        indentname = re.sub('[a-z0-9A-Z]+\.', '. . ', tn)
+        print('{0:6.2f} {1:s}'.format(act[tn], indentname))
 
 
 
