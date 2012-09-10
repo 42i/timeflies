@@ -63,13 +63,13 @@ class CalcActivitiesByMonth(TestCase):
         a = p2.activities[0]
         self.assertEqual(date(2012, 7, 14), a.day().date)
         act = self.doStats(7)
-        self.assertEqual(2.0, act['mother.project.sub1.aa'])
-        self.assertEqual(3.0, act['mother.project.sub3'])
-        self.assertEqual(10.0, act['mother.project.sub2'])
+        self.assertEqual(2.0, act['root.project.sub1.aa'])
+        self.assertEqual(3.0, act['root.project.sub3'])
+        self.assertEqual(10.0, act['root.project.sub2'])
         act = self.doStats(8)
-        self.assertEqual(1.5, act['mother.project.sub1.aa'])
-        self.assertEqual(4.0, act['mother.project.sub1'])
-        self.assertEqual(3.5, act['mother.project.sub2'])
+        self.assertEqual(1.5, act['root.project.sub1.aa'])
+        self.assertEqual(4.0, act['root.project.sub1'])
+        self.assertEqual(3.5, act['root.project.sub2'])
    
     def doStats(self, month):
         print('------------------')
@@ -82,4 +82,3 @@ class CalcActivitiesByMonth(TestCase):
         
 if __name__ == '__main__':
     unittest.main()
-

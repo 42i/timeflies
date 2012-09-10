@@ -45,14 +45,18 @@ class Task:
             e += s.calcEffort()
         return e
     
-    def calcActivity(self, timefilter, store, path=None):
+    def calcActivity(self, dayfilter, store, path=None):
         totals = 0.0;
         for a in self.activities:
-            if timefilter.passes(a.day()):
+            if dayfilter.passes(a.day()):
                 totals += a.duration
         fullpath = self.name if path == None else path + '.' + self.name
+
+        if totals != 0.0 and len(self.subs) > 0:
+            store[fullpath + '.--self--'] = totals
+        
         for s in self.subs:
-            totals += s.calcActivity(timefilter, store, fullpath)
+            totals += s.calcActivity(dayfilter, store, fullpath)
         
         if totals != 0.0:
             store[fullpath] = totals
@@ -95,7 +99,8 @@ class Task:
         print(indent + self.name + desc)
         
         for a in self.activities:
-            print(indent + '    # ' + str(a.day().date) + ' ' + str(a.duration))
+            comment = (', ' + a.description) if a.description != None else ''
+            print(indent + '    # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
         
         if self.subs != None:
             for s in self.subs:
@@ -152,6 +157,12 @@ class Day:
         self.start = start
         self.stop = stop
 
+    def calcActivity(self):
+        totals = 0.0
+        for a in self.activities:
+            totals += a.duration
+        return totals
+        
     def calcBalance(self):
         return self.calcWorked() + self.ill + self.leave
 
@@ -197,7 +208,7 @@ class Directive:
 class Universe:
     def __init__(self):
         self.days = {}
-        self.taskroot = Task("mother", "the task of life")
+        self.taskroot = Task("root", "the task of life")
         
     def getChronoDays(self):
         return sorted(self.days.values(), key = lambda day: day.date)
@@ -279,20 +290,26 @@ class Reader:
         args = comps[0].strip().split(' ')
         if len(args) < 2:
             self.msg('an activity must have a task and a duration.')
-        taskname = args[0]
-        duration = args[1]
-        if len(comps) == 2:
-            desc = comps[1]
         else:
-            desc = None
-        activity = Activity(duration, desc)
-        task = self.universe.taskroot.getTask(taskname)
-        if task == None:
-            self.msg('invalid activity task ' + taskname
-                     + ' on day ' + str(self.currentday.date))
-        else:
-            task.addActivity(activity)
-        self.currentday.addActivity(activity)
+            taskname = args[0]
+            duration = args[1]
+            if len(comps) == 2:
+                desc = comps[1].strip()
+            else:
+                desc = None
+
+            try:
+                activity = Activity(duration, desc)
+                task = self.universe.taskroot.getTask(taskname)
+                if task == None:
+                    self.msg('invalid activity task ' + taskname
+                             + ' on day ' + str(self.currentday.date))
+                else:
+                    task.addActivity(activity)
+                    self.currentday.addActivity(activity)
+            except ValueError:
+                self.msg('invalid activity duration ' + duration + '.')
+            
         
     def processComment(self, comment):
         self.currentday.addComment(comment)
@@ -432,6 +449,12 @@ class Statistics:
                 print('missing weekday record for ' + str(dt))
             d = d + 1
 
+    def checkDays(self, dayfilter):
+        for d in self.days:
+            if dayfilter.passes(d):
+                delta = d.calcActivity() - d.calcWorked()
+                if delta != 0.0:
+                    print('*** {0:s} : delta = {1:5.2f}'.format(d.date.strftime('%Y-%m-%d, %a'), delta))
         
     def simple(self):
         self.previous = None
@@ -454,14 +477,18 @@ class Statistics:
 
 if __name__ == '__main__':
     sheetname = 'test/simple-project-2.fly' #sys.argv[1]
+    sheetname = 'H:\Timesheet\work-book-2012-09.log' #sys.argv[1]
     u = Universe()
     r = Reader(u)
     r.read(sheetname)
     s = Statistics(u)
-    s.simple();
+    month = MonthFilter(2012, 9)
     print('------------------')
+    s.checkDays(month);
+    print('------------------')
+    u.taskroot.dump()
     act = {}
-    u.taskroot.calcActivity(MonthFilter(2012, 8), act)
+    u.taskroot.calcActivity(month, act)
     for tn in sorted(act.keys()):
         indentname = re.sub('[a-z0-9A-Z]+\.', '. . ', tn)
         print('{0:6.2f} {1:s}'.format(act[tn], indentname))
