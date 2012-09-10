@@ -222,8 +222,10 @@ class TaskLineBookmark:
 class Reader:
     def __init__(self, uni):
         self.universe = uni
+        self.inputfile = None
         
     def read(self, inputfile):
+        self.inputfile = inputfile
         f = open(inputfile)
         self.linecount = 0
         self.currentday = None
@@ -256,7 +258,7 @@ class Reader:
         f.close()
         
     def msg(self, text):
-        print('Line ' + str(self.linecount) + ': ' + text)
+        print(self.inputfile + ':' + str(self.linecount) + ': ' + text)
         
     def resetTaskStack(self):
         self.taskstack = TaskLineBookmark(self.universe.taskroot, -1)
