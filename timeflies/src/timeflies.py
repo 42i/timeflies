@@ -1,6 +1,5 @@
 
 from datetime import date
-import sys
 import re
 import weakref
 

@@ -2,7 +2,7 @@
 import unittest
 from unittest import TestCase
 
-import re
+#import re
 import sys
 from datetime import date
 
