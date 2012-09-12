@@ -2,7 +2,6 @@ List of Tasks
 
 - use PyLint
 - leading check tab/space validity (leading whitespace of two consecutive lines must be a match)
-- implement value tree with activity item references and use it
 - make log-message output testable (try having loggers or so that can gather the output in a list)
 - more test cases
 - allow 'import' to have tasks and days in separate files

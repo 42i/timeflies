@@ -17,6 +17,74 @@ def formatTimeVal(val, what):
     else:
         return '{0:5.2f} '.format(val) + what
 
+class TreeNode:
+    def __init__(self):
+        self.parent = None
+        self.children = None
+        self.childrenByName = None
+
+    def addChild(self, node):
+        if self.childrenByName == None:
+            self.children = []
+            self.childrenByName = {}
+        idx = len(self.children)
+        self.children.append(node)
+        self.childrenByName[node.getName()] = idx
+        node.parent = weakref.ref(self)
+    
+    def hasChildWithName(self, name):
+        return self.childrenByName != None and name in self.childrenByName
+    
+    def getChildWithName(self, name):
+        if not self.hasChildWithName(name):
+            return None
+        else:
+            return self.children[self.childrenByName[name]]
+    
+    def getNode(self, pathstr, create=False):
+        path = pathstr.split('.')
+        n = self
+        for c in path:
+            if n.hasChildWithName(c):
+                n = n.getChildWithName(c)
+            else:
+                if not create:
+                    return None
+                else:
+                    newnode = self.createNode(c)
+                    n.addChild(newnode)
+                    n = newnode
+        return n
+
+    def dump(self, indent=''):
+        self.dumpNode(indent)
+        
+        if self.children != None:
+            for c in self.children:
+                c.dump(indent + '. . ')
+        
+class ValueNode(TreeNode):
+    def __init__(self, task, value=None):
+        TreeNode.__init__(self)
+        self.value = value
+        self.task = task
+        self.activities = []
+    
+    def getName(self):
+        return self.task.name
+    
+    def addActivity(self, activity):
+        self.activities.append(activity)
+
+    def dumpNode(self, indent):
+        desc = self.task.description
+        descetc = (' -- ' + desc) if desc != None else ''
+        print('{0:6.2f} {1:s}{2:s}{3:s}'.format(self.value, indent, self.getName(), descetc, ))
+        
+        for a in self.activities:
+            comment = (', ' + a.description) if a.description != None else ''
+            print('       ' + indent + '. . # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
+  
 class AllFilter:
     def passes(self, day):
         return True
@@ -29,82 +97,59 @@ class MonthFilter:
     def passes(self, day):
         return day.date.year == self.year and day.date.month == self.month
         
-class Task:
+class Task(TreeNode):
     def __init__(self, name, desc=None, effort=0):
+        TreeNode.__init__(self)
         self.name = name
-        self.parent = None
         self.description = desc
         self.effort = int(effort)
-        self.subs = []
-        self.subsByName = {}
         self.activities = []
-        
+    
+    def createNode(self, name):
+        return Task(name)
+    
+    def getName(self):
+        return self.name
+    
     def calcEffort(self):
         e = self.effort
-        for s in self.subs:
+        for s in self.children:
             e += s.calcEffort()
         return e
     
-    def calcActivity(self, dayfilter, store, path=None):
+    def calcActivity(self, dayfilter):
+        res = ValueNode(self)
         totals = 0.0;
         for a in self.activities:
             if dayfilter.passes(a.day()):
                 totals += a.duration
-        fullpath = self.name if path == None else path + '.' + self.name
+                res.addActivity(a)
 
-        if totals != 0.0 and len(self.subs) > 0:
-            store[fullpath + '.--self--'] = totals
+        if totals != 0.0 and self.children != None:
+            res.addChild(ValueNode('--self--', totals))
         
-        for s in self.subs:
-            totals += s.calcActivity(dayfilter, store, fullpath)
+        if self.children != None:
+            for s in self.children:
+                c = s.calcActivity(dayfilter)
+                if c.value != 0.0:
+                    totals += c.value
+                    res.addChild(c)
         
-        if totals != 0.0:
-            store[fullpath] = totals
-        return totals
+        res.value = totals
+            
+        return res
         
-    def addTask(self, task):
-        idx = len(self.subs)
-        self.subs.append(task)
-        self.subsByName[task.name] = idx
-        task.parent = weakref.ref(self)
-    
-    def getSubByName(self, name):
-        return self.subs[self.subsByName[name]]
-    
-    def getTask(self, pathstr, create=False):
-        path = pathstr.split('.')
-        t = self
-        for c in path:
-            if c in t.subsByName:
-                t = t.getSubByName(c)
-            else:
-                if not create:
-                    return None
-                else:
-                    newt = Task(c)
-                    t.addTask(newt)
-                    t = newt
-        return t
-    
     def addActivity(self, activity):
         self.activities.append(activity)
         activity.task = weakref.ref(self)
 
-    def dump(self, indent=''):
-        if self.description != None:
-            desc = ' -- ' + self.description
-        else:
-            desc = ''
-        
+    def dumpNode(self, indent):
+        desc = (' -- ' + self.description) if self.description != None else ''        
         print(indent + self.name + desc)
         
         for a in self.activities:
             comment = (', ' + a.description) if a.description != None else ''
-            print(indent + '    # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
-        
-        if self.subs != None:
-            for s in self.subs:
-                s.dump(indent + '    ')
+            print(indent + '. . # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
 
 class Activity:
     def __init__(self, duration, description):
@@ -277,7 +322,7 @@ class Reader:
         while indent <= self.taskstack.indent:
             self.taskstack = self.taskstack.parent
         
-        task = self.taskstack.task.getTask(fullname, create=True)
+        task = self.taskstack.task.getNode(fullname, create=True)
         
         if len(spec) > 1: # effort
             task.effort = spec[1]
@@ -302,7 +347,7 @@ class Reader:
 
             try:
                 activity = Activity(duration, desc)
-                task = self.universe.taskroot.getTask(taskname)
+                task = self.universe.taskroot.getNode(taskname)
                 if task == None:
                     self.msg('invalid activity task ' + taskname
                              + ' on day ' + str(self.currentday.date))
@@ -478,7 +523,7 @@ class Statistics:
 # ===== ===== ===== Main ===== ===== =====
 
 if __name__ == '__main__':
-    sheetname = 'test/simple-project-2.fly' #sys.argv[1]
+    #sheetname = 'test/simple-project-2.fly' #sys.argv[1]
     sheetname = 'H:\Timesheet\work-book-2012-09.log' #sys.argv[1]
     u = Universe()
     r = Reader(u)
@@ -489,11 +534,8 @@ if __name__ == '__main__':
     s.checkDays(month);
     print('------------------')
     u.taskroot.dump()
-    act = {}
-    u.taskroot.calcActivity(month, act)
-    for tn in sorted(act.keys()):
-        indentname = re.sub('[a-z0-9A-Z]+\.', '. . ', tn)
-        print('{0:6.2f} {1:s}'.format(act[tn], indentname))
+    act = u.taskroot.calcActivity(month)
+    act.dump()
 
 
 
