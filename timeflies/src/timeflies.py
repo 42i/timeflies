@@ -16,7 +16,20 @@ def formatTimeVal(val, what):
     else:
         return '{0:5.2f} '.format(val) + what
 
-class TreeNode:
+class AllFilter:
+    def passes(self, day):
+        return True
+    
+class MonthFilter:
+    def __init__(self, year, month):
+        self.year = year
+        self.month = month
+    
+    def passes(self, day):
+        return day.date.year == self.year and day.date.month == self.month
+        
+
+class Node:
     def __init__(self):
         self.parent = None
         self.children = None
@@ -26,26 +39,42 @@ class TreeNode:
         if self.childrenByName == None:
             self.children = []
             self.childrenByName = {}
-        idx = len(self.children)
-        self.children.append(node)
-        self.childrenByName[node.getName()] = idx
+        
+        name = node.getName()
+        
+        if name in self.childrenByName:
+            idx = self.childrenByName[name]
+            self.children[idx].parent = None
+            self.children[idx] = node
+        else:
+            idx = len(self.children)
+            self.children.append(node)
+            self.childrenByName[name] = idx
+            
         node.parent = weakref.ref(self)
     
-    def hasChildWithName(self, name):
-        return self.childrenByName != None and name in self.childrenByName
-    
-    def getChildWithName(self, name):
-        if not self.hasChildWithName(name):
-            return None
+    def hasChild(self, chld):
+        if self.childrenByName == None:
+            return False
+        elif isinstance(chld, int):
+            return 0 <= chld and chld < len(self.children)
         else:
-            return self.children[self.childrenByName[name]]
+            return chld in self.childrenByName
+    
+    def getChild(self, chld):
+        if not self.hasChild(chld):
+            return None
+        elif isinstance(chld, int):
+            return self.children[chld]
+        else:
+            return self.children[self.childrenByName[chld]]
     
     def getNode(self, pathstr, create=False):
         path = pathstr.split('.')
         n = self
         for c in path:
-            if n.hasChildWithName(c):
-                n = n.getChildWithName(c)
+            if n.hasChild(c):
+                n = n.getChild(c)
             else:
                 if not create:
                     return None
@@ -62,9 +91,9 @@ class TreeNode:
             for c in self.children:
                 c.dump(indent + '. . ')
         
-class ValueNode(TreeNode):
+class ValueNode(Node):
     def __init__(self, task, value=None):
-        TreeNode.__init__(self)
+        Node.__init__(self)
         self.value = value
         self.task = task
         self.activities = []
@@ -84,21 +113,9 @@ class ValueNode(TreeNode):
             comment = (', ' + a.description) if a.description != None else ''
             print('       ' + indent + '. . # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
   
-class AllFilter:
-    def passes(self, day):
-        return True
-    
-class MonthFilter:
-    def __init__(self, year, month):
-        self.year = year
-        self.month = month
-    
-    def passes(self, day):
-        return day.date.year == self.year and day.date.month == self.month
-        
-class Task(TreeNode):
+class Task(Node):
     def __init__(self, name, desc=None, effort=0):
-        TreeNode.__init__(self)
+        Node.__init__(self)
         self.name = name
         self.description = desc
         self.effort = int(effort)
