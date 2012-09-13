@@ -1,4 +1,25 @@
 
+'''
+
+    TimeFlies is a work log and task tree processor.
+    
+    Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    
+'''
+
 from datetime import date
 import re
 import weakref
@@ -544,9 +565,16 @@ def showUsage(cmd):
     print()
     print('Usage: ' + cmd + ' [options] <infile> [..]')
     print('''
-TimeFlies is a simple work log and task tree processor. Projects can be
+TimeFlies -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
+
+This is a simple work log and task tree processor. Projects can be
 defined in form of hierarchical task trees. Daily work progress is logged
 in form of day records with attached activities.
+
+This program comes with ABSOLUTELY NO WARRANTY. This is free software,
+and you are welcome to redistribute it under certain conditions. You
+should have received a copy of the GNU General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Options:
 
@@ -556,6 +584,7 @@ Options:
     the given month including weekly subtotals
 -t <yyyy-mm>, --tasks <yyyy-mm> : calculate hours worked on tasks for the
     given month
+
 ''')
 
 def makeFilter(arg):
@@ -599,8 +628,6 @@ def main(argv):
             print('Hour balance:')
             s.calcBalance()
             
-# ===== ===== ===== Main ===== ===== ====='
-
 if __name__ == '__main__':
     main(sys.argv)
 
