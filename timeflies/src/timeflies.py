@@ -2,6 +2,8 @@
 from datetime import date
 import re
 import weakref
+import sys
+import getopt
 
 def makeDate(dstr):
     datecomps = dstr.split('-')
@@ -284,7 +286,9 @@ class Reader:
     def __init__(self, uni):
         self.universe = uni
         self.inputfile = None
-        
+        self.linecount = 0
+        self.currentday = None
+
     def read(self, inputfile):
         self.inputfile = inputfile
         f = open(inputfile)
@@ -519,7 +523,7 @@ class Statistics:
                 if delta != 0.0:
                     print('*** {0:s} : delta = {1:5.2f}'.format(d.date.strftime('%Y-%m-%d, %a'), delta))
         
-    def simple(self):
+    def calcBalance(self):
         self.previous = None
         for d in self.days:
             self.processGap(d)
@@ -535,23 +539,70 @@ class Statistics:
 
         self.weeklybalance.dump()
         self.globalbalance.dump()
-              
-# ===== ===== ===== Main ===== ===== =====
 
-if __name__ == '__main__':
-    #sheetname = 'test/simple-project-2.fly' #sys.argv[1]
-    sheetname = 'H:\Timesheet\work-book-2012-09.log' #sys.argv[1]
+def showUsage(cmd):
+    print()
+    print('Usage: ' + cmd + ' [options] <infile> [..]')
+    print('''
+TimeFlies is a simple work log and task tree processor. Projects can be
+defined in form of hierarchical task trees. Daily work progress is logged
+in form of day records with attached activities.
+
+Options:
+
+-h, --help : show this info
+-b, --balance : calculate the must/have work hour balance
+-d <yyyy-mm>, --days <yyyy-mm> : calculate daily worked/leave/ill stats for
+    the given month including weekly subtotals
+-t <yyyy-mm>, --tasks <yyyy-mm> : calculate hours worked on tasks for the
+    given month
+''')
+
+def makeFilter(arg):
+    if arg == 'all':
+        return AllFilter()
+    else:
+        year, month = arg.split('-')
+        return MonthFilter(int(year), int(month))
+    
+def main(argv):
+    opts, args = getopt.getopt(argv[1:], 'hd:t:b', ['help', 'days=', 'tasks=', 'balance'])
+    
+    jobs = []
+    for opt, val in opts:
+        if opt == '-h' or opt == '--help':
+            showUsage(argv[0])
+        elif opt == '-b' or opt == '--balance':
+            jobs.append(('balance', val))
+        elif opt == '-d' or opt == '--days':
+            jobs.append(('days', val))
+        elif opt == 't' or opt == '--tasks':
+            jobs.append(('tasks', val))
+
     u = Universe()
     r = Reader(u)
-    r.read(sheetname)
+    for f in args:
+        r.read(f)
     s = Statistics(u)
-    month = MonthFilter(2012, 9)
-    print('------------------')
-    s.checkDays(month);
-    print('------------------')
-    u.taskroot.dump()
-    act = u.taskroot.calcActivity(month)
-    act.dump()
+    
+    for j, arg in jobs:
+        if j == 'days':
+            print('Day check (' + arg + '):')
+            f = makeFilter(arg)
+            s.checkDays(f)
+        elif j == 'tasks':
+            print('Task summary (' + arg + '):')
+            f = makeFilter(arg)
+            act = u.taskroot.calcActivity(f)
+            act.dump()
+        elif j == 'balance':
+            print('Hour balance:')
+            s.calcBalance()
+            
+# ===== ===== ===== Main ===== ===== ====='
+
+if __name__ == '__main__':
+    main(sys.argv)
 
 
 

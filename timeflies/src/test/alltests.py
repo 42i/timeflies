@@ -8,7 +8,7 @@ from datetime import date
 
 sys.path.append('..') 
 
-from timeflies import Day, Reader, Statistics, Universe, MonthFilter
+from timeflies import Day, Reader, Statistics, Universe, MonthFilter, main
 
 #class TestWithInputFile(TestCase):
 #    def __init__(self):
@@ -42,12 +42,7 @@ class SimpleProject(TestCase):
 
 class EndToEnd(TestCase):
     def test_read(self):
-        u = Universe()
-        r = Reader(u)
-        r.read('example1.log')
-        u.taskroot.dump()
-        s = Statistics(u)
-        s.simple()
+        main('run -b example1.log'.split(' '))
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
