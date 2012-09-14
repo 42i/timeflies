@@ -5,7 +5,4 @@ List of Tasks
 - make log-message output testable (try having loggers or so that can gather the output in a list)
 - more test cases
 - allow 'import' to have tasks and days in separate files
-- command line option: --check-days=(month|week)-(datespec)
-- command line option: --tally-tasks
-- command line option: --day-summary
 - sort activities chronologically at the end of a file read
