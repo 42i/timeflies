@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
+version = '0.1'
+
 cpyrght = \
 '''
-  TimeFlies is a work log and task tree processor.
+  TimeFlies v. {0:s} is a work log and task tree processor.
     
   Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
 
@@ -565,7 +567,7 @@ def showUsage(cmd):
     print()
     print('  Usage: ' + cmd + ' [options] <infile> [..]')
     print('''
-  TimeFlies -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
+  TimeFlies v. {0:s} -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
 
   This is a simple work log and task tree processor. Projects can be
   defined in form of hierarchical task trees. Daily work progress is logged
@@ -585,7 +587,7 @@ def showUsage(cmd):
       the given month including weekly subtotals
   -t <yyyy-mm>, --tasks <yyyy-mm> : calculate hours worked on tasks for the
       given month
-''')
+'''.format(version))
 
 def makeFilter(arg):
     if arg == 'all':
@@ -604,7 +606,7 @@ def main(argv):
             if opt == '-h' or opt == '--help':
                 showUsage(argv[0])
             elif opt == '-c' or opt == '--copyright':
-                print(cpyrght)
+                print(cpyrght.format(version))
             elif opt == '-b' or opt == '--balance':
                 jobs.append(('balance', val))
             elif opt == '-d' or opt == '--days':
