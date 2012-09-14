@@ -109,13 +109,20 @@ class Node:
                     n = newnode
         return n
 
-    def dump(self, indent=''):
-        self.dumpNode(indent)
-        
+    def dump(self, options, indent=''):
+        self.dumpNode(options, indent)
         if self.children != None:
+            indent += options['indent']
             for c in self.children:
-                c.dump(indent + '. . ')
+                c.dump(options, indent)
+
+def dumpActivities(activities, indent, options):
+        indent += options['indent']
         
+        for a in activities:
+            comment = (', ' + a.description) if a.description != None else ''
+            print(indent + '@ ' + str(a.day().date) + ' ' + str(a.duration) + comment)
+
 class ValueNode(Node):
     def __init__(self, task, value=None):
         Node.__init__(self)
@@ -129,15 +136,14 @@ class ValueNode(Node):
     def addActivity(self, activity):
         self.activities.append(activity)
 
-    def dumpNode(self, indent):
+    def dumpNode(self, options, indent):
         desc = self.task.description
         descetc = (' -- ' + desc) if desc != None else ''
-        print('{0:6.2f} {1:s}{2:s}{3:s}'.format(self.value, indent, self.getName(), descetc, ))
+        print('{1:s}{0:6.2f} : {2:s}{3:s}'.format(self.value, indent, self.getName(), descetc, ))
         
-        for a in self.activities:
-            comment = (', ' + a.description) if a.description != None else ''
-            print('       ' + indent + '. . # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
-  
+        if 'activities' in options:
+            dumpActivities(self.activities, '         ' + indent, options)
+ 
 class Task(Node):
     def __init__(self, name, desc=None, effort=0):
         Node.__init__(self)
@@ -184,13 +190,12 @@ class Task(Node):
         self.activities.append(activity)
         activity.task = weakref.ref(self)
 
-    def dumpNode(self, indent):
+    def dumpNode(self, options, indent):
         desc = (' -- ' + self.description) if self.description != None else ''        
         print(indent + self.name + desc)
         
-        for a in self.activities:
-            comment = (', ' + a.description) if a.description != None else ''
-            print(indent + '. . # ' + str(a.day().date) + ' ' + str(a.duration) + comment)
+        if 'activities' in options:
+            dumpActivities(self.activities, indent, options)
 
 class Activity:
     def __init__(self, duration, description):
@@ -202,8 +207,13 @@ class Activity:
 class Day:
     """A Day object represents a day of work. It has a date,
     hour information and comment information attached to it."""
-    def __init__(self, dstr):
-        self.date = makeDate(dstr)
+    def __init__(self, dt):
+        if isinstance(dt, str):
+            self.date = makeDate(dt)
+        elif isinstance(dt, date):
+            self.date = dt
+        else:
+            self.date = None
         self.directives = None
         self.start = 0
         self.stop = 0
@@ -294,7 +304,7 @@ class Directive:
 class Universe:
     def __init__(self):
         self.days = {}
-        self.taskroot = Task("root", "the task of life")
+        self.taskroot = Task("ALL")
         
     def getChronoDays(self):
         return sorted(self.days.values(), key = lambda day: day.date)
@@ -526,7 +536,7 @@ class Statistics:
         self.weeklybalance = Status('weekly')
         self.previous = None
 
-    def processGap(self, d1):
+    def processGap(self, d1, dayfilter):
         if self.previous == None:
             return
 
@@ -535,30 +545,34 @@ class Statistics:
 
         while d < end:
             dt = date.fromordinal(d)
-            if self.globalbalance.increaseMustHours(dt):
+            if dayfilter.passes(Day(dt)) and self.globalbalance.increaseMustHours(dt):
                 print('missing weekday record for ' + str(dt))
             d = d + 1
 
     def checkDays(self, dayfilter):
         for d in self.days:
             if dayfilter.passes(d):
-                delta = d.calcActivity() - d.calcWorked()
+                worked = d.calcWorked()
+                tasked = d.calcActivity()
+                delta = tasked - worked
                 if delta != 0.0:
-                    print('*** {0:s} : delta = {1:5.2f}'.format(d.date.strftime('%Y-%m-%d, %a'), delta))
+                    print('*** {0:s} : worked = {1:5.2f}, tasked = {2:5.2f}, delta = {3:5.2f}'
+                          .format(d.date.strftime('%Y-%m-%d, %a'), worked, tasked, delta))
         
-    def calcBalance(self):
+    def calcBalance(self, dayfilter):
         self.previous = None
         for d in self.days:
-            self.processGap(d)
-            if d.date.isoweekday() == 1:
-                self.weeklybalance.dump()
-                print()
-                self.weeklybalance.reset()
-                
-            self.weeklybalance.processDay(d)
-            self.globalbalance.processDay(d)
-            d.dump()
-            self.previous = d
+            self.processGap(d, dayfilter)
+            if dayfilter.passes(d):
+                if d.date.isoweekday() == 1:
+                    self.weeklybalance.dump()
+                    print()
+                    self.weeklybalance.reset()
+                    
+                self.weeklybalance.processDay(d)
+                self.globalbalance.processDay(d)
+                d.dump()
+                self.previous = d
 
         self.weeklybalance.dump()
         self.globalbalance.dump()
@@ -582,11 +596,16 @@ def showUsage(cmd):
 
   -h, --help : show this info
   -c, --copyright : show copyright info
-  -b, --balance : calculate the must/have work hour balance
-  -d <yyyy-mm>, --days <yyyy-mm> : calculate daily worked/leave/ill stats for
-      the given month including weekly subtotals
-  -t <yyyy-mm>, --tasks <yyyy-mm> : calculate hours worked on tasks for the
+  -w, --work-hours <yyyy-mm> : calculate the total must/have/leave/ill
+      work hour balance
+  -d, --day-check <yyyy-mm> : check the daily work time vs. booked
+      task time; helps to find unaccounted for time at work
+  -t, --tasks <yyyy-mm> : calculate hours worked on tasks for the
       given month
+  -s, --show-tasks : show the task tree
+  -a, --activities : show activities in task tree output for option -t or -s
+  -i, --indentation <width> : indent each level in the task hierarchy by
+      <width> space characters; default: 4
 '''.format(version))
 
 def makeFilter(arg):
@@ -599,20 +618,32 @@ def makeFilter(arg):
 def main(argv):
     jobs = []
     opts, args = None, None
+    dumpopts = {}
+    dumpopts['indent'] = '    '
+    
     try:
-        opts, args = getopt.getopt(argv[1:], 'hcd:t:b', ['copyright', 'help', 'days=', 'tasks=', 'balance'])
+        opts, args = getopt.getopt(argv[1:], 'hcasi:w:d:t:',
+                                   ['copyright', 'help', 'activities', 'show-tasks',
+                                    'indentation=',
+                                    'work-hours=', 'day-check=', 'tasks='])
 
         for opt, val in opts:
             if opt == '-h' or opt == '--help':
                 showUsage(argv[0])
             elif opt == '-c' or opt == '--copyright':
                 print(cpyrght.format(version))
-            elif opt == '-b' or opt == '--balance':
-                jobs.append(('balance', val))
-            elif opt == '-d' or opt == '--days':
-                jobs.append(('days', val))
-            elif opt == 't' or opt == '--tasks':
+            elif opt == '-a' or opt == '--activities':
+                dumpopts['activities'] = True
+            elif opt == '-i' or opt == '--indentation':
+                dumpopts['indent'] = ' ' * int(val)
+            elif opt == '-w' or opt == '--work-hours':
+                jobs.append(('work-hours', val))
+            elif opt == '-d' or opt == '--day-check':
+                jobs.append(('day-check', val))
+            elif opt == '-t' or opt == '--tasks':
                 jobs.append(('tasks', val))
+            elif opt == '-s' or opt == '--show-tasks':
+                jobs.append(('show-tasks', val))
 
     except getopt.GetoptError as e:
         print(argv[0] + ': ' + str(e))
@@ -626,7 +657,7 @@ def main(argv):
     s = Statistics(u)
     
     for j, arg in jobs:
-        if j == 'days':
+        if j == 'day-check':
             print('Day check (' + arg + '):')
             f = makeFilter(arg)
             s.checkDays(f)
@@ -634,10 +665,14 @@ def main(argv):
             print('Task summary (' + arg + '):')
             f = makeFilter(arg)
             act = u.taskroot.calcActivity(f)
-            act.dump()
-        elif j == 'balance':
-            print('Hour balance:')
-            s.calcBalance()
+            act.dump(dumpopts)
+        elif j == 'work-hours':
+            print('Work hour overview (' + arg + '):')
+            f = makeFilter(arg)
+            s.calcBalance(f)
+        elif j == 'show-tasks':
+            print('Task breakdown:')
+            u.taskroot.dump(dumpopts)
             
 if __name__ == '__main__':
     main(sys.argv)

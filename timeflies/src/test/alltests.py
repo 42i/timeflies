@@ -29,7 +29,7 @@ from datetime import date
 
 sys.path.append('..') 
 
-from timeflies import Day, Reader, Statistics, Universe, MonthFilter, main
+from timeflies import Day, Reader, Universe, MonthFilter, main
 
 #class TestWithInputFile(TestCase):
 #    def __init__(self):
@@ -63,7 +63,7 @@ class SimpleProject(TestCase):
 
 class EndToEnd(TestCase):
     def test_read(self):
-        main('run -b example1.log'.split(' '))
+        main('run -w 2012-08 example1.log'.split(' '))
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
@@ -86,9 +86,13 @@ class CalcActivitiesByMonth(TestCase):
         self.assertEqual(3.5, act.getNode('project.sub2').value)
    
     def doStats(self, month):
-        print('------------------')
+        print('------ Do not show activities ------------')
         act = self.u.taskroot.calcActivity(MonthFilter(2012, month))
-        act.dump()
+        options = {'indent':'    '}
+        act.dump(options)
+        print('------ Show activities ------------')
+        options['activities'] = True
+        act.dump(options)
         return act
         
 if __name__ == '__main__':
