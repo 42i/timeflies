@@ -138,8 +138,8 @@ class ValueNode(Node):
 
     def dumpNode(self, options, indent):
         desc = self.workPackage.description
-        descetc = (' -- ' + desc) if desc != None else ''
-        print('{1:s}{0:6.2f} : {2:s}{3:s}'.format(self.value, indent, self.getName(), descetc, ))
+        adornedDesc = (' -- ' + desc) if desc != None else ''
+        print('{1:s}{0:6.2f} : {2:s}{3:s}'.format(self.value, indent, self.getName(), adornedDesc))
         
         if 'activities' in options:
             dumpActivities(self.activities, '         ' + indent, options)
