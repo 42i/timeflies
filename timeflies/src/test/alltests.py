@@ -54,7 +54,7 @@ class SimpleProject(TestCase):
         u = Universe()
         r = Reader(u)
         r.read('simple-project-1.fly')
-        p1 = u.taskroot.getNode("project")
+        p1 = u.workPackageRoot.getNode("project")
         self.assertEqual("project", p1.name)
         p2 = p1.getNode("sub2.bbb")
         self.assertEqual("bbb", p2.name)
@@ -70,7 +70,7 @@ class CalcActivitiesByMonth(TestCase):
         self.u = Universe()
         r = Reader(self.u)
         r.read('simple-project-2.fly')
-        p1 = self.u.taskroot.getNode("project")
+        p1 = self.u.workPackageRoot.getNode("project")
         self.assertEqual("project", p1.name)
         p2 = p1.getNode("sub2.bbb")
         self.assertEqual("bbb", p2.name)
@@ -87,7 +87,7 @@ class CalcActivitiesByMonth(TestCase):
    
     def doStats(self, month):
         print('------ Do not show activities ------------')
-        act = self.u.taskroot.calcActivity(MonthFilter(2012, month))
+        act = self.u.workPackageRoot.calcActivity(MonthFilter(2012, month))
         options = {'indent':'    '}
         act.dump(options)
         print('------ Show activities ------------')
