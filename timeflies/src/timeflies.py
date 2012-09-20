@@ -28,6 +28,17 @@ import weakref
 import sys
 import getopt
 
+_outputdest = sys.stdout
+
+def set_output_destination(dest):
+    global _outputdest
+    _outputdest = dest
+
+def output(text=None):
+    if text is None:
+        text = ''
+    print(text, file=_outputdest)
+    
 def make_date(dstr):
     '''
     Create a date object out of a string of the form YYYY-MM-DD and return it.
@@ -73,7 +84,7 @@ class Node:
         self._children_byname = None
 
     def add_child(self, node):
-        if self._children_byname == None:
+        if self._children_byname is None:
             self._children = []
             self._children_byname = {}
         
@@ -91,7 +102,7 @@ class Node:
         node._parent = weakref.ref(self)
     
     def has_child(self, chld):
-        if self._children_byname == None:
+        if self._children_byname is None:
             return False
         elif isinstance(chld, int):
             return 0 <= chld and chld < len(self._children)
@@ -123,7 +134,7 @@ class Node:
 
     def dump(self, options, indent=''):
         self.dump_node(options, indent)
-        if self._children != None:
+        if self._children is not None:
             indent += options['indent']
             for c in self._children:
                 c.dump(options, indent)
@@ -141,8 +152,8 @@ def dump_activities(activities, indent, options):
     indent += options['indent']
     
     for a in activities:
-        comment = (', ' + a.description) if a.description != None else ''
-        print(indent + '@ ' + str(a.day().date) + ' ' + str(a.duration) + comment)
+        comment = (', ' + a.description) if a.description is not None else ''
+        output(indent + '- ' + str(a.day().date) + ' ' + str(a.duration) + comment)
 
 class ValueNode(Node):
     def __init__(self, workpackage, value=None):
@@ -152,15 +163,16 @@ class ValueNode(Node):
         self.activities = []
     
     def get_name(self):
-        return self.workpackage.name
+        return '--self--' if self.workpackage is None else self.workpackage.name
     
     def add_activity(self, activity):
         self.activities.append(activity)
 
     def dump_node(self, options, indent):
-        desc = self.workpackage.description
-        adorneddesc = (' -- ' + desc) if desc != None else ''
-        print('{1:s}{0:6.2f} : {2:s}{3:s}'.format(self.value, indent, self.get_name(), adorneddesc))
+        desc = None if self.workpackage is None else self.workpackage.description
+        adorneddesc = (' -- ' + desc) if desc is not None else ''
+        output('{1:s}{0:6.2f} : {2:s}{3:s}'
+               .format(self.value, indent, self.get_name(), adorneddesc))
         
         if 'activities' in options:
             dump_activities(self.activities, '         ' + indent, options)
@@ -193,13 +205,16 @@ class WorkPackage(Node):
                 totals += a.duration
                 res.add_activity(a)
 
-        if totals != 0.0 and self._children != None:
-            res.add_child(ValueNode('--self--', totals))
-        
-        if self._children != None:
+        if self._children is not None:
             for s in self._children:
                 c = s.calc_activity(dayfilter)
                 if c.value != 0.0:
+                    if res.activities:
+                        selfres = ValueNode(None, totals)
+                        res.add_child(selfres)
+                        for a in res.activities:
+                            selfres.add_activity(a)
+                        res.activities = []
                     totals += c.value
                     res.add_child(c)
         
@@ -212,8 +227,8 @@ class WorkPackage(Node):
         activity.workpackage = weakref.ref(self)
 
     def dump_node(self, options, indent):
-        desc = (' -- ' + self.description) if self.description != None else ''        
-        print(indent + self.name + desc)
+        desc = (' -- ' + self.description) if self.description is not None else ''        
+        output(indent + self.name + desc)
         
         if 'activities' in options:
             dump_activities(self.activities, indent, options)
@@ -246,7 +261,7 @@ class Day:
         self.activities = []
         
     def add_directive(self, d):
-        if self.directives == None:
+        if self.directives is None:
             self.directives = [ d ]
         else:
             self.directives.append(d)
@@ -293,7 +308,7 @@ class Day:
             return 8.0
     
     def dump(self):
-        print(self.date.strftime('%Y-%m-%d, %a: ') + \
+        output(self.date.strftime('%Y-%m-%d, %a: ') + \
               format_floatval(self.calc_worked(), "worked") + ', ' +\
               format_floatval(self.leave, "leave") + ', ' +\
               format_floatval(self.ill, "ill"))
@@ -373,7 +388,7 @@ class Reader:
                 elif line.startswith('-- '):
                     self._process_comment(line[3:].strip())
                 elif line.startswith('todo '):
-                    if not self._currentday == None:
+                    if self._currentday is not None:
                         self._msg('WARNING: TO DO item found beyond the beginning of the file')
                     else:
                         self._msg('TO DO: ' + line[5:].strip())
@@ -382,7 +397,7 @@ class Reader:
         f.close()
         
     def _msg(self, text):
-        print(self._inputfile + ':' + str(self._linecount) + ': ERROR : ' + text)
+        output(self._inputfile + ':' + str(self._linecount) + ': ERROR : ' + text)
         
     def _reset_workpackage_stack(self):
         self._workpackage_stack = WorkPackageLineBookmark(self._universe.workpackage_root, -1)
@@ -427,7 +442,7 @@ class Reader:
             try:
                 activity = Activity(duration, desc)
                 wp = self._universe.get_workpackage(workpackage_name)
-                if wp == None:
+                if wp is None:
                     self._msg('invalid activity work package ' + workpackage_name
                              + ' on day ' + str(self._currentday.date))
                 else:
@@ -482,7 +497,7 @@ class Reader:
             self._add_leave(args[0], args[1], args[2])
             return
         
-        if self._currentday == None:
+        if self._currentday is None:
             self._msg('No current day for instruction <' + argliststring + '>.')
             return
         
@@ -528,7 +543,7 @@ class Status:
         return workday
     
     def process_day(self, day):
-        if day.directives != None:
+        if day.directives is not None:
             for di in day.directives:
                 self._process_directive(di)
 
@@ -544,15 +559,15 @@ class Status:
             self.dump()
             self.reset()
             #print('--- reset ' + self.name + '---')
-        elif di.leave != None:
+        elif di.leave is not None:
             self._leavebalancehours += di.leave
-        elif di.must != None:
+        elif di.must is not None:
             self._musthours = di.must
-        elif di.have != None:
+        elif di.have is not None:
             self._havehours = di.have
         
     def dump(self):
-        print(self.name + ': must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
+        output(self.name + ': must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
               .format(self._musthours, self._workedhours, self._illhours, self._leavetakenhours, self._leavebalancehours, self._havehours))
 
 class Statistics:
@@ -563,7 +578,7 @@ class Statistics:
         self.previous = None
 
     def _process_gap(self, d1, dayfilter):
-        if self.previous == None:
+        if self.previous is None:
             return
 
         d = self.previous.date.toordinal() + 1
@@ -572,7 +587,7 @@ class Statistics:
         while d < end:
             dt = date.fromordinal(d)
             if dayfilter.passes(Day(dt)) and self.globalbalance.increase_must_hours(dt):
-                print('missing weekday record for ' + str(dt))
+                output('missing weekday record for ' + str(dt))
             d = d + 1
 
     def check_days(self, dayfilter):
@@ -582,7 +597,7 @@ class Statistics:
                 tasked = d.calc_activity()
                 delta = tasked - worked
                 if delta != 0.0:
-                    print('*** {0:s} : worked = {1:5.2f}, tasked = {2:5.2f}, delta = {3:5.2f}'
+                    output('*** {0:s} : worked = {1:5.2f}, tasked = {2:5.2f}, delta = {3:5.2f}'
                           .format(d.date.strftime('%Y-%m-%d, %a'), worked, tasked, delta))
         
     def calc_balance(self, dayfilter):
@@ -592,7 +607,7 @@ class Statistics:
             if dayfilter.passes(d):
                 if d.date.isoweekday() == 1:
                     self.weeklybalance.dump()
-                    print()
+                    output()
                     self.weeklybalance.reset()
                     
                 self.weeklybalance.process_day(d)
@@ -604,9 +619,9 @@ class Statistics:
         self.globalbalance.dump()
 
 def show_usage(cmd):
-    print()
-    print('  Usage: ' + cmd + ' [options] <infile> [..]')
-    print('''
+    output()
+    output('  Usage: ' + cmd + ' [options] <infile> [..]')
+    output('''
   TimeFlies v. {0:s} -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
 
   This is a simple time log and work package tree processor. Projects can be
@@ -650,7 +665,7 @@ def main(argv):
             if opt == '-h' or opt == '--help':
                 show_usage(argv[0])
             elif opt == '-c' or opt == '--copyright':
-                print(_copyright.format(_version))
+                output(_copyright.format(_version))
             elif opt == '-a' or opt == '--activities':
                 dumpopts['activities'] = True
             elif opt == '-i' or opt == '--indentation':
@@ -665,8 +680,8 @@ def main(argv):
                 jobs.append(('show-work-packages', val))
 
     except getopt.GetoptError as e:
-        print(argv[0] + ': ' + str(e))
-        print('For help try: ' + argv[0] + ' --help')
+        output(argv[0] + ': ' + str(e))
+        output('For help try: ' + argv[0] + ' --help')
         exit()
         
     u = Universe()
@@ -677,23 +692,23 @@ def main(argv):
     
     for j, arg in jobs:
         if j == 'day-check':
-            print('Day check (' + arg + '):')
+            output('Day check (' + arg + '):')
             f = make_filter(arg)
             s.check_days(f)
         elif j == 'work-packages':
-            print('Work package summary (' + arg + '):')
+            output('Work package summary (' + arg + '):')
             f = make_filter(arg)
             act = u.workpackage_root.calc_activity(f)
             act.dump(dumpopts)
         elif j == 'work-time':
-            print('Time at work overview (' + arg + '):')
+            output('Time at work overview (' + arg + '):')
             f = make_filter(arg)
             s.calc_balance(f)
         elif j == 'show-work-packages':
-            print('Work package breakdown:')
+            output('Work package breakdown:')
             u.workpackage_root.dump(dumpopts)
         else:
-            print('*** Unknown job: ' + j)
+            output('*** Unknown job: ' + j)
             
 if __name__ == '__main__':
     main(sys.argv)

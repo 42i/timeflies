@@ -1,0 +1,12 @@
+  8.50 : ALL
+      8.50 : project -- the big fat project
+          4.00 : sub1
+              1.50 : aa
+                         - 2012-08-01 1.5, hee haa aa
+              2.50 : cc
+                         - 2012-08-01 2.5, hee haa cc
+          4.50 : sub2
+              1.00 : --self--
+                         - 2012-08-01 1.0, some sorting out
+              3.50 : ccc
+                         - 2012-08-01 3.5, yayy ccc

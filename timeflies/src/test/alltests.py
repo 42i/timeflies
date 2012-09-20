@@ -29,8 +29,30 @@ from datetime import date
 
 sys.path.append('..') 
 
-from timeflies import Day, Reader, Universe, MonthFilter, main
+from timeflies import Day, Reader, Universe, MonthFilter, main, set_output_destination
 
+import shlex
+import subprocess
+
+class OutputWrapper:
+    def __init__(self, filename):
+        self._filename = filename
+        self._check_filename = filename + '.check'
+        self._check_file = open(self._check_filename, mode='w')
+        set_output_destination(self._check_file)
+    
+    def compare(self):
+        self._check_file.close()
+        lines = 0
+        diffcmdline = 'diff ' + self._filename + ' ' + self._check_filename
+        for i in subprocess.getoutput(diffcmdline).splitlines():
+            if lines == 0:
+                print(diffcmdline)
+            print(i)
+            lines += 1
+        
+        return lines == 0
+        
 #class TestWithInputFile(TestCase):
 #    def __init__(self):
 #        self.uni = Universe()
@@ -54,23 +76,23 @@ class SimpleProject(TestCase):
         u = Universe()
         r = Reader(u)
         r.read('simple-project-1.fly')
-        p1 = u.workpackage_root.get_node("project")
+        p1 = u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")
         self.assertEqual("bbb", p2.name)
         a = p2.activities[0]
         self.assertEqual(date(2012, 7, 14), a.day().date)
 
-class EndToEnd(TestCase):
-    def test_read(self):
-        main('run -w 2012-08 example1.log'.split(' '))
+#class EndToEnd(TestCase):
+#    def test_read(self):
+#        main('run -w 2012-08 example1.log'.split(' '))
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
         r = Reader(self.u)
         r.read('simple-project-2.fly')
-        p1 = self.u.workpackage_root.get_node("project")
+        p1 = self.u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")
         self.assertEqual("bbb", p2.name)
@@ -83,16 +105,19 @@ class CalcActivitiesByMonth(TestCase):
         act = self.doStats(8)
         self.assertEqual(1.5, act.get_node('project.sub1.aa').value)
         self.assertEqual(4.0, act.get_node('project.sub1').value)
-        self.assertEqual(3.5, act.get_node('project.sub2').value)
+        self.assertEqual(4.5, act.get_node('project.sub2').value)
+        act = self.doStats(9)
    
     def doStats(self, month):
-        print('------ Do not show activities ------------')
+        ow = OutputWrapper('simple-project-2.out-' + str(month))
         act = self.u.workpackage_root.calc_activity(MonthFilter(2012, month))
         options = {'indent':'    '}
         act.dump(options)
-        print('------ Show activities ------------')
+        self.assertTrue(ow.compare())
+        ow = OutputWrapper('simple-project-2.out-' + str(month) + '-act')
         options['activities'] = True
         act.dump(options)
+        self.assertTrue(ow.compare())
         return act
         
 if __name__ == '__main__':
