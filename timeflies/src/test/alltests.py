@@ -43,20 +43,20 @@ class DayTests(TestCase):
 
     def test_simpleBalance(self):
         d = Day('2012-08-05')
-        self.assertEqual(d.calcBalance(), 0)
-        d.setHours(8, 17)
-        self.assertEqual(d.calcBalance(), 9)
-        d.addOff(1)
-        self.assertEqual(d.calcBalance(), 8)
+        self.assertEqual(d.calc_balance(), 0)
+        d.set_hours(8, 17)
+        self.assertEqual(d.calc_balance(), 9)
+        d.add_off(1)
+        self.assertEqual(d.calc_balance(), 8)
 
 class SimpleProject(TestCase):
     def test_read(self):
         u = Universe()
         r = Reader(u)
         r.read('simple-project-1.fly')
-        p1 = u.workPackageRoot.getNode("project")
+        p1 = u.workpackage_root.get_node("project")
         self.assertEqual("project", p1.name)
-        p2 = p1.getNode("sub2.bbb")
+        p2 = p1.get_node("sub2.bbb")
         self.assertEqual("bbb", p2.name)
         a = p2.activities[0]
         self.assertEqual(date(2012, 7, 14), a.day().date)
@@ -70,24 +70,24 @@ class CalcActivitiesByMonth(TestCase):
         self.u = Universe()
         r = Reader(self.u)
         r.read('simple-project-2.fly')
-        p1 = self.u.workPackageRoot.getNode("project")
+        p1 = self.u.workpackage_root.get_node("project")
         self.assertEqual("project", p1.name)
-        p2 = p1.getNode("sub2.bbb")
+        p2 = p1.get_node("sub2.bbb")
         self.assertEqual("bbb", p2.name)
         a = p2.activities[0]
         self.assertEqual(date(2012, 7, 14), a.day().date)
         act = self.doStats(7)
-        self.assertEqual(2.0, act.getNode('project.sub1.aa').value)
-        self.assertEqual(3.0, act.getNode('project.sub3').value)
-        self.assertEqual(10.0, act.getNode('project.sub2').value)
+        self.assertEqual(2.0, act.get_node('project.sub1.aa').value)
+        self.assertEqual(3.0, act.get_node('project.sub3').value)
+        self.assertEqual(10.0, act.get_node('project.sub2').value)
         act = self.doStats(8)
-        self.assertEqual(1.5, act.getNode('project.sub1.aa').value)
-        self.assertEqual(4.0, act.getNode('project.sub1').value)
-        self.assertEqual(3.5, act.getNode('project.sub2').value)
+        self.assertEqual(1.5, act.get_node('project.sub1.aa').value)
+        self.assertEqual(4.0, act.get_node('project.sub1').value)
+        self.assertEqual(3.5, act.get_node('project.sub2').value)
    
     def doStats(self, month):
         print('------ Do not show activities ------------')
-        act = self.u.workPackageRoot.calcActivity(MonthFilter(2012, month))
+        act = self.u.workpackage_root.calc_activity(MonthFilter(2012, month))
         options = {'indent':'    '}
         act.dump(options)
         print('------ Show activities ------------')
