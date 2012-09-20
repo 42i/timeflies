@@ -23,7 +23,7 @@
 import unittest
 from unittest import TestCase
 
-#import re
+import os
 import sys
 from datetime import date
 
@@ -31,7 +31,6 @@ sys.path.append('..')
 
 from timeflies import Day, Reader, Universe, MonthFilter, main, set_output_destination
 
-import shlex
 import subprocess
 
 class OutputWrapper:
@@ -51,6 +50,7 @@ class OutputWrapper:
             print(i)
             lines += 1
         
+        os.remove(self._check_filename)
         return lines == 0
         
 #class TestWithInputFile(TestCase):
