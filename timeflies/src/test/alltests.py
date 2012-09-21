@@ -91,13 +91,18 @@ class SimpleProject(TestCase):
 #        main('run -w 2012-08 example1.log'.split(' '))
 
 
-class ReaderTests(TestCase):
-    def test_1(self):
-        ow = OutputWrapper('read-test-1.out')
-        do_main('run -s -t 2012-07 -w 2012-07 read-test-1.fly')
+class EndToEndTests(TestCase):
+    def doit(self, cmdline, expected):
+        ow = OutputWrapper(expected)
+        do_main('run ' + cmdline)
         self.assertTrue(ow.compare())
         
+    def test_1(self):
+        self.doit('-s -t 2012-07 -w 2012-07 test-1.fly', 'test-1.out')
     
+    def test_2(self):
+        self.doit('-w 2012-07-14..2012-08-01 -a test-2.fly', 'test-2.out')
+        
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()

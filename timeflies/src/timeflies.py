@@ -47,16 +47,14 @@ def tidy_whitespace(mess):
     return re.sub('\s+', ' ', mess.strip())
 
 def make_date(dstr):
-    '''
-    Create a date object out of a string of the form YYYY-MM-DD and return it.
-    '''
+    '''Create a date object out of a string of the form
+    YYYY-MM-DD and return it.'''
     year, month, day = dstr.split('-')
     return date(int(year), int(month), int(day))
 
 def is_weekend(day):
-    '''
-    Return True if the given date is a Saturday or a Sunday, False otherwise.
-    '''
+    '''Return True if the given date is a Saturday or a Sunday,
+    False otherwise.'''
     return day.isoweekday() == 6 or day.isoweekday() == 7
 
 def format_floatval(val, what):
@@ -68,21 +66,38 @@ def format_floatval(val, what):
 class AllFilter:
     def passes(self, day):
         return True
-    
-class MonthFilter:
-    def __init__(self, year, month):
-        self.year = year
-        self.month = month
+
+class RangeFilter:
+    def __init__(self, starty, startm, startd, endy, endm, endd):
+        self._start = date(starty, startm, startd).toordinal()
+        self._end = date(endy, endm, endd).toordinal()
     
     def passes(self, day):
-        return day.date.year == self.year and day.date.month == self.month
+        ordinal = day.date.toordinal()
+        return self._start <= ordinal and ordinal <= self._end
+        
+class MonthFilter:
+    def __init__(self, year, month):
+        self._year = year
+        self._month = month
+    
+    def passes(self, day):
+        return day.date.year == self._year and day.date.month == self._month
 
 def make_filter(arg):
     if arg == 'all':
         return AllFilter()
-    else:
+    elif re.match('^\d{4}-\d{2}$', arg):
         year, month = arg.split('-')
         return MonthFilter(int(year), int(month))
+    elif re.match('^\d{4}(-\d{2}){2}\.\.\d{4}(-\d{2}){2}$', arg):
+        startstring, endstring = arg.split('..')
+        starty, startm, startd = startstring.split('-')
+        endy, endm, endd = endstring.split('-')        
+        return RangeFilter(int(starty), int(startm), int(startd),
+                           int(endy), int(endm), int(endd))
+    else:
+        output('Bad time filter argument: ' + arg)
 
 class Node:
     def __init__(self):
