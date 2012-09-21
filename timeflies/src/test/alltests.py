@@ -33,6 +33,9 @@ from timeflies import Day, Reader, Universe, MonthFilter, main, set_output_desti
 
 import subprocess
 
+def do_main(cmdline):
+    main(cmdline.split(' '))
+    
 class OutputWrapper:
     def __init__(self, filename):
         self._filename = filename
@@ -86,7 +89,15 @@ class SimpleProject(TestCase):
 #class EndToEnd(TestCase):
 #    def test_read(self):
 #        main('run -w 2012-08 example1.log'.split(' '))
+
+
+class ReaderTests(TestCase):
+    def test_1(self):
+        ow = OutputWrapper('read-test-1.out')
+        do_main('run -s -t 2012-07 -w 2012-07 read-test-1.fly')
+        self.assertTrue(ow.compare())
         
+    
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()

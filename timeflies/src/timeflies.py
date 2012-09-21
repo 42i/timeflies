@@ -40,7 +40,12 @@ def output(text=None, dest=None):
     if dest is None:
         dest = _outputdest
     print(text, file=dest)
-    
+
+def tidy_whitespace(str):
+    '''Truncates leading and trailing whitespaces and
+    replaces each other sequence of whitespaces by a single space.'''
+    return re.sub('\s+', ' ', str.strip())
+
 def make_date(dstr):
     '''
     Create a date object out of a string of the form YYYY-MM-DD and return it.
@@ -444,7 +449,7 @@ class Reader:
         
     def _process_activity(self, line):
         comps = line.split(',', 1)
-        args = comps[0].strip().split(' ')
+        args = tidy_whitespace(comps[0]).split(' ')
         if len(args) < 2:
             self._msg('an activity must have a work package and a duration.')
         else:
@@ -474,7 +479,7 @@ class Reader:
     def _process_instructions(self, line):
         morsels = line.split(',')
         for mors in morsels:
-            self._process_instruction(mors.strip())
+            self._process_instruction(tidy_whitespace(mors))
 
     def _add_leave(self, start, end, where):
         st = make_date(start)
