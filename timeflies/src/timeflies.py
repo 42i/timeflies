@@ -706,7 +706,6 @@ class Application:
         r = Reader(self._universe)
         for f in self._args:
             r.read(f)
-        s = Statistics(self._universe)
     
     def process(self):
         for j, arg in self._jobs:
