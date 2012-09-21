@@ -41,10 +41,10 @@ def output(text=None, dest=None):
         dest = _outputdest
     print(text, file=dest)
 
-def tidy_whitespace(str):
+def tidy_whitespace(mess):
     '''Truncates leading and trailing whitespaces and
     replaces each other sequence of whitespaces by a single space.'''
-    return re.sub('\s+', ' ', str.strip())
+    return re.sub('\s+', ' ', mess.strip())
 
 def make_date(dstr):
     '''
