@@ -34,10 +34,12 @@ def set_output_destination(dest):
     global _outputdest
     _outputdest = dest
 
-def output(text=None):
+def output(text=None, dest=None):
     if text is None:
         text = ''
-    print(text, file=_outputdest)
+    if dest is None:
+        dest = _outputdest
+    print(text, file=dest)
     
 def make_date(dstr):
     '''
@@ -46,11 +48,11 @@ def make_date(dstr):
     year, month, day = dstr.split('-')
     return date(int(year), int(month), int(day))
 
-def is_weekend(d):
+def is_weekend(day):
     '''
     Return True if the given date is a Saturday or a Sunday, False otherwise.
     '''
-    return d.isoweekday() == 6 or d.isoweekday() == 7
+    return day.isoweekday() == 6 or day.isoweekday() == 7
 
 def format_floatval(val, what):
     if val == 0.0:
@@ -82,6 +84,7 @@ class Node:
         self._parent = None
         self._children = None
         self._children_byname = None
+        self.activities = None
 
     def add_child(self, node):
         if self._children_byname is None:
@@ -149,24 +152,21 @@ class Node:
         pass
     
 def dump_activities(activities, indent, options):
-    indent += options['indent']
-    
-    for a in activities:
-        comment = (', ' + a.description) if a.description is not None else ''
-        output(indent + '- ' + str(a.day().date) + ' ' + str(a.duration) + comment)
+    if activities is not None:
+        indent += options['indent']
+        
+        for a in activities:
+            comment = (', ' + a.description) if a.description is not None else ''
+            output(indent + '- ' + str(a.day().date) + ' ' + str(a.duration) + comment)
 
 class ValueNode(Node):
     def __init__(self, workpackage, value=None):
         Node.__init__(self)
         self.value = value
         self.workpackage = workpackage
-        self.activities = []
     
     def get_name(self):
         return '--self--' if self.workpackage is None else self.workpackage.name
-    
-    def add_activity(self, activity):
-        self.activities.append(activity)
 
     def dump_node(self, options, indent):
         desc = None if self.workpackage is None else self.workpackage.description
@@ -183,7 +183,6 @@ class WorkPackage(Node):
         self.name = name
         self.description = desc
         self.effort = int(effort)
-        self.activities = []
     
     def create_node(self, name):
         return WorkPackage(name)
@@ -200,20 +199,29 @@ class WorkPackage(Node):
     def calc_activity(self, dayfilter):
         res = ValueNode(self)
         totals = 0.0
-        for a in self.activities:
-            if dayfilter.passes(a.day()):
-                totals += a.duration
-                res.add_activity(a)
+        
+        if self.activities is not None:
+            for a in self.activities:
+                if dayfilter.passes(a.day()):
+                    totals += a.duration
+                    a.attach_to(res)
 
         if self._children is not None:
             for s in self._children:
                 c = s.calc_activity(dayfilter)
                 if c.value != 0.0:
+                    # Only attach children with actual effort to
+                    # keep the result pruned nicely
                     if res.activities:
+                        # wp 'self' has both activities on itself and
+                        # on sub-wps. To make the activities on the wp
+                        # itselr more easily visible, we insert a dummy
+                        # 'self' child here and move the activities
+                        # in question to that one.
                         selfres = ValueNode(None, totals)
                         res.add_child(selfres)
-                        for a in res.activities:
-                            selfres.add_activity(a)
+                        for act in res.activities:
+                            act.attach_to(selfres)
                         res.activities = []
                     totals += c.value
                     res.add_child(c)
@@ -221,10 +229,6 @@ class WorkPackage(Node):
         res.value = totals
             
         return res
-        
-    def add_activity(self, activity):
-        self.activities.append(activity)
-        activity.workpackage = weakref.ref(self)
 
     def dump_node(self, options, indent):
         desc = (' -- ' + self.description) if self.description is not None else ''        
@@ -239,10 +243,25 @@ class Activity:
         self.workpackage = None
         self.duration = float(duration)
         self.description = description
+    
+    def attach_to(self, node):
+        '''Attaches ourselves to the given node. If the node is a
+        WorkPackage or a Day, a weak-ref to the parent node is
+        set.'''
+        if isinstance(node, WorkPackage):
+            self.workpackage = weakref.ref(node)
+        elif isinstance(node, Day):
+            self.day = weakref.ref(node)
         
+        if node.activities is None:
+            node.activities = [ self ]
+        else:
+            node.activities.append(self)
+            
+            
 class Day:
-    """A Day object represents a day of work. It has a date,
-    hour information and comment information attached to it."""
+    '''A Day object represents a day of work. It has a date,
+    hour information and comment information attached to it.'''
     def __init__(self, dt):
         if isinstance(dt, str):
             self.date = make_date(dt)
@@ -258,17 +277,13 @@ class Day:
         self.leave = 0
         self.phol = False
         self.comments = []
-        self.activities = []
+        self.activities = None
         
     def add_directive(self, d):
         if self.directives is None:
             self.directives = [ d ]
         else:
             self.directives.append(d)
-    
-    def add_activity(self, activity):
-        self.activities.append(activity)
-        activity.day = weakref.ref(self)
         
     def add_comment(self, comment):
         self.comments.append(comment)
@@ -291,8 +306,9 @@ class Day:
 
     def calc_activity(self):
         totals = 0.0
-        for a in self.activities:
-            totals += a.duration
+        if self.activities is not None:
+            for a in self.activities:
+                totals += a.duration
         return totals
         
     def calc_balance(self):
@@ -446,8 +462,8 @@ class Reader:
                     self._msg('invalid activity work package ' + workpackage_name
                              + ' on day ' + str(self._currentday.date))
                 else:
-                    wp.add_activity(activity)
-                    self._currentday.add_activity(activity)
+                    activity.attach_to(wp)
+                    activity.attach_to(self._currentday)
             except ValueError:
                 self._msg('invalid activity duration ' + duration + '.')
             
