@@ -665,71 +665,75 @@ def show_usage(cmd):
       <width> space characters; default: 4
 '''.format(_version))
 
-def main(argv):
-    jobs = []
-    opts, args = None, None
-    dumpopts = {}
-    dumpopts['indent'] = '    '
+class Application:
+    def __init__(self):
+        self._universe = Universe()
+        self._jobs = []
+        self._dumpopts = { 'indent':'    ' }
+        self._args = None
     
-    try:
-        opts, args = getopt.getopt(argv[1:], 'hcasi:w:d:t:',
-                                   ['copyright', 'help', 'activities', 'show-work-packages',
-                                    'indentation=',
-                                    'work-time=', 'day-check=', 'work-packages='])
-
-        for opt, val in opts:
-            if opt == '-h' or opt == '--help':
-                show_usage(argv[0])
-            elif opt == '-c' or opt == '--copyright':
-                output(_copyright.format(_version))
-            elif opt == '-a' or opt == '--activities':
-                dumpopts['activities'] = True
-            elif opt == '-i' or opt == '--indentation':
-                dumpopts['indent'] = ' ' * int(val)
-            elif opt == '-t' or opt == '--work-time':
-                jobs.append(('work-time', val))
-            elif opt == '-d' or opt == '--day-check':
-                jobs.append(('day-check', val))
-            elif opt == '-w' or opt == '--work-packages':
-                jobs.append(('work-packages', val))
-            elif opt == '-s' or opt == '--show-work-packages':
-                jobs.append(('show-work-packages', val))
-
-    except getopt.GetoptError as e:
-        output(argv[0] + ': ' + str(e))
-        output('For help try: ' + argv[0] + ' --help')
-        exit()
+    def interpret_cmdline(self, argv):
+        try:
+            opts, self._args = getopt.getopt(argv[1:], 'hcasi:w:d:t:',
+                                       ['copyright', 'help', 'activities', 'show-work-packages',
+                                        'indentation=',
+                                        'work-time=', 'day-check=', 'work-packages='])
+    
+            for opt, val in opts:
+                if opt == '-h' or opt == '--help':
+                    show_usage(argv[0])
+                elif opt == '-c' or opt == '--copyright':
+                    output(_copyright.format(_version))
+                elif opt == '-a' or opt == '--activities':
+                    self._dumpopts['activities'] = True
+                elif opt == '-i' or opt == '--indentation':
+                    self._dumpopts['indent'] = ' ' * int(val)
+                elif opt == '-t' or opt == '--work-time':
+                    self._jobs.append(('work-time', val))
+                elif opt == '-d' or opt == '--day-check':
+                    self._jobs.append(('day-check', val))
+                elif opt == '-w' or opt == '--work-packages':
+                    self._jobs.append(('work-packages', val))
+                elif opt == '-s' or opt == '--show-work-packages':
+                    self._jobs.append(('show-work-packages', val))
+    
+        except getopt.GetoptError as e:
+            output(argv[0] + ': ' + str(e))
+            output('For help try: ' + argv[0] + ' --help')
+            exit()
         
-    u = Universe()
-    r = Reader(u)
-    for f in args:
-        r.read(f)
-    s = Statistics(u)
+    def read_files(self):
+        r = Reader(self._universe)
+        for f in self._args:
+            r.read(f)
+        s = Statistics(self._universe)
     
-    for j, arg in jobs:
-        if j == 'day-check':
-            output('Day check (' + arg + '):')
-            f = make_filter(arg)
-            s.check_days(f)
-        elif j == 'work-packages':
-            output('Work package summary (' + arg + '):')
-            f = make_filter(arg)
-            act = u.workpackage_root.calc_activity(f)
-            act.dump(dumpopts)
-        elif j == 'work-time':
-            output('Time at work overview (' + arg + '):')
-            f = make_filter(arg)
-            s.calc_balance(f)
-        elif j == 'show-work-packages':
-            output('Work package breakdown:')
-            u.workpackage_root.dump(dumpopts)
-        else:
-            output('*** Unknown job: ' + j)
-            
+    def process(self):
+        for j, arg in self._jobs:
+            if j == 'day-check':
+                output('Day check (' + arg + '):')
+                f = make_filter(arg)
+                Statistics(self._universe).check_days(f)
+            elif j == 'work-packages':
+                output('Work package summary (' + arg + '):')
+                f = make_filter(arg)
+                act = self._universe.workpackage_root.calc_activity(f)
+                act.dump(self._dumpopts)
+            elif j == 'work-time':
+                output('Time at work overview (' + arg + '):')
+                f = make_filter(arg)
+                Statistics(self._universe).calc_balance(f)
+            elif j == 'show-work-packages':
+                output('Work package breakdown:')
+                self._universe.workpackage_root.dump(self._dumpopts)
+            else:
+                output('*** Unknown job: ' + j)
+
+def main(argv):
+    app = Application()
+    app.interpret_cmdline(argv)
+    app.read_files()
+    app.process()
+    
 if __name__ == '__main__':
     main(sys.argv)
-
-
-
-
-
