@@ -1,6 +1,8 @@
 List of Tasks
 
 - use PyLint
+- times: hh:mm
+- improve total and weekly summary output formats
 - leading check tab/space validity (leading whitespace of two consecutive lines must be a match)
 - escape hash sign: \#
 - more test cases
