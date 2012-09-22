@@ -290,8 +290,8 @@ class Day:
         else:
             self.date = None
         self.directives = None
-        self.start = 0
-        self.stop = 0
+        self.start = None
+        self.stop = None
         self.off = 0
         self.ill = 0
         self.leave = 0
@@ -321,6 +321,8 @@ class Day:
         self.ill = ill
 
     def set_hours(self, start, stop):
+        if self.start is not None or self.stop is not None:
+            raise Exception('day start and stop times can only be set once.')
         self.start = start
         self.stop = stop
 
@@ -335,7 +337,10 @@ class Day:
         return self.calc_worked() + self.ill + self.leave
 
     def calc_worked(self):
-        return self.stop - self.start - self.off
+        if self.start is None or self.stop is None:
+            return -self.off
+        else:
+            return self.stop - self.start - self.off
     
     def calc_required(self):
         if self.phol or is_weekend(self.date):
@@ -513,12 +518,27 @@ class Reader:
 
             d = d + 1
 
-    def _new_day(self, datestring):
+    def _new_day(self, args):
+        largs = len(args)
+        if largs != 1 and largs != 3:
+            self._msg('weird arguments for day record: ' + ' '.join(args))
+            
+        datestring = args[0]
+        
         if datestring in self._universe.days:
             self._currentday = self._universe.days[datestring]
         else:
             self._currentday = Day(datestring)
             self._universe.days[datestring] = self._currentday
+
+        if largs == 3:
+            try:
+                start = args[1]
+                end = args[2]
+                self._currentday.set_hours(float(start), float(end))
+            except Exception as exc:
+                self._msg(str(exc))
+                
 
     def _process_instruction(self, argliststring):
         arglist = argliststring.split(' ')
@@ -526,7 +546,7 @@ class Reader:
         args = arglist[1:]
 
         if instr == 'day':
-            self._new_day(args[0])
+            self._new_day(args)
             return
         
         if instr == 'leave' and len(args) == 3:
@@ -547,8 +567,6 @@ class Reader:
             self._currentday.add_directive(Directive().set_have(float(args[0])))
         elif instr == 'off':
             self._currentday.add_off(float(args[0]))
-        elif instr == 'hours':
-            self._currentday.set_hours(float(args[0]), float(args[1]))
         elif instr == 'leave':
             if len(args) == 2:
                 self._currentday.add_leave(float(args[0]))

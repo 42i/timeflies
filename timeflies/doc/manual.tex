@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+\usepackage{xunicode}
+\usepackage{fontspec}
+\usepackage{xltxtra}
+\usepackage{float}
+\usepackage{fancyvrb}
+\defaultfontfeatures{Scale=MatchLowercase}
+\setmainfont[Mapping=tex-text,Ligatures=TeX,Numbers=OldStyle]{Linux Libertine O}
+\setsansfont[Mapping=tex−text,Numbers=OldStyle] {Linux Biolinum O}
+\setmonofont[Mapping=tex-text,Scale=0.8] {DejaVu Sans Mono}
+
+\newcommand{\timeflies}{\emph{TimeFlies}}
+
+%\setromanfont{Linux Libertine O}
+
+\begin{document}
+
+\DefineVerbatimEnvironment{inputfile}{Verbatim}
+   {frame=single,
+    framesep=1mm,
+    baselinestretch=0.8,
+    labelposition=topline}
+
+%\newfloat{example}{thp}{lof}[section]
+%\floatname{example}{Example}
+
+\title{\timeflies\ -- A Tool for Time Keeping}
+\author{J\"org Bullmann}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{What is \timeflies\ About?}
+
+Do you need to account for the time you spend at work? What project or work package have you been working on? Do you want to keep track of the hours you work? How much leave have you got left for this year?
+
+Do you keep a daily work log containing things you did, problems you solved, some kind of to do list?
+
+Do you want to make an estimate of effort for a project or work package? Would you like to break down those things into smaller items and possibly break down those again too?
+
+\timeflies\ can help you with this.
+
+\section{Tutorial by Example}
+
+In this section we will look at a number of use cases for \timeflies.
+
+\subsection{A Simple Work Log}
+
+Say you keep a work log and you also want to keep track of your working time. If you make your work log follow \timeflies' syntax, you can intersperse time keeping information with the actual work log text.
+
+See the following snippet of a hypothetical work log entry of 18 Sep 2012 in \timeflies\ syntax.
+
+\begin{inputfile}
+day 2012-09-18 8.5 17.25
+-- wrote unit test to reproduce problem report 2012-0098
+-- fixed problem report 2012-0098
+-- added HTML output option to object dumper
+-- discussed implications of Java 1.7 rollout
+\end{inputfile}
+
+Each day in \timeflies\ starts with the \verb-day- keyword. All text after one \verb-day- is part of that day. In the above example that includes the four \emph{log comment} lines.
+
+A log comment is a comment that you want to attach to the day for possible later processing. It is not a \emph{source code comment} like a Python \verb-#- or a C++ \verb-//- comment which appears as text in the source file but is immediately discarded. In fact, \timeflies\ uses the hash sign \verb-#- source comment marker just like Python, Perl or the shell: everything starting with a \verb-#- until the end of that line is ignored.
+
+A log comment line in \timeflies\ starts in double dash characters \verb=--= and at least one space character. All text following these characters until the end of the line (or until a \verb-#- source commend marker) make up the log comment text that \timeflies\ records.
+
+The \verb-day- instruction gets the date in \emph{yyyy}\verb=-=\emph{mm}\verb=-=\emph{dd} format as its first argument and the \emph{in} and \emph{out} times in hours with decimals. So in our example we state that on 18 Sep 2012 we arrived at 8:30 a.m.\ and left at 5:15 p.m..
+
+With the \verb-off- instruction you tell \timeflies\ about times during this day's working time period that you did not actually work. You might e.g.\ have had a 45 minute lunch break. Multiple \verb-off- instructions are possible and can appear anywhere in the day. In the following example, the \verb-off- instruction for the above mentioned lunch break is put where it belongs chronologically and another one for a 15 minute tea break is added later.
+
+\begin{inputfile}
+day 2012-09-18 8.5 17.25
+-- wrote unit test to reproduce problem report 2012-0098
+-- fixed problem report 2012-0098
+off 0.75
+-- added HTML output option to object dumper
+off 0.25
+-- discussed implications of Java 1.7 rollout
+\end{inputfile}
+
+Now what can \timeflies\ do with such a file? Assume the work log file's name is \verb:work-log.fly:, then
+
+\begin{inputfile}
+> timeflies.py -t all work-log.fly
+Time at work overview (all):we
+2012-09-18, Tue:  7.75 worked, --.-- leave, --.-- ill
+weekly: must =   8.00, worked =   7.75, ill =   0.00, leave taken=   0.00, leave left =   0.00, have =   7.75
+global: must =   8.00, worked =   7.75, ill =   0.00, leave taken=   0.00, leave left =   0.00, have =   7.75
+\end{inputfile}
+
+1 2 3 4 5 6 7 8 9 0!
+
+\subsection{Work Log With Work Activity Allocation}
+
+
+
+%\begin{example}\begin{inputfile}
+%day 2012-09-18 8.5 17.25
+%-- wrote unit test to reproduce problem report 2012-0098
+%-- fixed problem report 2012-0098
+%off 0.75
+%-- added HTML output option to object dumper
+%off 0.25
+%-- discussed implications of Java 1.7 rollout
+%\end{inputfile}
+%\caption{Day with log comments and off instructions}
+%\end{example}
+
+\subsection{Work Package Breakdown}
+
+\subsection{Monitor Project Progress}
+
+\section{Reference}
+
+
+\end{document}
