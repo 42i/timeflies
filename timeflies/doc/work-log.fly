@@ -1,0 +1,19 @@
+day 2012-09-19 8.5 17.25
+-- updated regression tests
+off 0.5
+-- fixed build scripts
+
+day 2012-09-18 8.75 17.75
+-- wrote unit test to reproduce problem report 2012-0098
+-- fixed problem report 2012-0098
+off 0.75
+-- added HTML output option to object dumper
+-- discussed implications of Java 1.7 rollout
+
+day 2012-09-17 8 18
+-- weekly team meeting
+off 0.5
+-- monthly quality task force 
+off 0.25
+-- code review: server side includes
+
