@@ -17,7 +17,8 @@
 
 \DefineVerbatimEnvironment{inputfile}{Verbatim}
    {%frame=single,
-    framesep=1mm,
+    %framesep=1mm,
+    numbers=left,
     baselinestretch=0.8,
     labelposition=topline}
 
@@ -54,7 +55,7 @@ day 2012-09-18 8.75 17.75
 day 2012-09-17 8 18
 \end{inputfile}
 
-Having breaks you want to account for? Use \verb-off- instructions to state periods of time in a day of work during which you were not actually working:
+Do you need to account for breaks you are taking? Use \verb-off- instructions to state periods of time in a day of work during which you were not actually working:
 
 \begin{inputfile}
 day 2012-09-19 8.5 17.25, off 0.5
@@ -74,8 +75,8 @@ off 0.5
 off 0.25
 \end{inputfile}
 
-This last example shows the notion of a \verb-day-\emph{-block}: a \verb-day-\emph{-block} extends
-from one \verb-day--keyword to the next and everything in this day block is part of that day.
+This last example illustrates the notion of a \verb-day-\emph{-block}: a \verb-day-\emph{-block} extends
+from one \verb-day--keyword to the next and everything inside this day block is part of that day.
 
 The days in the file do not need to be listed chronologically. You could e.g.\ list the days in reverse order so that the present is always at the top of the file.
 
@@ -93,9 +94,9 @@ off 0.5
 off 0.25
 \end{inputfile}
 
-\subsection{Logging Activities}
+\subsection{Keeping Notes in the Log}
 
-Want to keep notes about your work in the same place as your time? Use \emph{log comment} lines like in this file:
+Do you want to keep notes about your work in the same place as you keep the time information? Use \emph{log comment} lines like in this file:
 
 \begin{inputfile}
 day 2012-09-19 8.5 17.25
@@ -120,22 +121,111 @@ off 0.25
 
 A log comment line starts in double dash characters \verb=--= and one or more space characters. All text following these characters until the end of the line (or until a \verb-#- source commend marker) with trailing spaces removed constitute the recorded log comment.
 
-Now what can you do with such a file? Assume the above work log file's name is \verb:work-log.fly:, then
+Now what can you do with such a file? Assume the above work log file's name is \verb:work-log.fly:, then option \verb:-t: tells \timeflies\ to calculate your work times.
 
 \begin{inputfile}
-> timeflies.py -t all work-log.fly
+> timeflies.py -t work-log.fly 
 Time at work overview (all):
 2012-09-17, Mon:  9.25 worked, --.-- leave, --.-- ill
 2012-09-18, Tue:  8.25 worked, --.-- leave, --.-- ill
 2012-09-19, Wed:  8.25 worked, --.-- leave, --.-- ill
-weekly: must =  24.00, worked =  25.75, ill =   0.00, leave taken =   0.00, leave left =   0.00, have =  25.75
-global: must =  24.00, worked =  25.75, ill =   0.00, leave taken =   0.00, leave left =   0.00, have =  25.75
+   week 2012-38: 25.75 worked, --.-- leave, --.-- ill
+  month 2012-09: 25.75 worked, --.-- leave, --.-- ill
+          total: 25.75 worked, --.-- leave, --.-- ill
 \end{inputfile}
 
-1 2 3 4 5 6 7 8 9 0!
+To include the log comments in this output, use the \verb=-C= option:
 
-\subsection{Work Log With Work Activity Allocation}
+\begin{inputfile}
+> timeflies.py -t -C work-log.fly 
+Time at work overview (all):
+2012-09-17, Mon:  9.25 worked, --.-- leave, --.-- ill
+             -- weekly team meeting
+             -- monthly quality task force
+             -- code review: server side includes
+2012-09-18, Tue:  8.25 worked, --.-- leave, --.-- ill
+             -- wrote unit test to reproduce problem report 2012-0098
+             -- fixed problem report 2012-0098
+             -- added HTML output option to object dumper
+             -- discussed implications of Java 1.7 rollout
+2012-09-19, Wed:  8.25 worked, --.-- leave, --.-- ill
+             -- updated regression tests
+             -- fixed build scripts
+   week 2012-38: 25.75 worked, --.-- leave, --.-- ill
+  month 2012-09: 25.75 worked, --.-- leave, --.-- ill
+          total: 25.75 worked, --.-- leave, --.-- ill
+\end{inputfile}
 
+\subsection{Logging Activities}
+
+Log comments are a good way to keep track of things you don't want to forget and have accessible and also aligned with your work time line.
+
+What, if you need to make a connection between portions of your working time and work packages you have been working on? First, you define your work packages with \verb:work-package: instructions. Then you replace the relevant log comment lines by \emph{activity} lines in the day blocks. An activity line starts with a single dash character \verb:-: followed by one or more spaces. This is followed by a work package id that has been defined before and a duration. This is optionally followed by a comma and some activity comment.
+
+\begin{inputfile}
+work-package regression-tests
+work-package meetings
+work-package quality-task-force
+work-package problem-reports
+work-package development
+work-package other
+
+day 2012-09-19 8.5 17.25
+- regression-tests 2, updated
+off 0.5
+- other 2, fixed build scripts
+
+day 2012-09-18 8.75 17.75
+- problem-reports 2, wrote unit test to reproduce problem report 2012-0098
+- problem-reports 2.5, fixed problem report 2012-0098
+off 0.75
+- development 3, added HTML output option to object dumper
+- other 1, discussed implications of Java 1.7 rollout
+
+day 2012-09-17 8 18
+- meetings 1.5, weekly team meeting
+off 0.5
+- quality-task-force 2 
+off 0.25
+- other 1, code review: server side includes
+\end{inputfile}
+
+Option \verb:-w: tells \timeflies\ to calculate the times you have been working on the different work packages:
+
+\begin{inputfile}
+> timeflies.py -w work-log.fly 
+Work package summary (all):
+ 17.00 : ALL
+      2.00 : regression-tests
+      1.50 : meetings
+      2.00 : quality-task-force
+      4.50 : problem-reports
+      3.00 : development
+      4.00 : other
+\end{inputfile}
+
+To also show the activities contributing to the different work packages, use option \verb:-a::
+
+\begin{inputfile}
+> timeflies.py -w -a work-log.fly 
+Work package summary (all):
+ 17.00 : ALL
+      2.00 : regression-tests
+             - 2012-09-19 2.0, updated
+      1.50 : meetings
+             - 2012-09-17 1.5, weekly team meeting
+      2.00 : quality-task-force
+             - 2012-09-17 2.0
+      4.50 : problem-reports
+             - 2012-09-18 2.0, wrote unit test to reproduce problem report 2012-0098
+             - 2012-09-18 2.5, fixed problem report 2012-0098
+      3.00 : development
+             - 2012-09-18 3.0, added HTML output option to object dumper
+      4.00 : other
+             - 2012-09-19 2.0, fixed build scripts
+             - 2012-09-18 1.0, discussed implications of Java 1.7 rollout
+             - 2012-09-17 1.0, code review: server side includes
+\end{inputfile}
 
 
 %\begin{example}\begin{inputfile}

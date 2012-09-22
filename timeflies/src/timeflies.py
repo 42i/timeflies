@@ -173,7 +173,7 @@ class Node:
     
 def dump_activities(activities, indent, options):
     if activities is not None:
-        indent += options['indent']
+        #indent += options['indent']
         
         for a in activities:
             comment = (', ' + a.description) if a.description is not None else ''
@@ -413,6 +413,11 @@ class Reader:
             self._linecount += 1
             line = re.sub(" *#.*", "", line).rstrip()
             
+            indent = len(line) - len(line.lstrip())
+            
+            if indent == 0:
+                self._reset_workpackage_stack()
+                
             if line == '':
                 self._reset_workpackage_stack()
             elif self._in_workpackage_definition():
@@ -620,27 +625,38 @@ class Status:
         elif di.have is not None:
             self._havehours = di.have
         
-    def dump(self):
-        output(self.name + ': must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
-              .format(self._musthours, self._workedhours, self._illhours, self._leavetakenhours, self._leavebalancehours, self._havehours))
+    def dump(self, tag):
+        if tag is None:
+            prefix = self.name
+        else:
+            prefix = self.name + ' ' + tag
+            
+        output('{0:>15s}'.format(prefix) + ': ' +\
+              format_floatval(self._workedhours, "worked") + ', ' +\
+              format_floatval(self._leavetakenhours, "leave") + ', ' +\
+              format_floatval(self._illhours, "ill"))
+
+#        output(self.name + ' : must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
+#              .format(self._musthours, self._workedhours, self._illhours, self._leavetakenhours, self._leavebalancehours, self._havehours))
 
 class Statistics:
     def __init__(self, universe):
         self.days = universe.get_chrono_days()
-        self.globalbalance = Status('global')
-        self.weeklybalance = Status('weekly')
-        self.previous = None
+        self.totals = Status('total')
+        self.weekly = Status('week')
+        self.monthly = Status('month')
+        self.prev_day = None
 
     def _process_gap(self, d1, dayfilter):
-        if self.previous is None:
+        if self.prev_day is None:
             return
 
-        d = self.previous.date.toordinal() + 1
+        d = self.prev_day.date.toordinal() + 1
         end = d1.date.toordinal()
 
         while d < end:
             dt = date.fromordinal(d)
-            if dayfilter.passes(Day(dt)) and self.globalbalance.increase_must_hours(dt):
+            if dayfilter.passes(Day(dt)) and self.totals.increase_must_hours(dt):
                 output('missing weekday record for ' + str(dt))
             d = d + 1
 
@@ -654,86 +670,81 @@ class Statistics:
                     output('*** {0:s} : worked = {1:5.2f}, tasked = {2:5.2f}, delta = {3:5.2f}'
                           .format(d.date.strftime('%Y-%m-%d, %a'), worked, tasked, delta))
         
-    def calc_balance(self, dayfilter):
-        self.previous = None
+    def calc_balance(self, dayfilter, options):
+        self.prev_month = None
+        self.prev_week = None
+        self.prev_day = None
+        
         for d in self.days:
             self._process_gap(d, dayfilter)
             if dayfilter.passes(d):
-                if d.date.isoweekday() == 1:
-                    self.weeklybalance.dump()
-                    output()
-                    self.weeklybalance.reset()
+                year, week = d.date.isocalendar()[0:2]
+                this_month = str(year) + '-{0:02d}'.format(int(d.date.month))
+                this_week = str(year) + '-{0:02d}'.format(int(week))
+                if self.prev_day is not None:
+                    if this_week != self.prev_week:
+                        self.weekly.dump(self.prev_week)
+                        #output()
+                        self.weekly.reset()
+                    if this_month != self.prev_month:
+                        self.monthly.dump(self.prev_month)
+                        #output()
+                        self.monthly.reset()
                     
-                self.weeklybalance.process_day(d)
-                self.globalbalance.process_day(d)
+                self.weekly.process_day(d)
+                self.monthly.process_day(d)
+                self.totals.process_day(d)
                 d.dump()
-                self.previous = d
+                if 'comments' in options:
+                    prefix = ' ' * 13 + '-- '
+                    for cmnt in d.comments:
+                        output(prefix + cmnt)
+                self.prev_day = d
+                self.prev_week = this_week
+                self.prev_month = this_month
 
-        self.weeklybalance.dump()
-        self.globalbalance.dump()
-
-def show_usage(cmd):
-    output()
-    output('  Usage: ' + cmd + ' [options] <infile> [..]')
-    output('''
-  TimeFlies v. {0:s} -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
-
-  This is a simple time log and work package tree processor. Projects can be
-  defined in form of hierarchical work package trees. Daily work progress is logged
-  in form of day records with attached activities referring to work packages.
-
-  This program comes with ABSOLUTELY NO WARRANTY. This is free software,
-  and you are welcome to redistribute it under certain conditions. You
-  should have received a copy of the GNU General Public License along
-  with this program. If not, see <http://www.gnu.org/licenses/>.
-
-  Options:
-
-  -h, --help : show this info
-  -c, --copyright : show copyright info
-  -t, --work-time <yyyy-mm> : calculate the total must/have/leave/ill
-      work hour balance
-  -d, --day-check <yyyy-mm> : check the daily work time vs. booked
-      work package time; helps to find unaccounted for time at work
-  -w, --work-packages <yyyy-mm> : calculate hours worked on work packages
-      for the given month
-  -s, --show-work-packages : show the work package tree
-  -a, --activities : show activities in work package tree output for option -w or -s
-  -i, --indentation <width> : indent each level in the work package hierarchy by
-      <width> space characters; default: 4
-'''.format(_version))
+        self.weekly.dump(self.prev_week)
+        self.monthly.dump(self.prev_month)
+        self.totals.dump(None)
 
 class Application:
     def __init__(self):
         self._universe = Universe()
         self._jobs = []
+        self._filter = 'all'
         self._dumpopts = { 'indent':'    ' }
         self._args = None
     
     def interpret_cmdline(self, argv):
         try:
-            opts, self._args = getopt.getopt(argv[1:], 'hcasi:w:d:t:',
-                                       ['copyright', 'help', 'activities', 'show-work-packages',
-                                        'indentation=',
-                                        'work-time=', 'day-check=', 'work-packages='])
+            opts, self._args = getopt.getopt(argv[1:], 'hf:tcwsaCi:',
+                                       ['help', 'copyright', 'filter=',
+                                        'tally-days', 'check-days',
+                                        'work-packages', 'show-work-packages',
+                                        'activities', 'comments',
+                                        'indent='])
     
             for opt, val in opts:
                 if opt == '-h' or opt == '--help':
-                    show_usage(argv[0])
-                elif opt == '-c' or opt == '--copyright':
+                    self.show_usage(argv[0])
+                elif opt == '--copyright':
                     output(_copyright.format(_version))
+                elif opt == '-f' or opt == '--filter':
+                    self._filter = val
+                elif opt == '-t' or opt == '--tally-days':
+                    self._jobs.append('tally-days')
+                elif opt == '-c' or opt == '--check-days':
+                    self._jobs.append('check-days')
+                elif opt == '-w' or opt == '--work-packages':
+                    self._jobs.append('work-packages')
+                elif opt == '-s' or opt == '--show-work-packages':
+                    self._jobs.append('show-work-packages')
                 elif opt == '-a' or opt == '--activities':
                     self._dumpopts['activities'] = True
-                elif opt == '-i' or opt == '--indentation':
+                elif opt == '-C' or opt == '--comments':
+                    self._dumpopts['comments'] = True
+                elif opt == '-i' or opt == '--indent':
                     self._dumpopts['indent'] = ' ' * int(val)
-                elif opt == '-t' or opt == '--work-time':
-                    self._jobs.append(('work-time', val))
-                elif opt == '-d' or opt == '--day-check':
-                    self._jobs.append(('day-check', val))
-                elif opt == '-w' or opt == '--work-packages':
-                    self._jobs.append(('work-packages', val))
-                elif opt == '-s' or opt == '--show-work-packages':
-                    self._jobs.append(('show-work-packages', val))
     
         except getopt.GetoptError as e:
             output(argv[0] + ': ' + str(e))
@@ -746,25 +757,59 @@ class Application:
             r.read(f)
     
     def process(self):
-        for j, arg in self._jobs:
-            if j == 'day-check':
-                output('Day check (' + arg + '):')
-                f = make_filter(arg)
-                Statistics(self._universe).check_days(f)
+        flt = make_filter(self._filter)
+        for j in self._jobs:
+            if j == 'check-days':
+                output('Day check (' + self._filter + '):')
+                Statistics(self._universe).check_days(flt)
             elif j == 'work-packages':
-                output('Work package summary (' + arg + '):')
-                f = make_filter(arg)
-                act = self._universe.workpackage_root.calc_activity(f)
+                output('Work package summary (' + self._filter + '):')
+                act = self._universe.workpackage_root.calc_activity(flt)
                 act.dump(self._dumpopts)
-            elif j == 'work-time':
-                output('Time at work overview (' + arg + '):')
-                f = make_filter(arg)
-                Statistics(self._universe).calc_balance(f)
+            elif j == 'tally-days':
+                output('Time at work overview (' + self._filter + '):')
+                Statistics(self._universe).calc_balance(flt, self._dumpopts)
             elif j == 'show-work-packages':
                 output('Work package breakdown:')
                 self._universe.workpackage_root.dump(self._dumpopts)
             else:
                 output('*** Unknown job: ' + j)
+
+    def show_usage(self, cmd):
+        output()
+        output('  Usage: ' + cmd + ' [options] <infile> [..]')
+        output('''
+      TimeFlies v. {0:s} -- Copyright (C) 2012 Joerg Bullmann (jb@heilancoo.net)
+    
+      This is a simple time log and work package tree processor. Projects can be
+      defined in form of hierarchical work package trees. Daily work progress is logged
+      in form of day records with attached activities referring to work packages.
+    
+      This program comes with ABSOLUTELY NO WARRANTY. This is free software,
+      and you are welcome to redistribute it under certain conditions. You
+      should have received a copy of the GNU General Public License along
+      with this program. If not, see <http://www.gnu.org/licenses/>.
+    
+      Options:
+    
+      -h, --help : show this info
+      --copyright : show copyright info
+      -f, --filter <filter> : a filter to select a processing time range;
+          YYYY-MM selects a month; YYYY-MM-DD..YYYY-MM-DD selects a time range
+          by giving the first and last day; 'all' to process all days;
+          default: process all
+      -t, --tally-days : calculate the total must/have/leave/ill
+          work hour balance
+      -c, --check-days : check the daily work time vs. booked
+          work package time; helps to find unaccounted for time at work
+      -w, --work-packages : calculate hours worked on work packages
+      -s, --show-work-packages : show the work package tree
+      -a, --activities : show activities in work package tree output (in options
+          -w, -s or -t)
+      -C, --comments : show log comments for each day (in option -t)
+      -i, --indent <width> : indent each level in the work package hierarchy by
+          <width> space characters; default: 4
+    '''.format(_version))
 
 def main(argv):
     app = Application()

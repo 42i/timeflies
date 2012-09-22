@@ -98,10 +98,13 @@ class EndToEndTests(TestCase):
         self.assertTrue(ow.compare())
         
     def test_1(self):
-        self.doit('-s -t 2012-07 -w 2012-07 test-1.fly', 'test-1.out')
+        self.doit('-s -t -w -f 2012-07 test-1.fly', 'test-1.out')
     
     def test_2(self):
-        self.doit('-w 2012-07-14..2012-08-01 -a test-2.fly', 'test-2.out')
+        self.doit('-w -f 2012-07-14..2012-08-01 -a test-2.fly', 'test-2.out')
+    
+    def test_3(self):
+        self.doit('-s simple-wp.fly', 'simple-wp.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
