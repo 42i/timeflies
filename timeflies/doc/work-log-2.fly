@@ -6,9 +6,9 @@ work-package development
 work-package other
 
 day 2012-09-19 8.5 17.25
-- regression-tests 2, updated
+- regression-tests 4, updated
 off 0.5
-- other 2, fixed build scripts
+- other 3.5, fixed build scripts
 
 day 2012-09-18 8.75 17.75
 - problem-reports 2, wrote unit test to reproduce problem report 2012-0098
@@ -18,8 +18,8 @@ off 0.75
 - other 1, discussed implications of Java 1.7 rollout
 
 day 2012-09-17 8 18
-- meetings 1.5, weekly team meeting
+- meetings 2.0, weekly team meeting
 off 0.5
-- quality-task-force 2 
+- quality-task-force 6 
 off 0.25
-- other 1, code review: server side includes
+- other 1.25, code review: server side includes

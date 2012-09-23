@@ -1,0 +1,33 @@
+work-package mighty-digester, digest inputs of all sorts and spit them back out
+	input
+		xml
+		json
+		dotted-text
+		binary
+	processing
+		statistics
+		phase-1, rough break-down
+		phase-2, particle recombination
+		phase-3, regrouping and amalgamation
+	output
+		xml
+		json
+		text
+		binary
+	mmi
+		gui
+		cmdline
+
+day 2012-07-01 8 17, off 1
+- mighty-digester.input.xml 4
+- mighty-digester.output.xml 3
+- mighty-digester.mmi.cmdline 1
+day 2012-07-02 8 17, off 1
+- mighty-digester.input.json 5
+- mighty-digester.processing.statistics 1.5
+- mighty-digester.mmi.cmdline 1.5
+day 2012-07-03 8 17, off 1
+- mighty-digester.input.xml 4
+- mighty-digester.output.xml 3
+- mighty-digester.output.text 0.5
+- mighty-digester.mmi.cmdline 0.5

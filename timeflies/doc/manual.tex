@@ -158,9 +158,17 @@ Time at work overview (all):
 
 \subsection{Logging Activities}
 
-Log comments are a good way to keep track of things you don't want to forget and have accessible and also aligned with your work time line.
+Log comments are a good way to keep track of things you don't want to forget and have accessible and also aligned with your work time line. Log comments have no work effort assigned to them, though. So you cannot use them in any way for calculations of effort spent.
 
-What, if you need to make a connection between portions of your working time and work packages you have been working on? First, you define your work packages with \verb:work-package: instructions. Then you replace the relevant log comment lines by \emph{activity} lines in the day blocks. An activity line starts with a single dash character \verb:-: followed by one or more spaces. This is followed by a work package id that has been defined before and a duration. This is optionally followed by a comma and some activity comment.
+To create connections between your working time and work packages y
+
+You use \emph{work packages} and \emph{activities} to connect the time you work to the work packages you work on: first, you define your work packages, then you use \emph{activity} lines in the day blocks instead of log comment lines.
+
+A work package definition is a line starting with the keyword \verb:work-package: (or the short version \verb:wp:) followed by a work package name.
+
+An activity line starts with a single dash character \verb:-: followed by one or more spaces. This is followed by a work package id and a duration. This is optionally followed by a comma and some activity comment.
+
+See below the converted example work log file.
 
 \begin{inputfile}
 work-package regression-tests
@@ -171,9 +179,9 @@ work-package development
 work-package other
 
 day 2012-09-19 8.5 17.25
-- regression-tests 2, updated
+- regression-tests 4, updated
 off 0.5
-- other 2, fixed build scripts
+- other 3.5, fixed build scripts
 
 day 2012-09-18 8.75 17.75
 - problem-reports 2, wrote unit test to reproduce problem report 2012-0098
@@ -183,11 +191,11 @@ off 0.75
 - other 1, discussed implications of Java 1.7 rollout
 
 day 2012-09-17 8 18
-- meetings 1.5, weekly team meeting
+- meetings 2.0, weekly team meeting
 off 0.5
-- quality-task-force 2 
+- quality-task-force 6 
 off 0.25
-- other 1, code review: server side includes
+- other 1.25, code review: server side includes
 \end{inputfile}
 
 Option \verb:-w: tells \timeflies\ to calculate the times you have been working on the different work packages:
@@ -195,13 +203,13 @@ Option \verb:-w: tells \timeflies\ to calculate the times you have been working 
 \begin{inputfile}
 > timeflies.py -w work-log.fly 
 Work package summary (all):
- 17.00 : ALL
-      2.00 : regression-tests
-      1.50 : meetings
-      2.00 : quality-task-force
+ 25.25 : ALL
+      4.00 : regression-tests
+      2.00 : meetings
+      6.00 : quality-task-force
       4.50 : problem-reports
       3.00 : development
-      4.00 : other
+      5.75 : other
 \end{inputfile}
 
 To also show the activities contributing to the different work packages, use option \verb:-a::
@@ -209,23 +217,35 @@ To also show the activities contributing to the different work packages, use opt
 \begin{inputfile}
 > timeflies.py -w -a work-log.fly 
 Work package summary (all):
- 17.00 : ALL
-      2.00 : regression-tests
-             - 2012-09-19 2.0, updated
-      1.50 : meetings
-             - 2012-09-17 1.5, weekly team meeting
-      2.00 : quality-task-force
-             - 2012-09-17 2.0
+ 25.25 : ALL
+      4.00 : regression-tests
+             - 2012-09-19 4.0, updated
+      2.00 : meetings
+             - 2012-09-17 2.0, weekly team meeting
+      6.00 : quality-task-force
+             - 2012-09-17 6.0
       4.50 : problem-reports
              - 2012-09-18 2.0, wrote unit test to reproduce problem report 2012-0098
              - 2012-09-18 2.5, fixed problem report 2012-0098
       3.00 : development
              - 2012-09-18 3.0, added HTML output option to object dumper
-      4.00 : other
-             - 2012-09-19 2.0, fixed build scripts
+      5.75 : other
+             - 2012-09-19 3.5, fixed build scripts
              - 2012-09-18 1.0, discussed implications of Java 1.7 rollout
-             - 2012-09-17 1.0, code review: server side includes
+             - 2012-09-17 1.25, code review: server side includes
 \end{inputfile}
+
+To check whether you have allocated all your working time to work packages, use option \verb:-c:
+
+\begin{inputfile}
+> timeflies.py -c work-log.fly 
+Day check (all):
+*** 2012-09-18, Tue : worked =  8.25, tasked =  8.50, delta =  0.25
+*** 2012-09-19, Wed : worked =  8.25, tasked =  7.50, delta = -0.75
+\end{inputfile}
+
+This shows that on two days the time at work and the time worked on work packages are differing.
+
 
 
 %\begin{example}\begin{inputfile}
@@ -241,6 +261,70 @@ Work package summary (all):
 %\end{example}
 
 \subsection{Work Package Breakdown}
+
+In the previous section, work packages have been defined as simple, atomic, named items. A work package can be subdivided and refined in hierarchical way. See the following example.
+
+\begin{inputfile}
+wp mighty-digester, digest inputs of all sorts and spit them back out
+    input
+        xml
+        json
+        dotted-text
+        binary
+    processing
+        statistics
+        phase-1, rough break-down
+        phase-2, particle recombination
+        phase-3, regrouping and amalgamation
+    output
+        xml
+        json
+        text
+        binary
+    mmi
+        gui
+        cmdline
+\end{inputfile}
+
+The items in this work package hierarchy can be referred to in activity lines as dot separated work package path names. In above example such paths could e.g.\ be \verb:mighty-digester.input.xml:, \verb:mighty-digester.processing.phase-1:.
+
+Following, a piece of work log for the above project.
+
+\begin{inputfile}
+day 2012-07-01 8 17, off 1
+- mighty-digester.input.xml 4
+- mighty-digester.output.xml 3
+- mighty-digester.mmi.cmdline 1
+day 2012-07-02 8 17, off 1
+- mighty-digester.input.json 5
+- mighty-digester.processing.statistics 1.5
+- mighty-digester.mmi.cmdline 1.5
+day 2012-07-03 8 17, off 1
+- mighty-digester.input.xml 4
+- mighty-digester.output.xml 3
+- mighty-digester.output.text 0.5
+- mighty-digester.mmi.cmdline 0.5
+\end{inputfile}
+
+Assuming the work package defintions are kept in file \verb:prj-mighty-digester.fly: and the work log itself in \verb:work-log.fly:, the work package summary can be calculated as follows:
+
+\begin{inputfile}
+> timeflies.py -w prj-mighty-digester.fly work-log.fly 
+Work package summary (all):
+ 24.00 : ALL
+     24.00 : mighty-digester -- digest inputs of all sorts and spit them back out
+         13.00 : input
+              8.00 : xml
+              5.00 : json
+          1.50 : processing
+              1.50 : statistics
+          6.50 : output
+              6.00 : xml
+              0.50 : text
+          3.00 : mmi
+              3.00 : cmdline
+\end{inputfile}
+
 
 \subsection{Monitor Project Progress}
 
