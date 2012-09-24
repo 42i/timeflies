@@ -43,7 +43,7 @@ Do you want to make an estimate of effort for a project or work package? Would y
 
 \section{Tutorial by Example}
 
-In this section we will look at a number of use cases. All \timeflies\ data is kept in simple text files. So all your data is always easily accessible to you and the format itself is quite human-readable. Moreover it can easily be version controlled.
+In this section we will look at a number of use cases. All \timeflies\ data is kept in plain text files. So all your data is always easily accessible to you and the format itself is quite human-readable. Moreover it can easily be version controlled.
 
 \subsection{Recording Time}
 
@@ -74,7 +74,7 @@ Do you want to keep notes about your work in the same place as you keep the time
 
 \input{fly-5.in}
 
-A log comment line starts in double dash characters \verb=--= and one or more space characters. All text following these characters until the end of the line (or until a \verb-#- source commend marker) with trailing spaces removed constitute the recorded log comment.
+A log comment line starts in double dash characters \verb=--= and one or more space characters. All text following these characters until the end of the line (or until a \verb-#- source comment marker) with trailing spaces removed constitute the recorded log comment.
 
 Now what can you do with such a file? Assume the above work log file's name is \verb:work-log.fly:, then option \verb:-t: tells \timeflies\ to calculate your work times.
 
@@ -88,23 +88,23 @@ To include the log comments in this output, use the \verb=-C= option:
 
 Here's a longer example where you can see the use of weekly and montly summaries.
 
-\input{fly-9.in}
+\input{fly-8.in}
 
 Use option \verb:-f week: to get an overview of weekly work time balances.
 
-\input{fly-9a.out}
+\input{fly-8a.out}
 
 Or have both weekly and monthly balances shown.
 
-\input{fly-9b.out}
+\input{fly-8b.out}
 
 Maybe you only want to look at one month?
 
-\input{fly-9c.out}
+\input{fly-8c.out}
 
 You only need weekly totals in that one month?
 
-\input{fly-9d.out}
+\input{fly-8d.out}
 
 \subsection{Logging Activities}
 
@@ -138,13 +138,13 @@ This shows that on two days the time at work and the time worked on work package
 
 In the previous section, work packages have been defined as simple, atomic, named items. A work package can be subdivided and refined hierarchically. See the following example.
 
-\input{fly-7.in}
+\input{fly-7-wp.in}
 
 The items in this work package hierarchy can be referred to in activity lines as \verb:.:-delimited work package path names.
 
 Following, a piece of work log for the above project.
 
-\input{fly-8.in}
+\input{fly-7.in}
 
 Assuming the work package defintions are kept in file \verb:prj-mighty-digester.fly: and the work log itself in \verb:work-log.fly:, the work package summary can be calculated as follows with option \verb:-w: as in the previous example.
 

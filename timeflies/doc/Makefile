@@ -2,9 +2,8 @@
 EXAMPLES = fly-1.in fly-2.in fly-3.in fly-4.in \
 		   fly-5.in fly-5a.out fly-5b.out \
 		   fly-6.in fly-6a.out fly-6b.out fly-6c.out \
-		   fly-7.in fly-7a.out fly-7b.out \
-		   fly-8.in \
-		   fly-9.in fly-9a.out fly-9b.out fly-9c.out fly-9d.out
+		   fly-7.in fly-7-wp.in fly-7a.out fly-7b.out \
+		   fly-8.in fly-8a.out fly-8b.out fly-8c.out fly-8d.out
 
 show : timeflies.pdf
 	evince $<
@@ -15,87 +14,43 @@ timeflies.pdf : timeflies.tex $(EXAMPLES)
 clean :
 	rm -f $(EXAMPLES) *~ timeflies.log timeflies.aux timeflies.toc
 	
-%.in: %.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	cat $< >> $@
-	echo '\\end{inputfile}' >> $@
+fly-%.in: ex-%/work-log.fly
+	./wrap-input.py $< > $@
 
-fly-5a.out : fly-5.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t work-log.fly' >> $@
-	../src/timeflies.py -t $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-7-wp.in : ex-7/prj-mighty-digester.fly
+	./wrap-input.py $< > $@
 
-fly-5b.out : fly-5.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t -C work-log.fly' >> $@
-	../src/timeflies.py -t -C $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-5a.out : ex-5/work-log.fly
+	./generate_output.py -t $^ > $@
 
-fly-6a.out : fly-6.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -w work-log.fly' >> $@
-	../src/timeflies.py -w $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-5b.out : ex-5/work-log.fly
+	./generate_output.py -t -C $^ > $@
 
-fly-6b.out : fly-6.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -w -a work-log.fly' >> $@
-	../src/timeflies.py -w -a $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-6a.out : ex-6/work-log.fly
+	./generate_output.py -w $^ > $@
 
-fly-6c.out : fly-6.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -c work-log.fly' >> $@
-	../src/timeflies.py -c $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-6b.out : ex-6/work-log.fly
+	./generate_output.py -w -a $^ > $@
 
-fly-7a.out : fly-7.plain fly-8.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -w prj-mighty-digester.fly work-log.fly' >> $@
-	../src/timeflies.py -w $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-6c.out : ex-6/work-log.fly
+	./generate_output.py -c $^ > $@
 
-fly-7b.out : fly-7.plain fly-8.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -w -a prj-mighty-digester.fly work-log.fly' >> $@
-	../src/timeflies.py -w -a $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-7a.out : ex-7/prj-mighty-digester.fly ex-7/work-log.fly
+	./generate_output.py -w $^ > $@
 
-fly-9a.out : fly-9.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t -f week work-log.fly' >> $@
-	../src/timeflies.py -t -f week $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-7b.out : ex-7/prj-mighty-digester.fly ex-7/work-log.fly
+	./generate_output.py -w -a $^ > $@
 
-fly-9b.out : fly-9.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t -f week,month work-log.fly' >> $@
-	../src/timeflies.py -t -f week,month $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-8a.out : ex-8/work-log.fly
+	./generate_output.py -t -f week $^ > $@
 
-fly-9c.out : fly-9.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t -f 2012-09 work-log.fly' >> $@
-	../src/timeflies.py -t -f 2012-09 $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-8b.out : ex-8/work-log.fly
+	./generate_output.py -t -f week,month $^ > $@
 
-fly-9d.out : fly-9.plain
-	echo '% generated from '$< > $@
-	echo '\\begin{inputfile}' >> $@
-	echo '> timeflies.py -t -f week,2012-09 work-log.fly' >> $@
-	../src/timeflies.py -t -f week,2012-09 $^ >> $@
-	echo '\\end{inputfile}' >> $@
+fly-8c.out : ex-8/work-log.fly
+	./generate_output.py -t -f 2012-09 $^ > $@
+
+fly-8d.out : ex-8/work-log.fly
+	./generate_output.py -t -f week,2012-09 $^ > $@
 
 
