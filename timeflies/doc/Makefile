@@ -6,14 +6,14 @@ EXAMPLES = fly-1.in fly-2.in fly-3.in fly-4.in \
 		   fly-8.in \
 		   fly-9.in fly-9a.out fly-9b.out fly-9c.out fly-9d.out
 
-show : manual.pdf
+show : timeflies.pdf
 	evince $<
 
-manual.pdf : manual.tex $(EXAMPLES)
+timeflies.pdf : timeflies.tex $(EXAMPLES)
 	xelatex $^ && xelatex $^
 
 clean :
-	rm -f $(EXAMPLES) *~ manual.log manual.aux manual.toc
+	rm -f $(EXAMPLES) *~ timeflies.log timeflies.aux timeflies.toc
 	
 %.in: %.plain
 	echo '% generated from '$< > $@
