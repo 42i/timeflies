@@ -246,20 +246,6 @@ Day check (all):
 
 This shows that on two days the time at work and the time worked on work packages are differing.
 
-
-
-%\begin{example}\begin{inputfile}
-%day 2012-09-18 8.5 17.25
-%-- wrote unit test to reproduce problem report 2012-0098
-%-- fixed problem report 2012-0098
-%off 0.75
-%-- added HTML output option to object dumper
-%off 0.25
-%-- discussed implications of Java 1.7 rollout
-%\end{inputfile}
-%\caption{Day with log comments and off instructions}
-%\end{example}
-
 \subsection{Work Package Breakdown}
 
 In the previous section, work packages have been defined as simple, atomic, named items. A work package can be subdivided and refined in hierarchical way. See the following example.
@@ -286,7 +272,7 @@ wp mighty-digester, digest inputs of all sorts and spit them back out
         cmdline
 \end{inputfile}
 
-The items in this work package hierarchy can be referred to in activity lines as dot separated work package path names. In above example such paths could e.g.\ be \verb:mighty-digester.input.xml:, \verb:mighty-digester.processing.phase-1:.
+The items in this work package hierarchy can be referred to in activity lines as dot separated work package path names. In above work package definition examples for such paths are \verb:mighty-digester.input.xml:, \verb:mighty-digester.processing.phase-1:.
 
 Following, a piece of work log for the above project.
 
@@ -324,7 +310,6 @@ Work package summary (all):
           3.00 : mmi
               3.00 : cmdline
 \end{inputfile}
-
 
 \subsection{Monitor Project Progress}
 
