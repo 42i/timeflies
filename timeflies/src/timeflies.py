@@ -631,7 +631,7 @@ class Status:
         else:
             prefix = self.name + ' ' + tag
             
-        output('{0:>15s}'.format(prefix) + ': ' +\
+        output('{0:>15s}: '.format(prefix) +\
               format_floatval(self._workedhours, "worked") + ', ' +\
               format_floatval(self._leavetakenhours, "leave") + ', ' +\
               format_floatval(self._illhours, "ill"))
@@ -670,7 +670,11 @@ class Statistics:
                     output('*** {0:s} : worked = {1:5.2f}, tasked = {2:5.2f}, delta = {3:5.2f}'
                           .format(d.date.strftime('%Y-%m-%d, %a'), worked, tasked, delta))
         
-    def calc_balance(self, dayfilter, options):
+    def calc_balance(self, options):
+        dayfilter = options['time']
+        do_daily = options['day']
+        do_weekly = options['week']
+        do_monthly = options['month']
         self.prev_month = None
         self.prev_week = None
         self.prev_day = None
@@ -682,29 +686,32 @@ class Statistics:
                 this_month = str(year) + '-{0:02d}'.format(int(d.date.month))
                 this_week = str(year) + '-{0:02d}'.format(int(week))
                 if self.prev_day is not None:
-                    if this_week != self.prev_week:
+                    if do_weekly and this_week != self.prev_week:
                         self.weekly.dump(self.prev_week)
-                        #output()
                         self.weekly.reset()
-                    if this_month != self.prev_month:
+                    if do_monthly and this_month != self.prev_month:
                         self.monthly.dump(self.prev_month)
-                        #output()
                         self.monthly.reset()
                     
                 self.weekly.process_day(d)
                 self.monthly.process_day(d)
                 self.totals.process_day(d)
-                d.dump()
-                if 'comments' in options:
-                    prefix = ' ' * 13 + '-- '
-                    for cmnt in d.comments:
-                        output(prefix + cmnt)
+
+                if do_daily:
+                    d.dump()
+                    if 'comments' in options:
+                        prefix = ' ' * 13 + '-- '
+                        for cmnt in d.comments:
+                            output(prefix + cmnt)
+
                 self.prev_day = d
                 self.prev_week = this_week
                 self.prev_month = this_month
 
-        self.weekly.dump(self.prev_week)
-        self.monthly.dump(self.prev_month)
+        if do_weekly:
+            self.weekly.dump(self.prev_week)
+        if do_monthly:
+            self.monthly.dump(self.prev_month)
         self.totals.dump(None)
 
 class Application:
@@ -756,19 +763,48 @@ class Application:
         for f in self._args:
             r.read(f)
     
+    def _process_filter(self):
+        stats_day = False
+        stats_week = False
+        stats_month = False
+        
+        for flt in self._filter.split(','):
+            if flt == 'day':
+                stats_day = True
+            elif flt == 'week':
+                stats_week = True
+            elif flt == 'month':
+                stats_month = True
+            else:
+                self._dumpopts['time'] = make_filter(flt)
+        
+        if not 'time' in self._dumpopts:
+            self._dumpopts['time'] = make_filter('all')
+            
+        if not stats_week and not stats_month:
+            for kind in ['day', 'week', 'month']:
+                self._dumpopts[kind] = True
+        else:
+            self._dumpopts['day'] = stats_day
+            self._dumpopts['week'] = stats_week
+            self._dumpopts['month'] = stats_month
+            
+        self._filter = ", ".join(self._filter.split(','))
+        
     def process(self):
-        flt = make_filter(self._filter)
+        self._process_filter()
+        
         for j in self._jobs:
             if j == 'check-days':
                 output('Day check (' + self._filter + '):')
-                Statistics(self._universe).check_days(flt)
+                Statistics(self._universe).check_days(self._dumpopts['time'])
             elif j == 'work-packages':
                 output('Work package summary (' + self._filter + '):')
-                act = self._universe.workpackage_root.calc_activity(flt)
+                act = self._universe.workpackage_root.calc_activity(self._dumpopts['time'])
                 act.dump(self._dumpopts)
             elif j == 'tally-days':
                 output('Time at work overview (' + self._filter + '):')
-                Statistics(self._universe).calc_balance(flt, self._dumpopts)
+                Statistics(self._universe).calc_balance(self._dumpopts)
             elif j == 'show-work-packages':
                 output('Work package breakdown:')
                 self._universe.workpackage_root.dump(self._dumpopts)

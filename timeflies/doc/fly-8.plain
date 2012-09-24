@@ -1,0 +1,13 @@
+day 2012-07-01 8 17, off 1
+- mg.in.xml 4, updated to new XSD
+- mg.out.xml 3, updated to new XSD
+- mg.mmi.cmdline 1, XML options
+day 2012-07-02 8 17, off 1
+- mg.in.json 5, first minimal implementation
+- mg.proc.stats 1.5, line counting
+- mg.mmi.cmdline 1.5, statistics options
+day 2012-07-03 8 17, off 1
+- mg.in.xml 4, adapted includes
+- mg.out.xml 3, normalised host node structure
+- mg.out.text 0.5, don't use TAB any more
+- mg.mmi.cmdline 0.5, text and xml options

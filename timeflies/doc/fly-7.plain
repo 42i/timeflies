@@ -17,17 +17,3 @@ wp mg, MightyDigester: digests inputs of all sorts and spits them back out
     mmi
         gui
         cmdline
-
-day 2012-07-01 8 17, off 1
-- mg.in.xml 4
-- mg.out.xml 3
-- mg.mmi.cmdline 1
-day 2012-07-02 8 17, off 1
-- mg.in.json 5
-- mg.proc.stats 1.5
-- mg.mmi.cmdline 1.5
-day 2012-07-03 8 17, off 1
-- mg.in.xml 4
-- mg.out.xml 3
-- mg.out.text 0.5
-- mg.mmi.cmdline 0.5

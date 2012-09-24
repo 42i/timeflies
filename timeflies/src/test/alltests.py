@@ -105,6 +105,12 @@ class EndToEndTests(TestCase):
     
     def test_3(self):
         self.doit('-s simple-wp.fly', 'simple-wp.out')
+    
+    def test_4a(self):
+        self.doit('-t -f week test-4.fly', 'test-4a.out')
+    
+    def test_4b(self):
+        self.doit('-t -f week,month test-4.fly', 'test-4b.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
