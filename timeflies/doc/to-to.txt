@@ -1,8 +1,8 @@
 List of Tasks
 
-- rename block leave (with start and end dates) to leave-days
 - find alternative to PyLint
-- leading check tab/space validity (leading whitespace of two consecutive lines must be a match)
+- leading check tab/space validity (leading whitespace of
+  two consecutive lines must be a match)
 - escape hash sign: \#
 - more test cases
 - test case leave counting
@@ -12,3 +12,6 @@ List of Tasks
 - test case multiple work package auto-merge
 - 'import' mechanism to e.g. have work packages and days in separate files
 - sort activities chronologically at the end of a file read; ascending/descending
+
+DONE:
+- rename block leave (with start and end dates) to leave-days

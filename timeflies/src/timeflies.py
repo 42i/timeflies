@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-_version = '0.1'
+_version = '0.2'
 
 _copyright = \
 '''
@@ -563,7 +563,7 @@ class Reader:
             self._new_day(args)
             return
         
-        if instr == 'leave' and len(args) == 2:
+        if instr == 'leave-days' and len(args) == 2:
             self._add_leave(args[0], args[1])
             return
         
