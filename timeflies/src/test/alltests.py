@@ -111,6 +111,12 @@ class EndToEndTests(TestCase):
     
     def test_4b(self):
         self.doit('-t -f week,month test-4.fly', 'test-4b.out')
+    
+    def test_5(self):
+        self.doit('-t test-5.fly', 'test-5.out')
+    
+    def test_hours_minutes(self):
+        self.doit('-t -w hours-minutes.fly', 'hours-minutes.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):

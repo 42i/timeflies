@@ -1,8 +1,6 @@
 List of Tasks
 
-- use PyLint
-- times: hh:mm
-- improve total and weekly summary output formats
+- find alternative to PyLint
 - leading check tab/space validity (leading whitespace of two consecutive lines must be a match)
 - escape hash sign: \#
 - more test cases
@@ -10,5 +8,6 @@ List of Tasks
 - test case reset
 - test case duplicate day start-stop
 - test case multiple day record auto-merge
-- allow 'import' to have work packages and days in separate files
-- sort activities chronologically at the end of a file read; ascnding/descending
+- test case multiple work package auto-merge
+- 'import' mechanism to e.g. have work packages and days in separate files
+- sort activities chronologically at the end of a file read; ascending/descending

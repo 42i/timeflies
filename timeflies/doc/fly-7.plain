@@ -1,4 +1,4 @@
-wp mg, MightyDigester: digests inputs of all sorts and spits them back out
+wp md, MightyDigester: digests inputs of all sorts
     in, read supported input formats
         xml
         json

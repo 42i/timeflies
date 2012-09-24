@@ -42,8 +42,8 @@ def output(text=None, dest=None):
     print(text, file=dest)
 
 def tidy_whitespace(mess):
-    '''Truncates leading and trailing whitespaces and
-    replaces each other sequence of whitespaces by a single space.'''
+    '''Truncates leading and trailing white spaces and
+    replaces each other sequence of white spaces by a single space.'''
     return re.sub('\s+', ' ', mess.strip())
 
 def make_date(dstr):
@@ -52,6 +52,15 @@ def make_date(dstr):
     year, month, day = dstr.split('-')
     return date(int(year), int(month), int(day))
 
+def make_time(tstr):
+    if re.match('^\d+:\d\d$', tstr):
+        hours, minutes = tstr.split(':')
+        return float(hours) + (float(minutes) / 60.0)
+    elif re.match('^\d+(\.\d{1,2})?$', tstr):
+        return float(tstr)
+    else:
+        return None
+
 def is_weekend(day):
     '''Return True if the given date is a Saturday or a Sunday,
     False otherwise.'''
@@ -59,9 +68,9 @@ def is_weekend(day):
 
 def format_floatval(val, what):
     if val == 0.0:
-        return '--.-- ' + what
+        return '----.-- ' + what
     else:
-        return '{0:5.2f} '.format(val) + what
+        return '{0:7.2f} '.format(val) + what
 
 class AllFilter:
     def passes(self, day):
@@ -191,11 +200,11 @@ class ValueNode(Node):
     def dump_node(self, options, indent):
         desc = None if self.workpackage is None else self.workpackage.description
         adorneddesc = (' -- ' + desc) if desc is not None else ''
-        output('{1:s}{0:6.2f} : {2:s}{3:s}'
+        output('{1:s}{0:7.2f} : {2:s}{3:s}'
                .format(self.value, indent, self.get_name(), adorneddesc))
         
         if 'activities' in options:
-            dump_activities(self.activities, '         ' + indent, options)
+            dump_activities(self.activities, '          ' + indent, options)
  
 class WorkPackage(Node):
     def __init__(self, name, desc=None, effort=0):
@@ -293,7 +302,7 @@ class Day:
         self.start = None
         self.stop = None
         self.off = 0
-        self.ill = 0
+        self.sick = 0
         self.leave = 0
         self.phol = False
         self.comments = []
@@ -317,8 +326,8 @@ class Day:
     def add_leave(self, leave):
         self.leave += leave
 
-    def add_ill(self, ill):
-        self.ill = ill
+    def add_sick(self, sick):
+        self.sick = sick
 
     def set_hours(self, start, stop):
         if self.start is not None or self.stop is not None:
@@ -334,7 +343,7 @@ class Day:
         return totals
         
     def calc_balance(self):
-        return self.calc_worked() + self.ill + self.leave
+        return self.calc_worked() + self.sick + self.leave
 
     def calc_worked(self):
         if self.start is None or self.stop is None:
@@ -352,7 +361,7 @@ class Day:
         output(self.date.strftime('%Y-%m-%d, %a: ') + \
               format_floatval(self.calc_worked(), "worked") + ', ' +\
               format_floatval(self.leave, "leave") + ', ' +\
-              format_floatval(self.ill, "ill"))
+              format_floatval(self.sick, "sick"))
 
         
 class Directive:
@@ -465,7 +474,7 @@ class Reader:
         wp = self._workpackage_stack.workpackage.get_node(fullname, create=True)
         
         if len(spec) > 1: # effort
-            wp.effort = spec[1]
+            wp.effort = make_time(spec[1])
             
         if len(items) == 2: # description
             wp.description = items[1].strip()
@@ -485,8 +494,12 @@ class Reader:
             else:
                 desc = None
 
-            try:
-                activity = Activity(duration, desc)
+            duration_float = make_time(duration)
+            
+            if duration_float is None:
+                self._msg('invalid activity duration ' + duration + '.')
+            else:
+                activity = Activity(duration_float, desc)
                 wp = self._universe.get_workpackage(workpackage_name)
                 if wp is None:
                     self._msg('invalid activity work package ' + workpackage_name
@@ -494,9 +507,6 @@ class Reader:
                 else:
                     activity.attach_to(wp)
                     activity.attach_to(self._currentday)
-            except ValueError:
-                self._msg('invalid activity duration ' + duration + '.')
-            
         
     def _process_comment(self, comment):
         self._currentday.add_comment(comment)
@@ -506,7 +516,7 @@ class Reader:
         for mors in morsels:
             self._process_instruction(tidy_whitespace(mors))
 
-    def _add_leave(self, start, end, where):
+    def _add_leave(self, start, end):
         st = make_date(start)
         end = make_date(end)
 
@@ -517,9 +527,8 @@ class Reader:
             dt = date.fromordinal(d)
 
             if not is_weekend(dt):
-                self._new_day(str(dt))
+                self._new_day([str(dt)])
                 self._currentday.add_leave(8.0)
-                self._currentday.add_comment('leave: ' + where)
 
             d = d + 1
 
@@ -540,7 +549,7 @@ class Reader:
             try:
                 start = args[1]
                 end = args[2]
-                self._currentday.set_hours(float(start), float(end))
+                self._currentday.set_hours(make_time(start), make_time(end))
             except Exception as exc:
                 self._msg(str(exc))
                 
@@ -554,8 +563,8 @@ class Reader:
             self._new_day(args)
             return
         
-        if instr == 'leave' and len(args) == 3:
-            self._add_leave(args[0], args[1], args[2])
+        if instr == 'leave' and len(args) == 2:
+            self._add_leave(args[0], args[1])
             return
         
         if self._currentday is None:
@@ -565,17 +574,18 @@ class Reader:
         if instr == 'reset':
             self._currentday.add_directive(Directive().set_reset())
         elif instr == 'add-leave':
-            self._currentday.add_directive(Directive().set_leave(float(args[0])))
+            self._currentday.add_directive(Directive().set_leave(make_time(args[0])))
         elif instr == 'balance-must':
-            self._currentday.add_directive(Directive().set_must(float(args[0])))
+            self._currentday.add_directive(Directive().set_must(make_time(args[0])))
         elif instr == 'balance-have':
-            self._currentday.add_directive(Directive().set_have(float(args[0])))
+            self._currentday.add_directive(Directive().set_have(make_time(args[0])))
         elif instr == 'off':
-            self._currentday.add_off(float(args[0]))
+            self._currentday.add_off(make_time(args[0]))
+        elif instr == 'sick':
+            self._currentday.add_sick(make_time(args[0]))
         elif instr == 'leave':
-            if len(args) == 2:
-                self._currentday.add_leave(float(args[0]))
-                self._currentday.add_comment('leave: ' + args[1])
+            if len(args) == 1:
+                self._currentday.add_leave(make_time(args[0]))
             else:
                 self._msg('Weird leave spec <' + argliststring + '>.')
         else:
@@ -591,7 +601,7 @@ class Status:
         self._havehours = 0
         self._leavebalancehours = 0
         self._leavetakenhours = 0
-        self._illhours = 0
+        self._sickhours = 0
         self._workedhours = 0
 
     def increase_must_hours(self, dt):
@@ -609,7 +619,7 @@ class Status:
         self._musthours += day.calc_required()
         self._havehours += day.calc_balance()
         self._workedhours += day.calc_worked()
-        self._illhours += day.ill
+        self._sickhours += day.sick
         self._leavebalancehours -= day.leave
         self._leavetakenhours += day.leave
         
@@ -617,7 +627,6 @@ class Status:
         if di.reset:
             self.dump()
             self.reset()
-            #print('--- reset ' + self.name + '---')
         elif di.leave is not None:
             self._leavebalancehours += di.leave
         elif di.must is not None:
@@ -634,10 +643,7 @@ class Status:
         output('{0:>15s}: '.format(prefix) +\
               format_floatval(self._workedhours, "worked") + ', ' +\
               format_floatval(self._leavetakenhours, "leave") + ', ' +\
-              format_floatval(self._illhours, "ill"))
-
-#        output(self.name + ' : must = {0:6.2f}, worked = {1:6.2f}, ill = {2:6.2f}, leave taken= {3:6.2f}, leave left = {4:6.2f}, have = {5:6.2f}'\
-#              .format(self._musthours, self._workedhours, self._illhours, self._leavetakenhours, self._leavebalancehours, self._havehours))
+              format_floatval(self._sickhours, "sick"))
 
 class Statistics:
     def __init__(self, universe):
@@ -833,8 +839,11 @@ class Application:
       -f, --filter <filter> : a filter to select a processing time range;
           YYYY-MM selects a month; YYYY-MM-DD..YYYY-MM-DD selects a time range
           by giving the first and last day; 'all' to process all days;
+          for option -t summary cycles of 'day', 'week' and 'month' (or
+          combinations thereof) can be added with the filter option too;
+          to combine multiple items, use a comma separated list;
           default: process all
-      -t, --tally-days : calculate the total must/have/leave/ill
+      -t, --tally-days : calculate the total must/have/leave/sick
           work hour balance
       -c, --check-days : check the daily work time vs. booked
           work package time; helps to find unaccounted for time at work
@@ -845,6 +854,13 @@ class Application:
       -C, --comments : show log comments for each day (in option -t)
       -i, --indent <width> : indent each level in the work package hierarchy by
           <width> space characters; default: 4
+
+    Examples:
+    
+    timeflies.py -t -f 2012-07,week : calculate weekly work hour summaries for
+    the month of July 2012.
+    
+    ... more to follow ...
     '''.format(_version))
 
 def main(argv):

@@ -1,10 +1,10 @@
- 17.00 : ALL
-     17.00 : project -- the big fat project
-          4.00 : sub1
-              2.00 : aa
-              2.00 : bb
-         10.00 : sub2
-              5.00 : bbb
-              5.00 : ccc
-          3.00 : sub3
-              3.00 : xyz
+  17.00 : ALL
+      17.00 : project -- the big fat project
+           4.00 : sub1
+               2.00 : aa
+               2.00 : bb
+          10.00 : sub2
+               5.00 : bbb
+               5.00 : ccc
+           3.00 : sub3
+               3.00 : xyz

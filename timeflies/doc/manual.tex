@@ -112,7 +112,7 @@ Log comments are a good way to keep track of things you don't want to forget and
 
 You use \emph{work packages} and \emph{activities} to connect the time you work with the work packages you work on: first, you define your work packages, then you use \emph{activity} lines in the day blocks instead of log comment lines.
 
-A work package definition is a line starting with the keyword \verb:work-package: (or the short version \verb:wp:) followed by a work package name.
+A work package definition is a line starting with the keyword \verb:work-package: (or its abbreviation \verb:wp:) followed by a work package name.
 
 An activity line starts with a single dash character \verb:-: followed by one or more spaces. This is followed by a work package id and a duration. This is optionally followed by a comma and some activity comment.
 
@@ -140,7 +140,7 @@ In the previous section, work packages have been defined as simple, atomic, name
 
 \input{fly-7.in}
 
-The items in this work package hierarchy can be referred to in activity lines as dot separated work package path names. In above work package definition examples for such paths are \verb:mg.in.xml:, \verb:mg.proc.phase-1:.
+The items in this work package hierarchy can be referred to in activity lines as \verb:.:-delimited work package path names.
 
 Following, a piece of work log for the above project.
 
@@ -158,5 +158,8 @@ And here the same with activities shown.
 
 \section{Reference}
 
+\subsection{Command Line Options}
+
+\subsection{File Syntax}
 
 \end{document}

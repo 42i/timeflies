@@ -13,7 +13,7 @@ manual.pdf : manual.tex $(EXAMPLES)
 	xelatex $^ && xelatex $^
 
 clean :
-	rm $(EXAMPLES)
+	rm -f $(EXAMPLES) *~ manual.log manual.aux manual.toc
 	
 %.in: %.plain
 	echo '% generated from '$< > $@

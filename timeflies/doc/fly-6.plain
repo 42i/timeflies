@@ -1,9 +1,9 @@
-work-package regression-tests
-work-package meetings
-work-package quality-task-force
-work-package problem-reports
-work-package development
-work-package other
+wp regression-tests
+wp meetings
+wp quality-task-force
+wp problem-reports
+wp development
+wp other
 
 day 2012-09-19 8.5 17.25
 - regression-tests 4, updated
