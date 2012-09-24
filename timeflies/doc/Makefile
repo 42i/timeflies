@@ -21,36 +21,36 @@ fly-7-wp.in : ex-7/prj-mighty-digester.fly
 	./wrap-input.py $< > $@
 
 fly-5a.out : ex-5/work-log.fly
-	./generate_output.py -t $^ > $@
+	./generate-output.py -t $^ > $@
 
 fly-5b.out : ex-5/work-log.fly
-	./generate_output.py -t -C $^ > $@
+	./generate-output.py -t -C $^ > $@
 
 fly-6a.out : ex-6/work-log.fly
-	./generate_output.py -w $^ > $@
+	./generate-output.py -w $^ > $@
 
 fly-6b.out : ex-6/work-log.fly
-	./generate_output.py -w -a $^ > $@
+	./generate-output.py -w -a $^ > $@
 
 fly-6c.out : ex-6/work-log.fly
-	./generate_output.py -c $^ > $@
+	./generate-output.py -c $^ > $@
 
 fly-7a.out : ex-7/prj-mighty-digester.fly ex-7/work-log.fly
-	./generate_output.py -w $^ > $@
+	./generate-output.py -w $^ > $@
 
 fly-7b.out : ex-7/prj-mighty-digester.fly ex-7/work-log.fly
-	./generate_output.py -w -a $^ > $@
+	./generate-output.py -w -a $^ > $@
 
 fly-8a.out : ex-8/work-log.fly
-	./generate_output.py -t -f week $^ > $@
+	./generate-output.py -t -f week $^ > $@
 
 fly-8b.out : ex-8/work-log.fly
-	./generate_output.py -t -f week,month $^ > $@
+	./generate-output.py -t -f week,month $^ > $@
 
 fly-8c.out : ex-8/work-log.fly
-	./generate_output.py -t -f 2012-09 $^ > $@
+	./generate-output.py -t -f 2012-09 $^ > $@
 
 fly-8d.out : ex-8/work-log.fly
-	./generate_output.py -t -f week,2012-09 $^ > $@
+	./generate-output.py -t -f week,2012-09 $^ > $@
 
 
