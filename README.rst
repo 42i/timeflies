@@ -7,14 +7,14 @@ TimeFlies is a light weight acitvity logging and time tracking application with 
 Installation
 ------------
 
-Just download timeflies.py_ and stick anywhere convenient. It needs Python 3 and expects it in ``/usr/bin/python3``.
+Just download timeflies.py_ and store it wherever convenient. It needs Python 3 and expects it in ``/usr/bin/python3``.
 
 .. _timeflies.py: https://raw.github.com/42i/timeflies/master/src/timeflies.py
 
 Manual
 ------
 
-There also is a `TimeFlies PDF manual`_.
+There is a `TimeFlies PDF manual`_.
 
 .. _`TimeFlies PDF manual`: https://github.com/downloads/42i/timeflies/timeflies.pdf
 
