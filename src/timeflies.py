@@ -185,7 +185,7 @@ def dump_activities(activities, indent, options):
         #indent += options['indent']
         
         for a in activities:
-            comment = (', ' + a.description) if a.description is not None else ''
+            comment = ('; ' + a.description) if a.description is not None else ''
             output(indent + '- ' + str(a.day().date) + ' ' + str(a.duration) + comment)
 
 class ValueNode(Node):
@@ -199,7 +199,7 @@ class ValueNode(Node):
 
     def dump_node(self, options, indent):
         desc = None if self.workpackage is None else self.workpackage.description
-        adorneddesc = (' -- ' + desc) if desc is not None else ''
+        adorneddesc = ('; ' + desc) if desc is not None else ''
         output('{1:s}{0:7.2f} : {2:s}{3:s}'
                .format(self.value, indent, self.get_name(), adorneddesc))
         
@@ -260,7 +260,7 @@ class WorkPackage(Node):
         return res
 
     def dump_node(self, options, indent):
-        desc = (' -- ' + self.description) if self.description is not None else ''        
+        desc = ('; ' + self.description) if self.description is not None else ''        
         output(indent + self.name + desc)
         
         if 'activities' in options:
@@ -460,9 +460,9 @@ class Reader:
     def _in_workpackage_definition(self):
         return self._universe.workpackage_root != self._workpackage_stack.workpackage
     
-    #   name.of.the.workpackage [params ...], description
+    #   name.of.the.workpackage [params ...]; description
     def _process_workpackage(self, line):
-        items = line.split(',', 1)
+        items = line.split(';', 1)
         spec = items[0].strip().split(' ')
         fullname = spec[0]
                 
@@ -482,7 +482,7 @@ class Reader:
         self._workpackage_stack = WorkPackageLineBookmark(wp, indent, self._workpackage_stack)
         
     def _process_activity(self, line):
-        comps = line.split(',', 1)
+        comps = line.split(';', 1)
         args = tidy_whitespace(comps[0]).split(' ')
         if len(args) < 2:
             self._msg('an activity must have a work package and a duration.')

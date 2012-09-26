@@ -1,5 +1,5 @@
 
-wp project, the big fat project
+wp project; the big fat project
 	sub1
 		aa 40
 		bb 50
@@ -12,18 +12,18 @@ wp project, the big fat project
 		xyz 30
 
 day 2012-09-01 8 17, off 1
-- project.sub1 2.25, some stuff, there should be no --self-- here
+- project.sub1 2.25; some stuff, there should be no --self-- here
 day 2012-08-01 8 17, off 1
-- project.sub1.aa 1.5, hee haa aa
-- project.sub1.cc 2.5, hee haa cc
-- project.sub2.ccc 3.5, yayy ccc
-- project.sub2 1, some sorting out		
+- project.sub1.aa 1.5; hee haa aa
+- project.sub1.cc 2.5; hee haa cc
+- project.sub2.ccc 3.5; yayy ccc
+- project.sub2 1; some sorting out		
 day 2012-07-14 8 17, off 1
-- project.sub1.aa 2, hee haa aa
-- project.sub2.bbb 4, yayy bbb
+- project.sub1.aa 2; hee haa aa
+- project.sub2.bbb 4; yayy bbb
 day 2012-07-13 8 17, off 1
-- project.sub1.bb 2, hee haa bb
-- project.sub2.ccc 5, yayy ccc
+- project.sub1.bb 2; hee haa bb
+- project.sub2.ccc 5; yayy ccc
 day 2012-07-12 8 17, off 1
-- project.sub3.xyz 3, hee haa xyz
-- project.sub2.bbb 1, yayy bbb
+- project.sub3.xyz 3; hee haa xyz
+- project.sub2.bbb 1; yayy bbb

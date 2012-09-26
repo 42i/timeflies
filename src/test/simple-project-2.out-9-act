@@ -1,4 +1,4 @@
    2.25 : ALL
-       2.25 : project -- the big fat project
+       2.25 : project; the big fat project
            2.25 : sub1
-                  - 2012-09-01 2.25, some stuff, there should be no --self-- here
+                  - 2012-09-01 2.25; some stuff, there should be no --self-- here

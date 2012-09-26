@@ -1,5 +1,5 @@
 
-work-package project, the big fat project
+work-package project; the big fat project
 	sub1
 		aa 40
 		bb 50
@@ -12,5 +12,5 @@ work-package project, the big fat project
 		xyz 30
 		
 day 2012-07-14 8 17, off 1
-- project.sub1.aa 2, hee haa aa
-- project.sub2.bbb 4, yayy bbb
+- project.sub1.aa 2; hee haa aa
+- project.sub2.bbb 4; yayy bbb

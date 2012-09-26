@@ -6,7 +6,7 @@ wp    aaa   50
 		cccc
 		
 wp aaa.bbb
-	bbbb2 60 , green leaves on the tree
+	bbbb2 60 ; green leaves on the tree
 	
 day 2012-07-18   8  18 ,   off 1
-- aaa.bbb   3.5 , did some mucking about
+- aaa.bbb   3.5 ; did some mucking about

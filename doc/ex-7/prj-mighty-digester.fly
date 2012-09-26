@@ -1,15 +1,15 @@
-wp md, MightyDigester: digests inputs of all sorts
-    in, read supported input formats
+wp md; MightyDigester: digests inputs of all sorts
+    in; read supported input formats
         xml
         json
-        dottxt, dotted text format
+        dottxt; dotted text format
         binary
-    proc, processing modules
-        stats, processing statistics
-        phase-1, rough break-down
-        phase-2, particle recombination
-        phase-3, regrouping and amalgamation
-    out, write supported output formats
+    proc; processing modules
+        stats; processing statistics
+        phase-1; rough break-down
+        phase-2; particle recombination
+        phase-3; regrouping and amalgamation
+    out; write supported output formats
         xml
         json
         text
