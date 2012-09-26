@@ -56,7 +56,7 @@ Now let TimeFlies loose on this.
 
 The effort spent on each work package::
 
-	$ timeflies.py -w time.fly 
+    $ timeflies.py -w time.fly 
     Work package summary (all):
       28.75 : ALL
           28.75 : changer; does some heavy changing
