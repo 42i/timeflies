@@ -74,7 +74,7 @@ Do you want to keep notes about your work in the same place as you keep the time
 
 \input{fly-5.in}
 
-A log comment line starts in double dash characters \verb=--= and one or more space characters. All text following these characters until the end of the line (or until a \verb-#- source comment marker) with trailing spaces removed constitute the recorded log comment.
+A log comment line starts with a semicolon and one or more space characters. All text following these characters until the end of the line (or until a \verb-#- source comment marker) with trailing spaces removed constitute the recorded log comment.
 
 Now what can you do with such a file? Assume the above work log file's name is \verb:work-log.fly:, then option \verb:-t: tells \timeflies\ to calculate your work times.
 
@@ -184,7 +184,7 @@ day, off, leave, sick
 
 block-leave
 
-log comment: --
+log comment: ;
 
 activity: -
 \end{document}
