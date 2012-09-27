@@ -1,1 +1,2 @@
-2012-09-12 : activity and work-package description delimiter now ; instead of the previous ,
+2012-09-27 : log comment marker now ; instead of --
+2012-09-26 : activity and work-package description marker now ; instead of the previous ,
