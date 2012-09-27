@@ -1,6 +1,7 @@
 List of Tasks
 
 - public holidays
+- user-friendly time range option handling
 - set must-work hours per day
 - find alternative to PyLint
 - leading check tab/space validity (leading whitespace of
