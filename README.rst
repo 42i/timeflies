@@ -2,26 +2,32 @@
 TimeFlies
 =========
 
-TimeFlies is a light weight acitvity logging and time tracking application with support for work package hierarchies. You keep your log data in one or more plain text files and TimeFlies will analyse them and generate the reports you want.
+TimeFlies is a light weight activity logging and time tracking application with
+support for work package hierarchies. You keep your log data in one or more plain
+text files and TimeFlies will analyse them and generate the reports you want.
 
 Installation
 ------------
 
-Just download timeflies.py_ and store it wherever convenient. It needs Python 3 and expects it in ``/usr/bin/python3``.
+From packaged ZIP files containing both timeflies.py and the PDF manual:
+
+- TimeFlies-0.3-2012-09-27.zip_
+
+.. _TimeFlies-0.3-2012-09-27.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.3-2012-09-27.zip
+
+Straight out of the repository:
+
+- timeflies.py_, timeflies.pdf_
 
 .. _timeflies.py: https://raw.github.com/42i/timeflies/master/src/timeflies.py
+.. _timeflies.pdf: https://raw.github.com/42i/timeflies/master/doc/timeflies.pdf
 
-Manual
-------
-
-There is a `TimeFlies PDF manual`_.
-
-.. _`TimeFlies PDF manual`: https://github.com/downloads/42i/timeflies/timeflies.pdf
+Required: Python 3 in ``/usr/bin/python3``.
 
 Examples
 --------
 
-Stick your work package structure and work log data in a text file ``time.fly``::
+Stick your work package structure and work log data in a text file, say, ``time.fly``::
 
     work-package changer; does some heavy changing
         input
@@ -39,6 +45,7 @@ Stick your work package structure and work log data in a text file ``time.fly``:
     - changer.input.xml 2; simple nodes and vertices
     - changer.process.step1 3; simple node list handling
     - changer.output.txt 4; just nodes
+    
     day 2012-07-13 8 11:30
     - changer.input.json 3; nodes and dicts
     - changer.input.xml 0.5; added comment parsing
@@ -48,6 +55,7 @@ Stick your work package structure and work log data in a text file ``time.fly``:
     day 2012-08-06 10:00 15:15
     - changer.process.step2 2.5; vertex maps implemented 
     - changer.process.step1 2.75; adapted dicts to use vertex maps
+    
     day 2012-08-07 9:00 20:00
     - changer.process.step3 6; simple linear filtering
     - changer.output.bin 5; single node binary serialisation
