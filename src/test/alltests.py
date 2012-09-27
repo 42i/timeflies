@@ -117,7 +117,10 @@ class EndToEndTests(TestCase):
     
     def test_hours_minutes(self):
         self.doit('-t -w hours-minutes.fly', 'hours-minutes.out')
-        
+    
+    def test_reset(self):
+        self.doit('-t reset-test.fly', 'reset-test.out')
+    
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()

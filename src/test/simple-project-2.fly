@@ -12,7 +12,7 @@ wp project; the big fat project
 		xyz 30
 
 day 2012-09-01 8 17, off 1
-- project.sub1 2.25; some stuff, there should be no --self-- here
+- project.sub1 2.25; some stuff, there should be no _self here
 day 2012-08-01 8 17, off 1
 - project.sub1.aa 1.5; hee haa aa
 - project.sub1.cc 2.5; hee haa cc

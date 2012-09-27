@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-_version = '0.2'
+_version = '0.3'
 
 _copyright = \
 '''
@@ -182,10 +182,8 @@ class Node:
     
 def dump_activities(activities, indent, options):
     if activities is not None:
-        #indent += options['indent']
-        
         for a in activities:
-            comment = ('; ' + a.description) if a.description is not None else ''
+            comment = '' if a.description is None else ('; ' + a.description)
             output(indent + '- ' + str(a.day().date) + ' ' + str(a.duration) + comment)
 
 class ValueNode(Node):
@@ -195,11 +193,11 @@ class ValueNode(Node):
         self.workpackage = workpackage
     
     def get_name(self):
-        return '--self--' if self.workpackage is None else self.workpackage.name
+        return '_self' if self.workpackage is None else self.workpackage.name
 
     def dump_node(self, options, indent):
         desc = None if self.workpackage is None else self.workpackage.description
-        adorneddesc = ('; ' + desc) if desc is not None else ''
+        adorneddesc = '' if desc is None else ('; ' + desc)
         output('{1:s}{0:7.2f} : {2:s}{3:s}'
                .format(self.value, indent, self.get_name(), adorneddesc))
         
@@ -244,7 +242,7 @@ class WorkPackage(Node):
                     if res.activities:
                         # wp 'self' has both activities on itself and
                         # on sub-wps. To make the activities on the wp
-                        # itselr more easily visible, we insert a dummy
+                        # itself more easily visible, we insert a dummy
                         # 'self' child here and move the activities
                         # in question to that one.
                         selfres = ValueNode(None, totals)
@@ -260,7 +258,7 @@ class WorkPackage(Node):
         return res
 
     def dump_node(self, options, indent):
-        desc = ('; ' + self.description) if self.description is not None else ''        
+        desc = '' if self.description is None else ('; ' + self.description)        
         output(indent + self.name + desc)
         
         if 'activities' in options:
@@ -440,8 +438,8 @@ class Reader:
                     
                 if line.startswith('- '):
                     self._process_activity(line[2:].strip())
-                elif line.startswith('-- '):
-                    self._process_comment(line[3:].strip())
+                elif line.startswith('; '):
+                    self._process_comment(line[2:].strip())
                 elif line.startswith('todo '):
                     if self._currentday is not None:
                         self._msg('WARNING: TO DO item found beyond the beginning of the file')
@@ -625,7 +623,7 @@ class Status:
         
     def _process_directive(self, di):
         if di.reset:
-            self.dump()
+            self.dump('reset')
             self.reset()
         elif di.leave is not None:
             self._leavebalancehours += di.leave
@@ -706,7 +704,7 @@ class Statistics:
                 if do_daily:
                     d.dump()
                     if 'comments' in options:
-                        prefix = ' ' * 13 + '-- '
+                        prefix = ' ' * 13 + '; '
                         for cmnt in d.comments:
                             output(prefix + cmnt)
 
@@ -731,7 +729,7 @@ class Application:
     def interpret_cmdline(self, argv):
         try:
             opts, self._args = getopt.getopt(argv[1:], 'hf:tcwsaCi:',
-                                       ['help', 'copyright', 'filter=',
+                                       ['help', 'version', 'copyright', 'filter=',
                                         'tally-days', 'check-days',
                                         'work-packages', 'show-work-packages',
                                         'activities', 'comments',
@@ -742,6 +740,8 @@ class Application:
                     self.show_usage(argv[0])
                 elif opt == '--copyright':
                     output(_copyright.format(_version))
+                elif opt == '--version':
+                    output(_version)
                 elif opt == '-f' or opt == '--filter':
                     self._filter = val
                 elif opt == '-t' or opt == '--tally-days':
@@ -835,6 +835,7 @@ class Application:
       Options:
     
       -h, --help : show this info
+      --version : show TimeFlies' version info
       --copyright : show copyright info
       -f, --filter <filter> : a filter to select a processing time range;
           YYYY-MM selects a month; YYYY-MM-DD..YYYY-MM-DD selects a time range
