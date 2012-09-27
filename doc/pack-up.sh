@@ -5,7 +5,7 @@ tifl=../src/timeflies.py
 version=`$tifl --version`
 date=`date +%Y-%m-%d`
 dir=TimeFlies-$version-$date
-zipfile=../$dir.zip
+zipfile=../../$dir.zip
 
 mkdir $dir
 
