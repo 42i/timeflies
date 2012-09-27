@@ -1,5 +1,7 @@
 List of Tasks
 
+- public holidays
+- set must-work hours per day
 - find alternative to PyLint
 - leading check tab/space validity (leading whitespace of
   two consecutive lines must be a match)
