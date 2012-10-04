@@ -121,6 +121,9 @@ class EndToEndTests(TestCase):
     def test_reset(self):
         self.doit('-t reset-test.fly', 'reset-test.out')
     
+    def test_day_comment(self):
+        self.doit('-t -C test-day-comment.fly', 'test-day-comment.out')
+    
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()

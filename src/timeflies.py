@@ -303,7 +303,7 @@ class Day:
         self.sick = 0
         self.leave = 0
         self.phol = False
-        self.comments = []
+        self.comments = None
         self.activities = None
         
     def add_directive(self, d):
@@ -313,7 +313,10 @@ class Day:
             self.directives.append(d)
         
     def add_comment(self, comment):
-        self.comments.append(comment)
+        if self.comments is None:
+            self.comments = [ comment ]
+        else:
+            self.comments.append(comment)
 
     def add_off(self, off):
         self.off += off
@@ -703,7 +706,7 @@ class Statistics:
 
                 if do_daily:
                     d.dump()
-                    if 'comments' in options:
+                    if 'comments' in options and d.comments is not None:
                         prefix = ' ' * 13 + '; '
                         for cmnt in d.comments:
                             output(prefix + cmnt)
