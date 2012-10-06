@@ -66,11 +66,14 @@ def is_weekend(day):
     False otherwise.'''
     return day.isoweekday() == 6 or day.isoweekday() == 7
 
-def format_floatval(val, what):
+def format_floatval(val):
     if val == 0.0:
-        return '----.-- ' + what
+        return '----.--'
     else:
-        return '{0:7.2f} '.format(val) + what
+        return '{0:7.2f}'.format(val)
+
+def dump_day_header():
+    output('{0:^15s} {1:>7s} {2:>7s} {3:>7s}'.format('when', 'worked', 'leave', 'sick'))
 
 class AllFilter:
     def passes(self, day):
@@ -313,22 +316,26 @@ class Day:
             self.directives.append(d)
         
     def add_comment(self, comment):
-        if self.comments is None:
-            self.comments = [ comment ]
-        else:
-            self.comments.append(comment)
+        if comment is not None:
+            if self.comments is None:
+                self.comments = [ comment ]
+            else:
+                self.comments.append(comment)
 
     def add_off(self, off):
         self.off += off
 
-    def set_phol(self, phol):
-        self.phol = phol
+    def set_phol(self, comment=None):
+        self.phol = True
+        self.add_comment(comment)
 
-    def add_leave(self, leave):
+    def add_leave(self, leave, comment=None):
         self.leave += leave
+        self.add_comment(comment)
 
-    def add_sick(self, sick):
+    def add_sick(self, sick, comment=None):
         self.sick = sick
+        self.add_comment(comment)
 
     def set_hours(self, start, stop):
         if self.start is not None or self.stop is not None:
@@ -357,12 +364,25 @@ class Day:
             return 0.0
         else:
             return 8.0
-    
-    def dump(self):
-        output(self.date.strftime('%Y-%m-%d, %a: ') + \
-              format_floatval(self.calc_worked(), "worked") + ', ' +\
-              format_floatval(self.leave, "leave") + ', ' +\
-              format_floatval(self.sick, "sick"))
+        
+    def dump(self, options):
+        worked = self.calc_worked()
+        if (self.leave != 0.0 or self.sick != 0.0) and worked == 0.0 and self.comments:
+            cmnt = ' ' + self.comments[0]
+            if len(self.comments) > 1:
+                cmnt += ' [...]'
+        else:
+            cmnt = ''
+            
+        output(self.date.strftime('%Y-%m-%d %a: ') + \
+              format_floatval(worked) + ' ' +\
+              format_floatval(self.leave) + ' ' +\
+              format_floatval(self.sick) + cmnt)
+        
+        if worked != 0.0 and 'comments' in options and self.comments is not None:
+            prefix = ' ' * 14 + '; '
+            for cmnt in self.comments:
+                output(prefix + cmnt)
 
         
 class Directive:
@@ -513,11 +533,17 @@ class Reader:
         self._currentday.add_comment(comment)
 
     def _process_instructions(self, line):
-        morsels = line.split(',')
-        for mors in morsels:
+        # Get the comment part of the line, if there is any
+        instructions, semicolon, rawcomment = line.partition(';')
+        comment = None if semicolon == '' else rawcomment.strip()
+        
+        morsels = instructions.split(',')
+        for mors in morsels[:-1]:
             self._process_instruction(tidy_whitespace(mors))
+        
+        self._process_instruction(tidy_whitespace(morsels[-1]), comment)
 
-    def _add_leave(self, start, end):
+    def _add_leave(self, start, end, comment):
         st = make_date(start)
         end = make_date(end)
 
@@ -529,7 +555,7 @@ class Reader:
 
             if not is_weekend(dt):
                 self._new_day([str(dt)])
-                self._currentday.add_leave(8.0)
+                self._currentday.add_leave(8.0, comment)
 
             d = d + 1
 
@@ -555,7 +581,7 @@ class Reader:
                 self._msg(str(exc))
                 
 
-    def _process_instruction(self, argliststring):
+    def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
         instr = arglist[0]
         args = arglist[1:]
@@ -564,8 +590,8 @@ class Reader:
             self._new_day(args)
             return
         
-        if instr == 'leave-days' and len(args) == 2:
-            self._add_leave(args[0], args[1])
+        if instr == 'leave-days':
+            self._add_leave(args[0], args[1], comment)
             return
         
         if self._currentday is None:
@@ -583,10 +609,10 @@ class Reader:
         elif instr == 'off':
             self._currentday.add_off(make_time(args[0]))
         elif instr == 'sick':
-            self._currentday.add_sick(make_time(args[0]))
+            self._currentday.add_sick(make_time(args[0]), comment)
         elif instr == 'leave':
             if len(args) == 1:
-                self._currentday.add_leave(make_time(args[0]))
+                self._currentday.add_leave(make_time(args[0]), comment)
             else:
                 self._msg('Weird leave spec <' + argliststring + '>.')
         else:
@@ -641,11 +667,11 @@ class Status:
         else:
             prefix = self.name + ' ' + tag
             
-        output('{0:>15s}: '.format(prefix) +\
-              format_floatval(self._workedhours, "worked") + ', ' +\
-              format_floatval(self._leavetakenhours, "leave") + ', ' +\
-              format_floatval(self._sickhours, "sick"))
-
+        output('{0:>14s}: '.format(prefix) +\
+              format_floatval(self._workedhours) + ' ' +\
+              format_floatval(self._leavetakenhours) + ' ' +\
+              format_floatval(self._sickhours))
+    
 class Statistics:
     def __init__(self, universe):
         self.days = universe.get_chrono_days()
@@ -686,6 +712,8 @@ class Statistics:
         self.prev_week = None
         self.prev_day = None
         
+        dump_day_header()
+        
         for d in self.days:
             self._process_gap(d, dayfilter)
             if dayfilter.passes(d):
@@ -705,11 +733,7 @@ class Statistics:
                 self.totals.process_day(d)
 
                 if do_daily:
-                    d.dump()
-                    if 'comments' in options and d.comments is not None:
-                        prefix = ' ' * 13 + '; '
-                        for cmnt in d.comments:
-                            output(prefix + cmnt)
+                    d.dump(options)
 
                 self.prev_day = d
                 self.prev_week = this_week
@@ -720,6 +744,8 @@ class Statistics:
         if do_monthly:
             self.monthly.dump(self.prev_month)
         self.totals.dump(None)
+        
+        dump_day_header()
 
 class Application:
     def __init__(self):

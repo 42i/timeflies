@@ -1,7 +1,9 @@
 Time at work overview (week, month):
-   week 2012-35:   42.25 worked, ----.-- leave, ----.-- sick
-  month 2012-08:   42.25 worked, ----.-- leave, ----.-- sick
-   week 2012-36:   43.25 worked, ----.-- leave, ----.-- sick
-   week 2012-37:   17.50 worked, ----.-- leave, ----.-- sick
-  month 2012-09:   60.75 worked, ----.-- leave, ----.-- sick
-          total:  103.00 worked, ----.-- leave, ----.-- sick
+     when        worked   leave    sick
+  week 2012-35:   42.25 ----.-- ----.--
+ month 2012-08:   42.25 ----.-- ----.--
+  week 2012-36:   43.25 ----.-- ----.--
+  week 2012-37:   17.50 ----.-- ----.--
+ month 2012-09:   60.75 ----.-- ----.--
+         total:  103.00 ----.-- ----.--
+     when        worked   leave    sick

@@ -1,2 +1,7 @@
+v 0.4
+2012-10-06 : comments for leave and sickness
+2012-10-06 : changed time at work overview output (heading line with worked, leave, sickness); added leave and sickness comments
+
+v 0.3
 2012-09-27 : log comment marker now ; instead of --
 2012-09-26 : activity and work-package description marker now ; instead of the previous ,

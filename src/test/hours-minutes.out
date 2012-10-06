@@ -1,10 +1,12 @@
 Time at work overview (all):
-2012-07-17, Tue:    9.00 worked, ----.-- leave,    3.75 sick
-2012-07-18, Wed:    9.00 worked, ----.-- leave, ----.-- sick
-2012-07-19, Thu:    9.00 worked,    1.50 leave, ----.-- sick
-   week 2012-29:   27.00 worked,    1.50 leave,    3.75 sick
-  month 2012-07:   27.00 worked,    1.50 leave,    3.75 sick
-          total:   27.00 worked,    1.50 leave,    3.75 sick
+     when        worked   leave    sick
+2012-07-17 Tue:    9.00 ----.--    3.75
+2012-07-18 Wed:    9.00 ----.-- ----.--
+2012-07-19 Thu:    9.00    1.50 ----.--
+  week 2012-29:   27.00    1.50    3.75
+ month 2012-07:   27.00    1.50    3.75
+         total:   27.00    1.50    3.75
+     when        worked   leave    sick
 Work package summary (all):
    6.00 : ALL
        2.25 : a
