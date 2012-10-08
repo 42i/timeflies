@@ -287,8 +287,36 @@ class Activity:
             node.activities = [ self ]
         else:
             node.activities.append(self)
-            
-            
+
+def add_value(original, newVal, newDesc):
+    if isinstance(original, tuple):
+        v, d = original
+    else:
+        v = original
+        d = None
+
+    v += newVal
+    
+    if newDesc is not None:
+        d = newDesc if d is None else d + '; ' + newDesc        
+    
+    if d is not None:
+        return (v, d)
+    else:
+        return v
+
+def get_value(value):
+    if isinstance(value, tuple):
+        return value[0]
+    else:
+        return value
+
+def get_desc(value):
+    if isinstance(value, tuple):
+        return value[1]
+    else:
+        return None
+
 class Day:
     '''A Day object represents a day of work. It has a date,
     hour information and comment information attached to it.'''
@@ -302,10 +330,10 @@ class Day:
         self.directives = None
         self.start = None
         self.stop = None
-        self.off = 0
-        self.sick = 0
-        self.leave = 0
-        self.phol = False
+        self.off = 0.0
+        self.sick = 0.0
+        self.leave = 0.0
+        self.phol = None
         self.comments = None
         self.activities = None
         
@@ -322,20 +350,17 @@ class Day:
             else:
                 self.comments.append(comment)
 
-    def add_off(self, off):
-        self.off += off
+    def add_off(self, off, comment=None):
+        self.off = add_value(self.off, off, comment)
 
-    def set_phol(self, comment=None):
-        self.phol = True
-        self.add_comment(comment)
+    def set_phol(self, comment):
+        self.phol = 'public holiday' if comment is None else comment 
 
     def add_leave(self, leave, comment=None):
-        self.leave += leave
-        self.add_comment(comment)
+        self.leave = add_value(self.leave, leave, comment)
 
     def add_sick(self, sick, comment=None):
-        self.sick = sick
-        self.add_comment(comment)
+        self.sick = add_value(self.sick, sick, comment)
 
     def set_hours(self, start, stop):
         if self.start is not None or self.stop is not None:
@@ -351,35 +376,32 @@ class Day:
         return totals
         
     def calc_balance(self):
-        return self.calc_worked() + self.sick + self.leave
+        return self.calc_worked() + get_value(self.sick) + get_value(self.leave)
 
     def calc_worked(self):
-        if self.start is None or self.stop is None:
-            return -self.off
-        else:
-            return self.stop - self.start - self.off
+        at_work = 0.0 if self.start is None or self.stop is None else self.stop - self.start
+        return at_work - get_value(self.off)
     
     def calc_required(self):
-        if self.phol or is_weekend(self.date):
+        if self.phol is not None or is_weekend(self.date):
             return 0.0
         else:
             return 8.0
         
     def dump(self, options):
         worked = self.calc_worked()
-        if (self.leave != 0.0 or self.sick != 0.0) and worked == 0.0 and self.comments:
-            cmnt = ' ' + self.comments[0]
-            if len(self.comments) > 1:
-                cmnt += ' [...]'
-        else:
-            cmnt = ''
+        cmnt = ''
+        
+        for s in self.phol, get_desc(self.leave), get_desc(self.sick), get_desc(self.off):
+            if s is not None:
+                cmnt = cmnt + '; ' + s
             
         output(self.date.strftime('%Y-%m-%d %a: ') + \
               format_floatval(worked) + ' ' +\
-              format_floatval(self.leave) + ' ' +\
-              format_floatval(self.sick) + cmnt)
+              format_floatval(get_value(self.leave)) + ' ' +\
+              format_floatval(get_value(self.sick)) + cmnt[1:])
         
-        if worked != 0.0 and 'comments' in options and self.comments is not None:
+        if 'comments' in options and self.comments is not None:
             prefix = ' ' * 14 + '; '
             for cmnt in self.comments:
                 output(prefix + cmnt)
@@ -607,9 +629,11 @@ class Reader:
         elif instr == 'balance-have':
             self._currentday.add_directive(Directive().set_have(make_time(args[0])))
         elif instr == 'off':
-            self._currentday.add_off(make_time(args[0]))
+            self._currentday.add_off(make_time(args[0]), comment)
         elif instr == 'sick':
             self._currentday.add_sick(make_time(args[0]), comment)
+        elif instr == 'phol' or instr == 'public-holiday':
+            self._currentday.set_phol(comment)
         elif instr == 'leave':
             if len(args) == 1:
                 self._currentday.add_leave(make_time(args[0]), comment)
@@ -646,9 +670,9 @@ class Status:
         self._musthours += day.calc_required()
         self._havehours += day.calc_balance()
         self._workedhours += day.calc_worked()
-        self._sickhours += day.sick
-        self._leavebalancehours -= day.leave
-        self._leavetakenhours += day.leave
+        self._sickhours += get_value(day.sick)
+        self._leavebalancehours -= get_value(day.leave)
+        self._leavetakenhours += get_value(day.leave)
         
     def _process_directive(self, di):
         if di.reset:
