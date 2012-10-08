@@ -86,7 +86,7 @@ To include the log comments in this output, use the \verb=-C= option:
 
 \subsection{Time Summaries}
 
-Here's a longer example where you can see the use of weekly and montly summaries. Also a few days of annual leave are inserted using the \verb:leave-days: instruction.
+Here's a longer example where you can see the use of weekly and montly summaries. Also a few days of annual leave and sickness are inserted using the \verb:leave-days: and \verb:sick: instructions.
 
 \input{fly-8.in}
 
@@ -98,7 +98,7 @@ Or have both weekly and monthly balances shown.
 
 \input{fly-8b.out}
 
-Maybe you only want to look at one month?
+Maybe you only want to look at one month with daily details? Note the comments that have been associated with the leave and the sick days in the input file show up in the respective daily output lines.
 
 \input{fly-8c.out}
 
@@ -178,13 +178,100 @@ indentation
 
 \subsection{File Syntax}
 
-wp, work-package
+\subsubsection{Source Comments and Persistent Comments}
 
-day, off, leave, sick
+\timeflies\ knows two kinds of comments: \emph{source comments} and \emph{persistent comments}.
 
-block-leave
+\begin{description}
+\item[Source comments] are marked by a hash sign (\verb:#:) and extend from it to the end of the line. \timeflies\ ignores these comments and treats them as if they did not exist.
 
-log comment: ;
+\item[Persistent comments] are marked by a semicolon (\verb:;:) and extend to the end of the line (or a possibly following source comment in that line). A persistent comment is processed and will show up in the generated output. E.g.\ comments on leave or sick days will show up in the time at work output summaries. Comments on activities or work packages can show up in the work package outputs. 
+\end{description}
 
-activity: -
+\subsubsection{Time and Date Formats}
+
+Times and time durations can generally be given in \emph{[h]h:mm} format or in decimals. Examples would be \verb-8:30- or \verb-8.5-. Times use the 24-h-system. So 5:15 p.m.\ would therefore have to be written as either \verb-17:15- or \verb-17.25-.
+
+Dates must generally be written in \emph{yyyy-mm-dd} format.
+
+\subsubsection{Work Packages}
+
+Syntax: \verb:work-package <wpid> [; <comment>]:.
+The keyword \verb:work-package: can be abbreviated as \verb:wp:.
+
+The fully qualified work package id \verb:wpid: is a dot-delimited sequence of simple work package ids (tokens consisting of alphanumeric characters). It resembles a path from the root of the work package hierarchy. In an compound id \emph{a.b} the id \emph{b} appearing directly to the right of \emph{a} means that work package \emph{b} is an immediate sub work package of \emph{a}. Work package hierarchies can therefore be given as sequences of work package definitions.
+
+Alternatively (and more concise) a work package hierarchy can be given as hierarchically indented text (similar to Python indentation rules). In this case full work package ids are not necessary simple ones suffice.
+
+Illustrating this, the follwing example:
+
+\begin{inputfile}
+wp pro; project of some sort
+wp pro.aaa; part aaa
+wp pro.bbb; part bbb
+wp pro.bbb.xxx; detail xxx
+wp pro.bbb.yyy; detail yyy
+wp pro.ccc; part ccc
+\end{inputfile}
+
+is equivalent to:
+
+\begin{inputfile}
+wp pro; project of some sort
+    aaa; part aaa
+    bbb; part bbb
+        xxx; detail xxx
+        yyy; detail yyy
+    ccc; part ccc
+\end{inputfile}
+
+This concise form of work package definition can also be applied partially. So the following is another form, equivalent to the above two:
+
+\begin{inputfile}
+wp pro; project of some sort
+    aaa; part aaa
+    bbb; part bbb
+    ccc; part ccc
+wp pro.bbb
+    xxx; detail xxx
+    yyy; detail yyy
+\end{inputfile}
+
+\subsubsection{Day blocks}
+
+Syntax: \verb:day <date> [<in> <out>]:
+
+A day block starts with a the keyword \verb:day: followed by the day's date and optionally the arrival and leaving times at work. Either both times must be given or none at all. If they are not given, no time at work is assumed for that day. This is used e.g. for leave days or sick days. A day block ends at the next \verb:day: keyword, i.e.\ at the beginning of a new day block.
+
+\subsubsection{Activities}
+
+Syntax: \verb:- <wpid> <time> [; <comment>]:
+
+An \emph{activity} is a period of time spent working on a work package. An activity must appear in a day block. The work package id \verb:<wpid>: must be a valid fully qualified work package id, i.e. a matching work package must have been defined before.
+
+\subsubsection{Time off Work}
+
+Syntax: \verb:off <time>:
+
+Declare times off work in a day block, yet inside the time span of that day.
+ 
+\subsubsection{Sickness}
+
+Syntax: \verb:sick <time> [; <comment>]:
+
+Declare sick time in a day block, yet outside the time span of that day.
+
+\subsubsection{Leave}
+
+Syntax: \verb:leave <time> [; <comment>]:
+
+Declare leave in a day block, yet outside the time span of that day. Use this for leave periods in order of hours.
+
+\subsubsection{Block Leave (Several Days)}
+
+Syntax: \verb:leave-days <first> <last> [; <comment>]:
+
+A block of leave days is used to specify a period of more than one leave days. The leave block is defined by the first and last day of leave taken.
+
 \end{document}
+
