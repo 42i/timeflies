@@ -243,6 +243,11 @@ Syntax: \verb:day <date> [<in> <out>]:
 
 A day block starts with a the keyword \verb:day: followed by the day's date and optionally the arrival and leaving times at work. Either both times must be given or none at all. If they are not given, no time at work is assumed for that day. This is used e.g. for leave days or sick days. A day block ends at the next \verb:day: keyword, i.e.\ at the beginning of a new day block.
 
+% contains instructions
+% instructions can be comma delimited
+% instructions can be annotated by a ; comment
+% multiple instructions in one line -> comment applies to last instruction before it
+
 \subsubsection{Activities}
 
 Syntax: \verb:- <wpid> <time> [; <comment>]:
@@ -251,7 +256,7 @@ An \emph{activity} is a period of time spent working on a work package. An activ
 
 \subsubsection{Time off Work}
 
-Syntax: \verb:off <time>:
+Syntax: \verb:off <time> [; <comment>]:
 
 Declare times off work in a day block, yet inside the time span of that day.
  
@@ -271,7 +276,13 @@ Declare leave in a day block, yet outside the time span of that day. Use this fo
 
 Syntax: \verb:leave-days <first> <last> [; <comment>]:
 
-A block of leave days is used to specify a period of more than one leave days. The leave block is defined by the first and last day of leave taken.
+This is a short form to define an extended period of leave, i.e.\ several days. It is defined by the first and last day of leave taken.
 
+\subsubsection{Public Holidays}
+
+Syntax: \verb:public-holiday [; <comment>]:
+The keyword \verb:public-holiday: can be abbreviated as \verb:phol:.
+
+The current day is marked as a public holiday, i.e. a day where the required time at work is null.
 \end{document}
 
