@@ -124,6 +124,9 @@ class EndToEndTests(TestCase):
     def test_day_comment(self):
         self.doit('-t -C test-day-comment.fly', 'test-day-comment.out')
     
+    def test_leave_holiday(self):
+        self.doit('-t -C test-leave-holiday.fly', 'test-leave-holiday.out')
+    
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()

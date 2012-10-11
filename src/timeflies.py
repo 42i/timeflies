@@ -577,7 +577,8 @@ class Reader:
 
             if not is_weekend(dt):
                 self._new_day([str(dt)])
-                self._currentday.add_leave(8.0, comment)
+                if self._currentday.phol is None:
+                    self._currentday.add_leave(8.0, comment)
 
             d = d + 1
 
@@ -634,6 +635,7 @@ class Reader:
             self._currentday.add_sick(make_time(args[0]), comment)
         elif instr == 'phol' or instr == 'public-holiday':
             self._currentday.set_phol(comment)
+            self._currentday.leave = 0.0
         elif instr == 'leave':
             if len(args) == 1:
                 self._currentday.add_leave(make_time(args[0]), comment)
