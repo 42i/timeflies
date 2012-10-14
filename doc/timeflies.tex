@@ -284,5 +284,50 @@ Syntax: \verb:public-holiday [; <comment>]:.
 The keyword \verb:public-holiday: can be abbreviated as \verb:phol:.
 
 The current day is marked as a public holiday, i.e. a day where the required time at work is null.
+
+\subsubsection{Importing Files}
+
+Syntax: \verb:import <file>:.
+
+The named file is imported. This means the file's content is processed in the same way as if it had appeared in the importing file instead of the import statement.
+
+This allows you to e.g.\ split your daily logs by month or separate work package definitions from daily logs or share work package definitions amongst a group of users while keeping daily logs private.
+
+One single work package definition (a single \verb:work-package: statement in abbreviated hierarchical form using white space indentation) cannot be broken up across input file boundaries. To combine a work package hierarchy from multiple input files each input file must contain at least one complete \verb:work-package: statement each.
+
+Invalid example:
+
+\begin{inputfile}
+# File 1: looks good
+wp pro; project of some sort
+    aaa; part aaa
+    bbb; part bbb
+\end{inputfile}
+
+\begin{inputfile}
+# File 2; bad, does not start with a work-package statement
+        xxx; detail xxx
+        yyy; detail yyy
+    ccc; part ccc
+\end{inputfile}
+
+Correct form:
+
+\begin{inputfile}
+# File 1: same as in above example
+wp pro; project of some sort
+    aaa; part aaa
+    bbb; part bbb
+\end{inputfile}
+
+\begin{inputfile}
+# File 2: correct, starts with a work-package statement
+wp pro
+    bbb
+        xxx; detail xxx
+        yyy; detail yyy
+    ccc; part ccc
+\end{inputfile}
+
 \end{document}
 

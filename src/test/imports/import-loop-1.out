@@ -1,0 +1,9 @@
+imports/import-loop-1c.fly:3: WARNING : file imports/import-loop-1.fly already processed
+imports/import-loop-1b.fly:10: import trace 
+imports/import-loop-1a.fly:5: import trace 
+imports/import-loop-1.fly:1: import trace 
+Bill of materials:
+File: imports/import-loop-1.fly
+File: imports/import-loop-1a.fly
+File: imports/import-loop-1b.fly
+File: imports/import-loop-1c.fly

@@ -23,10 +23,12 @@ _copyright = \
 '''
 
 from datetime import date
+
 import re
 import weakref
 import sys
 import getopt
+import os.path
 
 _outputdest = sys.stdout
 
@@ -434,6 +436,20 @@ class Universe:
     def __init__(self):
         self.days = {}
         self.workpackage_root = WorkPackage("ALL")
+        self.inputfiles = set()
+        self.inputfiles_ordered = []
+        self.currentday = None
+        
+    def add_file(self, reader, file):
+        fullfile = os.path.abspath(file)
+        
+        if fullfile in self.inputfiles:
+            reader._msg('file ' + file + ' already processed', 'WARNING')
+            return False
+        
+        self.inputfiles_ordered.append(file)
+        self.inputfiles.add(fullfile)
+        return True
     
     def get_workpackage(self, pathname):
         return self.workpackage_root.get_node(pathname)
@@ -441,6 +457,18 @@ class Universe:
     def get_chrono_days(self):
         return sorted(self.days.values(), key = lambda day: day.date)
     
+    def bill_of_materials(self, abspaths=False):
+        for file in self.inputfiles_ordered:
+            f = file if not abspaths else os.path.abspath(file) 
+            output('File: ' + f)
+
+    def tidy_up(self):
+        self.currentday = None
+        
+        for day in self.days.values():
+            if day.phol is not None:
+                day.leave = 0.0
+        
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
         self.indent = indent
@@ -448,18 +476,22 @@ class WorkPackageLineBookmark:
         self.parent = parent
 
 class Reader:
-    def __init__(self, uni):
+    def __init__(self, uni, parent=None):
         self._universe = uni
         self._inputfile = None
         self._linecount = 0
-        self._currentday = None
+        self._universe.currentday = None
+        self._parent = parent
 
     def read(self, inputfile):
+        if not self._universe.add_file(self._parent, inputfile):
+            return
+       
         self._inputfile = inputfile
-        f = open(inputfile)
         self._linecount = 0
-        self._currentday = None
         self._reset_workpackage_stack()
+
+        f = open(inputfile)
         
         for line in f:
             self._linecount += 1
@@ -490,12 +522,33 @@ class Reader:
                         self._msg('WARNING: TO DO item found beyond the beginning of the file')
                     else:
                         self._msg('TO DO: ' + line[5:].strip())
+                elif line.startswith('import '):
+                    self._import_file(line[7:].strip())
                 elif line.strip() != '':
                     self._process_instructions(line)
         f.close()
         
-    def _msg(self, text):
-        output(self._inputfile + ':' + str(self._linecount) + ': ERROR : ' + text)
+        if self._parent is None: # top level read finished
+            self._universe.tidy_up()
+    
+    def _import_file(self, file):
+        sub_reader = Reader(self._universe, self)
+        
+        if os.path.isabs(file):
+            f = file
+        else:
+            folder = os.path.dirname(self._inputfile)
+            f = os.path.join(folder, file)
+        
+        sub_reader.read(f)
+
+    def _msg(self, text, kind="ERROR"):
+        output(self._inputfile + ':' + str(self._linecount) + ': ' + kind + ' : ' + text)
+        parent = self._parent
+        
+        while parent is not None:
+            output(parent._inputfile + ':' + str(parent._linecount) + ': import trace ')
+            parent = parent._parent
         
     def _reset_workpackage_stack(self):
         self._workpackage_stack = WorkPackageLineBookmark(self._universe.workpackage_root, -1)
@@ -549,10 +602,10 @@ class Reader:
                              + ' on day ' + str(self._currentday.date))
                 else:
                     activity.attach_to(wp)
-                    activity.attach_to(self._currentday)
+                    activity.attach_to(self._universe.currentday)
         
     def _process_comment(self, comment):
-        self._currentday.add_comment(comment)
+        self._universe.currentday.add_comment(comment)
 
     def _process_instructions(self, line):
         # Get the comment part of the line, if there is any
@@ -577,8 +630,7 @@ class Reader:
 
             if not is_weekend(dt):
                 self._new_day([str(dt)])
-                if self._currentday.phol is None:
-                    self._currentday.add_leave(8.0, comment)
+                self._universe.currentday.add_leave(8.0, comment)
 
             d = d + 1
 
@@ -590,16 +642,16 @@ class Reader:
         datestring = args[0]
         
         if datestring in self._universe.days:
-            self._currentday = self._universe.days[datestring]
+            self._universe.currentday = self._universe.days[datestring]
         else:
-            self._currentday = Day(datestring)
-            self._universe.days[datestring] = self._currentday
+            self._universe.currentday = Day(datestring)
+            self._universe.days[datestring] = self._universe.currentday
 
         if largs == 3:
             try:
                 start = args[1]
                 end = args[2]
-                self._currentday.set_hours(make_time(start), make_time(end))
+                self._universe.currentday.set_hours(make_time(start), make_time(end))
             except Exception as exc:
                 self._msg(str(exc))
                 
@@ -617,28 +669,29 @@ class Reader:
             self._add_leave(args[0], args[1], comment)
             return
         
-        if self._currentday is None:
+        currday = self._universe.currentday
+        
+        if currday is None:
             self._msg('No current day for instruction <' + argliststring + '>.')
             return
         
         if instr == 'reset':
-            self._currentday.add_directive(Directive().set_reset())
+            currday.add_directive(Directive().set_reset())
         elif instr == 'add-leave':
-            self._currentday.add_directive(Directive().set_leave(make_time(args[0])))
+            currday.add_directive(Directive().set_leave(make_time(args[0])))
         elif instr == 'balance-must':
-            self._currentday.add_directive(Directive().set_must(make_time(args[0])))
+            currday.add_directive(Directive().set_must(make_time(args[0])))
         elif instr == 'balance-have':
-            self._currentday.add_directive(Directive().set_have(make_time(args[0])))
+            currday.add_directive(Directive().set_have(make_time(args[0])))
         elif instr == 'off':
-            self._currentday.add_off(make_time(args[0]), comment)
+            currday.add_off(make_time(args[0]), comment)
         elif instr == 'sick':
-            self._currentday.add_sick(make_time(args[0]), comment)
+            currday.add_sick(make_time(args[0]), comment)
         elif instr == 'phol' or instr == 'public-holiday':
-            self._currentday.set_phol(comment)
-            self._currentday.leave = 0.0
+            currday.set_phol(comment)
         elif instr == 'leave':
             if len(args) == 1:
-                self._currentday.add_leave(make_time(args[0]), comment)
+                currday.add_leave(make_time(args[0]), comment)
             else:
                 self._msg('Weird leave spec <' + argliststring + '>.')
         else:
@@ -783,12 +836,12 @@ class Application:
     
     def interpret_cmdline(self, argv):
         try:
-            opts, self._args = getopt.getopt(argv[1:], 'hf:tcwsaCi:',
+            opts, self._args = getopt.getopt(argv[1:], 'hf:tcwsaCi:b',
                                        ['help', 'version', 'copyright', 'filter=',
                                         'tally-days', 'check-days',
                                         'work-packages', 'show-work-packages',
                                         'activities', 'comments',
-                                        'indent='])
+                                        'indent=', 'bill-of-materials'])
     
             for opt, val in opts:
                 if opt == '-h' or opt == '--help':
@@ -807,6 +860,8 @@ class Application:
                     self._jobs.append('work-packages')
                 elif opt == '-s' or opt == '--show-work-packages':
                     self._jobs.append('show-work-packages')
+                elif opt == '-b' or opt == '--bill-of-materials':
+                    self._jobs.append('bill-of-materials')
                 elif opt == '-a' or opt == '--activities':
                     self._dumpopts['activities'] = True
                 elif opt == '-C' or opt == '--comments':
@@ -869,6 +924,9 @@ class Application:
             elif j == 'show-work-packages':
                 output('Work package breakdown:')
                 self._universe.workpackage_root.dump(self._dumpopts)
+            elif j == 'bill-of-materials':
+                output('Bill of materials:')
+                self._universe.bill_of_materials()
             else:
                 output('*** Unknown job: ' + j)
 
@@ -892,6 +950,8 @@ class Application:
       -h, --help : show this info
       --version : show TimeFlies' version info
       --copyright : show copyright info
+      -b, --bill-of-materials : list all input files processed; can be used
+          to get an overview of all imported files
       -f, --filter <filter> : a filter to select a processing time range;
           YYYY-MM selects a month; YYYY-MM-DD..YYYY-MM-DD selects a time range
           by giving the first and last day; 'all' to process all days;

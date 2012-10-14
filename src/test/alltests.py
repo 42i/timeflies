@@ -127,6 +127,21 @@ class EndToEndTests(TestCase):
     def test_leave_holiday(self):
         self.doit('-t -C test-leave-holiday.fly', 'test-leave-holiday.out')
     
+    def test_simple_self_import(self):
+        self.doit('-t -C imports/self-import-1.fly', 'imports/self-import-1.out')
+        
+    def test_import_loop(self):
+        self.doit('-b imports/import-loop-1.fly', 'imports/import-loop-1.out')
+        
+    def test_import_split_wp(self):
+        self.doit('-s imports/wp-import-2.fly', 'imports/wp-import-2.out')
+        
+    def test_import_a_file(self):
+        self.doit('-t -w -C imports/days-import-1.fly', 'imports/days-import-1.out')
+        
+    def test_import_a_file_2(self):
+        self.doit('-t -w -C imports/sub/import-path-up-1.fly', 'imports/sub/import-path-up-1.out')
+        
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
