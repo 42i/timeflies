@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-_version = '0.3'
+_version = '0.4'
 
 _copyright = \
 '''
