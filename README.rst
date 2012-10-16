@@ -134,51 +134,57 @@ And you worked in total::
 
     $ timeflies.py -t time.fly 
     Time at work overview (all):
-    2012-07-12, Thu:    9.00 worked, ----.-- leave, ----.-- sick
-    2012-07-13, Fri:    3.50 worked, ----.-- leave, ----.-- sick
-       week 2012-28:   12.50 worked, ----.-- leave, ----.-- sick
-    2012-07-16, Mon: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-17, Tue: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-18, Wed: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-19, Thu: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-20, Fri: ----.-- worked,    8.00 leave, ----.-- sick
-       week 2012-29: ----.-- worked,   40.00 leave, ----.-- sick
-    2012-07-23, Mon: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-24, Tue: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-25, Wed: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-26, Thu: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-27, Fri: ----.-- worked,    8.00 leave, ----.-- sick
-       week 2012-30: ----.-- worked,   40.00 leave, ----.-- sick
-    2012-07-30, Mon: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-07-31, Tue: ----.-- worked,    8.00 leave, ----.-- sick
-      month 2012-07:   12.50 worked,   96.00 leave, ----.-- sick
-    2012-08-01, Wed: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-08-02, Thu: ----.-- worked,    8.00 leave, ----.-- sick
-    2012-08-03, Fri: ----.-- worked,    8.00 leave, ----.-- sick
-       week 2012-31: ----.-- worked,   40.00 leave, ----.-- sick
-    2012-08-06, Mon:    5.25 worked, ----.-- leave, ----.-- sick
-    2012-08-07, Tue:   11.00 worked, ----.-- leave, ----.-- sick
-       week 2012-32:   16.25 worked, ----.-- leave, ----.-- sick
-      month 2012-08:   16.25 worked,   24.00 leave, ----.-- sick
-              total:   28.75 worked,  120.00 leave, ----.-- sick
+         when        worked   leave    sick
+    2012-07-12 Thu:    9.00 ----.-- ----.--
+    2012-07-13 Fri:    3.50 ----.-- ----.--
+      week 2012-28:   12.50 ----.-- ----.--
+    2012-07-16 Mon: ----.--    8.00 ----.--
+    2012-07-17 Tue: ----.--    8.00 ----.--
+    2012-07-18 Wed: ----.--    8.00 ----.--
+    2012-07-19 Thu: ----.--    8.00 ----.--
+    2012-07-20 Fri: ----.--    8.00 ----.--
+      week 2012-29: ----.--   40.00 ----.--
+    2012-07-23 Mon: ----.--    8.00 ----.--
+    2012-07-24 Tue: ----.--    8.00 ----.--
+    2012-07-25 Wed: ----.--    8.00 ----.--
+    2012-07-26 Thu: ----.--    8.00 ----.--
+    2012-07-27 Fri: ----.--    8.00 ----.--
+      week 2012-30: ----.--   40.00 ----.--
+    2012-07-30 Mon: ----.--    8.00 ----.--
+    2012-07-31 Tue: ----.--    8.00 ----.--
+     month 2012-07:   12.50   96.00 ----.--
+    2012-08-01 Wed: ----.--    8.00 ----.--
+    2012-08-02 Thu: ----.--    8.00 ----.--
+    2012-08-03 Fri: ----.--    8.00 ----.--
+      week 2012-31: ----.--   40.00 ----.--
+    2012-08-06 Mon:    5.25 ----.-- ----.--
+    2012-08-07 Tue:   11.00 ----.-- ----.--
+      week 2012-32:   16.25 ----.-- ----.--
+     month 2012-08:   16.25   24.00 ----.--
+             total:   28.75  120.00 ----.--
+         when        worked   leave    sick
 
 The same filtered by month only::
 
     $ timeflies.py -t -f month time.fly 
     Time at work overview (month):
-      month 2012-07:   12.50 worked,   96.00 leave, ----.-- sick
-      month 2012-08:   16.25 worked,   24.00 leave, ----.-- sick
-              total:   28.75 worked,  120.00 leave, ----.-- sick
+         when        worked   leave    sick
+     month 2012-07:   12.50   96.00 ----.--
+     month 2012-08:   16.25   24.00 ----.--
+             total:   28.75  120.00 ----.--
+         when        worked   leave    sick
 
 Or filtered by week::
 
     $ timeflies.py -t -f week time.fly 
     Time at work overview (week):
-       week 2012-28:   12.50 worked, ----.-- leave, ----.-- sick
-       week 2012-29: ----.-- worked,   40.00 leave, ----.-- sick
-       week 2012-30: ----.-- worked,   40.00 leave, ----.-- sick
-       week 2012-31: ----.-- worked,   40.00 leave, ----.-- sick
-       week 2012-32:   16.25 worked, ----.-- leave, ----.-- sick
-              total:   28.75 worked,  120.00 leave, ----.-- sick
+         when        worked   leave    sick
+      week 2012-28:   12.50 ----.-- ----.--
+      week 2012-29: ----.--   40.00 ----.--
+      week 2012-30: ----.--   40.00 ----.--
+      week 2012-31: ----.--   40.00 ----.--
+      week 2012-32:   16.25 ----.-- ----.--
+             total:   28.75  120.00 ----.--
+         when        worked   leave    sick
 
 

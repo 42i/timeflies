@@ -1,4 +1,6 @@
 v 0.4
+2012-10-14 : imports
+2012-10-06 : public holidays
 2012-10-06 : comments for leave and sickness
 2012-10-06 : changed time at work overview output (heading line with worked, leave, sickness); added leave and sickness comments
 
