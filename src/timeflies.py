@@ -436,20 +436,11 @@ class Universe:
     def __init__(self):
         self.days = {}
         self.workpackage_root = WorkPackage("ALL")
-        self.inputfiles = set()
-        self.inputfiles_ordered = []
+        self.inputfiles = []
         self.currentday = None
         
-    def add_file(self, reader, file):
-        fullfile = os.path.abspath(file)
-        
-        if fullfile in self.inputfiles:
-            reader._msg('file ' + file + ' already processed', 'WARNING')
-            return False
-        
-        self.inputfiles_ordered.append(file)
-        self.inputfiles.add(fullfile)
-        return True
+    def add_file(self, file):
+        self.inputfiles.append(file)
     
     def get_workpackage(self, pathname):
         return self.workpackage_root.get_node(pathname)
@@ -458,7 +449,7 @@ class Universe:
         return sorted(self.days.values(), key = lambda day: day.date)
     
     def bill_of_materials(self, abspaths=False):
-        for file in self.inputfiles_ordered:
+        for file in self.inputfiles:
             f = file if not abspaths else os.path.abspath(file) 
             output('File: ' + f)
 
@@ -478,19 +469,20 @@ class WorkPackageLineBookmark:
 class Reader:
     def __init__(self, uni, parent=None):
         self._universe = uni
-        self._inputfile = None
-        self._linecount = 0
-        self._universe.currentday = None
         self._parent = parent
 
     def read(self, inputfile):
-        if not self._universe.add_file(self._parent, inputfile):
-            return
-       
+        self._absinputfile = os.path.abspath(inputfile)
         self._inputfile = inputfile
         self._linecount = 0
         self._reset_workpackage_stack()
+        
+        if self._have_import_loop():
+            self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
+            return
 
+        self._universe.add_file(inputfile)
+        
         f = open(inputfile)
         
         for line in f:
@@ -525,6 +517,16 @@ class Reader:
         
         if self._parent is None: # top level read finished
             self._universe.tidy_up()
+    
+    def _have_import_loop(self):
+        p = self._parent
+        
+        while p is not None:
+            if p._absinputfile == self._absinputfile:
+                return True
+            p = p._parent
+            
+        return False
     
     def _import_file(self, file):
         sub_reader = Reader(self._universe, self)
