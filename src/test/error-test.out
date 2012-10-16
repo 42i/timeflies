@@ -1,0 +1,12 @@
+error-test.fly:3: ERROR : no current day for instruction "off 1".
+error-test.fly:5: ERROR : invalid activity work package "a.b".
+error-test.fly:6: ERROR : an activity must have a work package and a duration.
+error-test.fly:7: ERROR : invalid activity duration "r".
+error-test.fly:8: ERROR : weird instruction "8".
+error-test.fly:8: ERROR : weird instruction "10".
+error-test.fly:9: ERROR : weird instruction "8 10".
+error-test.fly:10: ERROR : bad end time argument "aa" in day spec.
+error-test.fly:11: ERROR : bad start time argument "bb" in day spec.
+error-test.fly:12: ERROR : unexpected day argument list: "2012-09-06 8".
+error-test.fly:12: ERROR : weird instruction "10".
+error-test.fly:13: ERROR : unexpected day argument list: "2012-09-07 8 10 12".

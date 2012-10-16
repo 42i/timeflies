@@ -517,11 +517,6 @@ class Reader:
                     self._process_activity(line[2:].strip())
                 elif line.startswith('; '):
                     self._process_comment(line[2:].strip())
-                elif line.startswith('todo '):
-                    if self._currentday is not None:
-                        self._msg('WARNING: TO DO item found beyond the beginning of the file')
-                    else:
-                        self._msg('TO DO: ' + line[5:].strip())
                 elif line.startswith('import '):
                     self._import_file(line[7:].strip())
                 elif line.strip() != '':
@@ -542,7 +537,7 @@ class Reader:
         
         sub_reader.read(f)
 
-    def _msg(self, text, kind="ERROR"):
+    def _msg(self, text, kind='ERROR'):
         output(self._inputfile + ':' + str(self._linecount) + ': ' + kind + ' : ' + text)
         parent = self._parent
         
@@ -593,13 +588,12 @@ class Reader:
             duration_float = make_time(duration)
             
             if duration_float is None:
-                self._msg('invalid activity duration ' + duration + '.')
+                self._msg('invalid activity duration "' + duration + '".')
             else:
                 activity = Activity(duration_float, desc)
                 wp = self._universe.get_workpackage(workpackage_name)
                 if wp is None:
-                    self._msg('invalid activity work package ' + workpackage_name
-                             + ' on day ' + str(self._currentday.date))
+                    self._msg('invalid activity work package "' + workpackage_name + '".')
                 else:
                     activity.attach_to(wp)
                     activity.attach_to(self._universe.currentday)
@@ -637,7 +631,7 @@ class Reader:
     def _new_day(self, args):
         largs = len(args)
         if largs != 1 and largs != 3:
-            self._msg('weird arguments for day record: ' + ' '.join(args))
+            self._msg('unexpected day argument list: "' + ' '.join(args) + '".')
             
         datestring = args[0]
         
@@ -648,13 +642,15 @@ class Reader:
             self._universe.days[datestring] = self._universe.currentday
 
         if largs == 3:
-            try:
-                start = args[1]
-                end = args[2]
-                self._universe.currentday.set_hours(make_time(start), make_time(end))
-            except Exception as exc:
-                self._msg(str(exc))
+            start = make_time(args[1])
+            end = make_time(args[2])
+
+            if start is None:
+                self._msg('bad start time argument "' + args[1] + '" in day spec.')
+            if end is None:
+                self._msg('bad end time argument "' + args[2] + '" in day spec.')
                 
+            self._universe.currentday.set_hours(start, end)                
 
     def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
@@ -672,7 +668,7 @@ class Reader:
         currday = self._universe.currentday
         
         if currday is None:
-            self._msg('No current day for instruction <' + argliststring + '>.')
+            self._msg('no current day for instruction "' + argliststring + '".')
             return
         
         if instr == 'reset':
@@ -690,12 +686,9 @@ class Reader:
         elif instr == 'phol' or instr == 'public-holiday':
             currday.set_phol(comment)
         elif instr == 'leave':
-            if len(args) == 1:
-                currday.add_leave(make_time(args[0]), comment)
-            else:
-                self._msg('Weird leave spec <' + argliststring + '>.')
+            currday.add_leave(make_time(args[0]), comment)
         else:
-            self._msg('Weird instruction <' + argliststring + '>.')
+            self._msg('weird instruction "' + argliststring + '".')
 
 class Status:
     def __init__(self, name):
