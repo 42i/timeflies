@@ -460,7 +460,7 @@ class Universe:
         self.currentday = None
 
         if self.musthours is None:
-            self.musthours = [ 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0 ]     
+            self.musthours = [8.0] * 5 + [0.0] * 2     
    
         must_hours = self.musthours
             
@@ -668,7 +668,7 @@ class Reader:
             self._universe.currentday.set_hours(start, end)                
 
     def _process_must_hours(self, args):
-        must_hours = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        must_hours = [0.0] * 7
         
         arglen = len(args)
         
