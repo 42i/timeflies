@@ -1,10 +1,10 @@
 imports/self-import-1.fly:1: WARNING : file imports/self-import-1.fly already processed
 Time at work overview (all):
-     when        worked   leave    sick
-2012-01-03 Tue:    4.00 ----.-- ----.--
+     when        worked   leave    sick    must
+2012-01-03 Tue:    4.00 ----.-- ----.--    8.00
               ; aaa 2.5
               ; bbb 1.5
-  week 2012-01:    4.00 ----.-- ----.--
- month 2012-01:    4.00 ----.-- ----.--
-         total:    4.00 ----.-- ----.--
-     when        worked   leave    sick
+  week 2012-01:    4.00 ----.-- ----.--    8.00
+ month 2012-01:    4.00 ----.-- ----.--    8.00
+         total:    4.00 ----.-- ----.--    8.00
+     when        worked   leave    sick    must

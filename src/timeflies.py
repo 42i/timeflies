@@ -63,10 +63,12 @@ def make_time(tstr):
     else:
         return None
 
+day_map = { 'mon':0, 'tue':1, 'wed':2, 'thu':3, 'fri':4, 'sat':5, 'sun':6 }
+
 def is_weekend(day):
     '''Return True if the given date is a Saturday or a Sunday,
     False otherwise.'''
-    return day.isoweekday() == 6 or day.isoweekday() == 7
+    return day.weekday() == 5 or day.weekday() == 6
 
 def format_floatval(val):
     if val == 0.0:
@@ -75,7 +77,7 @@ def format_floatval(val):
         return '{0:7.2f}'.format(val)
 
 def dump_day_header():
-    output('{0:^15s} {1:>7s} {2:>7s} {3:>7s}'.format('when', 'worked', 'leave', 'sick'))
+    output('{0:^15s} {1:>7s} {2:>7s} {3:>7s} {4:>7s}'.format('when', 'worked', 'leave', 'sick', 'must'))
 
 class AllFilter:
     def passes(self, day):
@@ -329,12 +331,14 @@ class Day:
             self.date = dt
         else:
             self.date = None
+        self.musthours = None
         self.directives = None
         self.start = None
         self.stop = None
         self.off = 0.0
         self.sick = 0.0
         self.leave = 0.0
+        self.required = 0.0 if is_weekend(self.date) else 8.0
         self.phol = None
         self.comments = None
         self.activities = None
@@ -385,10 +389,7 @@ class Day:
         return at_work - get_value(self.off)
     
     def calc_required(self):
-        if self.phol is not None or is_weekend(self.date):
-            return 0.0
-        else:
-            return 8.0
+        return 0.0 if self.phol else self.required
         
     def dump(self, options):
         worked = self.calc_worked()
@@ -401,7 +402,8 @@ class Day:
         output(self.date.strftime('%Y-%m-%d %a: ') + \
               format_floatval(worked) + ' ' +\
               format_floatval(get_value(self.leave)) + ' ' +\
-              format_floatval(get_value(self.sick)) + cmnt[1:])
+              format_floatval(get_value(self.sick)) + ' ' +\
+              format_floatval(self.calc_required()) + cmnt[1:])
         
         if 'comments' in options and self.comments is not None:
             prefix = ' ' * 14 + '; '
@@ -438,6 +440,7 @@ class Universe:
         self.workpackage_root = WorkPackage("ALL")
         self.inputfiles = []
         self.currentday = None
+        self.musthours = None
         
     def add_file(self, file):
         self.inputfiles.append(file)
@@ -455,10 +458,20 @@ class Universe:
 
     def tidy_up(self):
         self.currentday = None
-        
-        for day in self.days.values():
+
+        if self.musthours is None:
+            self.musthours = [ 8.0, 8.0, 8.0, 8.0, 8.0, 0.0, 0.0 ]     
+   
+        must_hours = self.musthours
+            
+        for day in self.get_chrono_days():
+            if day.musthours is not None:
+                must_hours = day.musthours
+            
             if day.phol is not None:
                 day.leave = 0.0
+            
+            day.required = must_hours[day.date.weekday()]
         
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
@@ -654,6 +667,32 @@ class Reader:
                 
             self._universe.currentday.set_hours(start, end)                
 
+    def _process_must_hours(self, args):
+        must_hours = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        
+        arglen = len(args)
+        
+        if arglen % 2 != 0:
+            self._msg('malformed must-hours argument list "' + " ".join(args) + '".')
+        else:
+            arglen = int(arglen / 2)
+            for i in range(0, arglen):
+                day = args[i * 2]
+                hours = args[i * 2 + 1]
+                if not day in day_map:
+                    self._msg('unknown day "' + day + '".')
+                else:
+                    hrs = make_time(hours)
+                    if hrs is None:
+                        self._msg('bad time argument "' + hours + '" for day "' + day + '".')
+                    else:
+                        must_hours[day_map[day]] = make_time(hours)
+    
+        if self._universe.currentday is None:
+            self._universe.musthours = must_hours
+        else:
+            self._universe.currentday.must_hours = must_hours
+    
     def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
         instr = arglist[0]
@@ -667,6 +706,10 @@ class Reader:
             self._add_leave(args[0], args[1], comment)
             return
         
+        if instr == 'must-hours':
+            self._process_must_hours(args)
+            return
+
         currday = self._universe.currentday
         
         if currday is None:
@@ -744,7 +787,8 @@ class Status:
         output('{0:>14s}: '.format(prefix) +\
               format_floatval(self._workedhours) + ' ' +\
               format_floatval(self._leavetakenhours) + ' ' +\
-              format_floatval(self._sickhours))
+              format_floatval(self._sickhours) + ' ' +\
+              format_floatval(self._musthours))
     
 class Statistics:
     def __init__(self, universe):
