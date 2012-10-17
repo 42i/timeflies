@@ -1,3 +1,6 @@
+v 0.5
+2012-10-17 : must-hours
+
 v 0.4
 2012-10-14 : imports
 2012-10-06 : public holidays
