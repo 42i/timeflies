@@ -774,8 +774,8 @@ class Statistics:
                 allocated = d.calc_activity()
                 delta = allocated - worked
                 if delta != 0.0:
-                    output('{0:s} : worked = {1:5.2f}, allocated = {2:5.2f}, delta = {3:5.2f}'
-                          .format(d.date.strftime('%Y-%m-%d, %a'), worked, allocated, delta))
+                    output('{0:s}: worked {1:5.2f}, allocated {2:5.2f}, delta {3:5.2f}'
+                          .format(d.date.strftime('%Y-%m-%d %a'), worked, allocated, delta))
         
     def calc_balance(self, options):
         dayfilter = options['time']

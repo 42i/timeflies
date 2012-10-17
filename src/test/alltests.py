@@ -145,6 +145,9 @@ class EndToEndTests(TestCase):
     def test_errors_in_file(self):
         self.doit('error-test.fly', 'error-test.out')
         
+    def test_check_days(self):
+        self.doit('-c check-days-test.fly', 'check-days-test.out')
+        
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
