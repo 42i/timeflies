@@ -10,3 +10,6 @@ error-test.fly:11: ERROR : bad start time argument "bb" in day spec.
 error-test.fly:12: ERROR : unexpected day argument list: "2012-09-06 8".
 error-test.fly:12: ERROR : weird instruction "10".
 error-test.fly:13: ERROR : unexpected day argument list: "2012-09-07 8 10 12".
+error-test.fly:14: ERROR : invalid must-hours argument list "mon 4 5".
+error-test.fly:15: ERROR : unknown day "MON".
+error-test.fly:16: ERROR : bad time argument "gogo" for day "mon".

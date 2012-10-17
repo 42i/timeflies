@@ -11,3 +11,6 @@ day 2012-09-04 10 aa
 day 2012-09-05 bb 12
 day 2012-09-06 8, 10
 day 2012-09-07 8 10 12
+must-hours mon 4 5
+must-hours MON 5
+must-hours mon gogo

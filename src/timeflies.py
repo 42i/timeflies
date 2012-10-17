@@ -673,7 +673,7 @@ class Reader:
         arglen = len(args)
         
         if arglen % 2 != 0:
-            self._msg('malformed must-hours argument list "' + " ".join(args) + '".')
+            self._msg('invalid must-hours argument list "' + " ".join(args) + '".')
         else:
             arglen = int(arglen / 2)
             for i in range(0, arglen):
