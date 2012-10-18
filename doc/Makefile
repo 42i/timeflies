@@ -8,12 +8,15 @@ EXAMPLES = fly-1.in fly-2.in fly-3.in fly-4.in \
 show : timeflies.pdf
 	evince $<
 
-timeflies.pdf : timeflies.tex $(EXAMPLES)
+timeflies.pdf : timeflies.tex $(EXAMPLES) version.txt
 	xelatex $^ && xelatex $^
 
 clean :
-	rm -f $(EXAMPLES) *~ timeflies.log timeflies.aux timeflies.toc
-	
+	rm -f $(EXAMPLES) *~ timeflies.log timeflies.aux timeflies.toc version.txt
+
+version.txt : ../src/timeflies.py
+	$< --version > $@
+
 fly-%.in: ex-%/work-log.fly
 	./wrap-input.py $< > $@
 
