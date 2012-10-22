@@ -77,7 +77,7 @@ def format_floatval(val):
         return '{0:7.2f}'.format(val)
 
 def dump_day_header():
-    output('{0:^15s} {1:>7s} {2:>7s} {3:>7s} {4:>7s}'.format('when', 'worked', 'leave', 'sick', 'must'))
+    output('{0:^15s} {1:>7s} {2:>7s} {3:>7s} {4:>7s}'.format('when', 'worked', 'leave', 'sick', 'balance'))
 
 class AllFilter:
     def passes(self, day):
@@ -381,7 +381,7 @@ class Day:
                 totals += a.duration
         return totals
         
-    def calc_balance(self):
+    def calc_have(self):
         return self.calc_worked() + get_value(self.sick) + get_value(self.leave)
 
     def calc_worked(self):
@@ -390,7 +390,10 @@ class Day:
     
     def calc_required(self):
         return 0.0 if self.phol else self.required
-        
+
+    def calc_balance(self):
+        return self.calc_have() - self.calc_required()
+                
     def dump(self, options):
         worked = self.calc_worked()
         cmnt = ''
@@ -403,7 +406,7 @@ class Day:
               format_floatval(worked) + ' ' +\
               format_floatval(get_value(self.leave)) + ' ' +\
               format_floatval(get_value(self.sick)) + ' ' +\
-              format_floatval(self.calc_required()) + cmnt[1:])
+              format_floatval(self.calc_balance()) + cmnt[1:])
         
         if 'comments' in options and self.comments is not None:
             prefix = ' ' * 14 + '; '
@@ -670,15 +673,12 @@ class Reader:
     def _process_must_hours(self, args):
         must_hours = [0.0] * 7
         
-        arglen = len(args)
-        
-        if arglen % 2 != 0:
-            self._msg('invalid must-hours argument list "' + " ".join(args) + '".')
-        else:
-            arglen = int(arglen / 2)
-            for i in range(0, arglen):
-                day = args[i * 2]
-                hours = args[i * 2 + 1]
+        for arg in args:
+            day, equals, hours = arg.partition('=')
+            
+            if equals != '=':
+                self._msg('bad must-hours argument "' + arg + '".')
+            else:
                 if not day in day_map:
                     self._msg('unknown day "' + day + '".')
                 else:
@@ -742,7 +742,7 @@ class Status:
 
     def reset(self):
         self._musthours = 0
-        self._havehours = 0
+        self._balancehours = 0
         self._leavebalancehours = 0
         self._leavetakenhours = 0
         self._sickhours = 0
@@ -761,7 +761,7 @@ class Status:
                 self._process_directive(di)
 
         self._musthours += day.calc_required()
-        self._havehours += day.calc_balance()
+        self._balancehours += day.calc_balance()
         self._workedhours += day.calc_worked()
         self._sickhours += get_value(day.sick)
         self._leavebalancehours -= get_value(day.leave)
@@ -788,7 +788,7 @@ class Status:
               format_floatval(self._workedhours) + ' ' +\
               format_floatval(self._leavetakenhours) + ' ' +\
               format_floatval(self._sickhours) + ' ' +\
-              format_floatval(self._musthours))
+              format_floatval(self._balancehours))
     
 class Statistics:
     def __init__(self, universe):

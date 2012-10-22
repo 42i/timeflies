@@ -7,12 +7,12 @@ ALL
         ccc
             cccc
 Time at work overview (2012-07):
-     when        worked   leave    sick    must
-2012-07-18 Wed:    9.00 ----.-- ----.--    8.00
-  week 2012-29:    9.00 ----.-- ----.--    8.00
- month 2012-07:    9.00 ----.-- ----.--    8.00
-         total:    9.00 ----.-- ----.--    8.00
-     when        worked   leave    sick    must
+     when        worked   leave    sick balance
+2012-07-18 Wed:    9.00 ----.-- ----.--    1.00
+  week 2012-29:    9.00 ----.-- ----.--    1.00
+ month 2012-07:    9.00 ----.-- ----.--    1.00
+         total:    9.00 ----.-- ----.--    1.00
+     when        worked   leave    sick balance
 Work package summary (2012-07):
    3.50 : ALL
        3.50 : aaa

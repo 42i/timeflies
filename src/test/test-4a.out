@@ -1,7 +1,7 @@
 Time at work overview (week):
-     when        worked   leave    sick    must
-  week 2012-35:   42.25 ----.-- ----.--   40.00
-  week 2012-36:   43.25 ----.-- ----.--   40.00
-  week 2012-37:   17.50 ----.-- ----.--   16.00
-         total:  103.00 ----.-- ----.--   96.00
-     when        worked   leave    sick    must
+     when        worked   leave    sick balance
+  week 2012-35:   42.25 ----.-- ----.--    2.25
+  week 2012-36:   43.25 ----.-- ----.--    3.25
+  week 2012-37:   17.50 ----.-- ----.--    1.50
+         total:  103.00 ----.-- ----.--    7.00
+     when        worked   leave    sick balance

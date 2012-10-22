@@ -66,13 +66,13 @@ class DayTests(TestCase):
         d = Day('2012-08-05')
         self.assertEqual(d.date, date(2012, 8, 5))
 
-    def test_simpleBalance(self):
+    def test_simpleHave(self):
         d = Day('2012-08-05')
-        self.assertEqual(d.calc_balance(), 0)
+        self.assertEqual(d.calc_have(), 0)
         d.set_hours(8, 17)
-        self.assertEqual(d.calc_balance(), 9)
+        self.assertEqual(d.calc_have(), 9)
         d.add_off(1)
-        self.assertEqual(d.calc_balance(), 8)
+        self.assertEqual(d.calc_have(), 8)
 
 class SimpleProject(TestCase):
     def test_read(self):

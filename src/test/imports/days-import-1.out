@@ -1,10 +1,10 @@
 Time at work overview (all):
-     when        worked   leave    sick    must
-2012-01-03 Tue:    4.00 ----.-- ----.--    8.00
-  week 2012-01:    4.00 ----.-- ----.--    8.00
- month 2012-01:    4.00 ----.-- ----.--    8.00
-         total:    4.00 ----.-- ----.--    8.00
-     when        worked   leave    sick    must
+     when        worked   leave    sick balance
+2012-01-03 Tue:    4.00 ----.-- ----.--   -4.00
+  week 2012-01:    4.00 ----.-- ----.--   -4.00
+ month 2012-01:    4.00 ----.-- ----.--   -4.00
+         total:    4.00 ----.-- ----.--   -4.00
+     when        worked   leave    sick balance
 Work package summary (all):
    4.00 : ALL
        2.50 : aaa
