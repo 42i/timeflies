@@ -127,6 +127,9 @@ class EndToEndTests(TestCase):
     def test_leave_holiday(self):
         self.doit('-t -C test-leave-holiday.fly', 'test-leave-holiday.out')
     
+    def test_must_hours(self):
+        self.doit('-t test-must-hours.fly', 'test-must-hours.out')
+    
     def test_simple_self_import(self):
         self.doit('-t -C imports/self-import-1.fly', 'imports/self-import-1.out')
         

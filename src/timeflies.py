@@ -309,6 +309,15 @@ def add_value(original, newVal, newDesc):
     else:
         return v
 
+def set_value(original, val, comment=None):
+    if comment is not None:
+        return (val, comment)
+    else:
+        if isinstance(original, tuple):
+            return (val, original[1])
+        else:
+            return val
+
 def get_value(value):
     if isinstance(value, tuple):
         return value[0]
@@ -363,7 +372,10 @@ class Day:
         self.phol = 'public holiday' if comment is None else comment 
 
     def add_leave(self, leave, comment=None):
-        self.leave = add_value(self.leave, leave, comment)
+        if isinstance(leave, bool):
+            self.leave = set_value(self.leave, True, comment)
+        else:
+            self.leave = add_value(self.leave, leave, comment)
 
     def add_sick(self, sick, comment=None):
         self.sick = add_value(self.sick, sick, comment)
@@ -471,11 +483,13 @@ class Universe:
             if day.musthours is not None:
                 must_hours = day.musthours
             
+            day.required = must_hours[day.date.weekday()]
+
             if day.phol is not None:
                 day.leave = 0.0
-            
-            day.required = must_hours[day.date.weekday()]
-        
+            elif isinstance(get_value(day.leave), bool):
+                day.leave = set_value(day.leave, day.required)
+                
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
         self.indent = indent
@@ -642,7 +656,7 @@ class Reader:
 
             if not is_weekend(dt):
                 self._new_day([str(dt)])
-                self._universe.currentday.add_leave(8.0, comment)
+                self._universe.currentday.add_leave(True, comment)
 
             d = d + 1
 
@@ -691,7 +705,7 @@ class Reader:
         if self._universe.currentday is None:
             self._universe.musthours = must_hours
         else:
-            self._universe.currentday.must_hours = must_hours
+            self._universe.currentday.musthours = must_hours
     
     def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
@@ -850,7 +864,7 @@ class Statistics:
                 self.monthly.process_day(d)
                 self.totals.process_day(d)
 
-                if do_daily:
+                if do_daily and (d.calc_have() > 0.0 or d.phol):
                     d.dump(options)
 
                 self.prev_day = d

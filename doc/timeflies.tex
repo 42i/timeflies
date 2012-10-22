@@ -16,10 +16,12 @@
 \begin{document}
 
 \DefineVerbatimEnvironment{inputfile}{Verbatim}
-   {%frame=single,
-    %framesep=1mm,
-    numbers=left,
+   {numbers=left,
     baselinestretch=0.8,
+    labelposition=topline}
+
+\DefineVerbatimEnvironment{inputplain}{Verbatim}
+   {baselinestretch=0.8,
     labelposition=topline}
 
 %\newfloat{example}{thp}{lof}[section]
@@ -289,6 +291,58 @@ Syntax: \verb:public-holiday [; <comment>]:.
 The keyword \verb:public-holiday: can be abbreviated as \verb:phol:.
 
 The current day is marked as a public holiday, i.e. a day where the required time at work is null.
+
+\subsubsection{Required Work Hours}
+
+Syntax: \verb:must-hours <weekday>=<hours> [..]: where \verb:<weekday>: is one of \verb:mon:, \verb:tue:, \verb:wed:, \verb:thu:, \verb:fri:, \verb:sat: or \verb:sun:.
+
+This lets you define the times you need to work on the different days of the week. All weekdays of one single working time arrangement have to be given in one \verb:must-hours: statement. Multiple \verb:must-hours: statements can be used to change the work hours to e.g. reflect you going from full time to 80\% or back.
+
+This example defines a standard 40 hour working week:
+\begin{inputfile}
+must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
+\end{inputfile}
+
+This example defines an 80\% week with Mondays off:
+\begin{inputfile}
+must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
+\end{inputfile}
+
+Or you work Thursdays and Fridays only half days:
+\begin{inputfile}
+must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
+\end{inputfile}
+
+The last example shows multiple changes in working time: 
+\begin{inputfile}
+day 2012-01-01
+must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
+
+# ...
+
+day 2012-06-01
+must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
+
+# ...
+
+day 2012-09-01
+must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
+
+# ...
+\end{inputfile}
+
+
+If a \verb:must-hours: statement appears inside a day block, the given working times are applicable from the date of that day block onwards until the date of the chronologically next day block with a \verb:must-hours: statement (which will be applicable from then onwards).
+
+If a \verb:must-hours: statement appears outside a day block (before the very first day block in the input), then the given working times are applicable until the chronologically first day block with a \verb:must-hours: statement (which will be applicable from then onwards).
+
+In above explanation of applicability the word \emph{chronologically} is very important because day blocks in \timeflies\ do not need to appear in chronological order in the input. The applicability of the \verb:must-hours: statements is determined by the chronological order, though, which is not necessarily the same as the statements' order of appearance in the input file(s).
+
+If a day block has no applicable \verb:must-hours: statement, then the default
+\begin{inputplain}
+must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
+\end{inputplain}
+is assumed.
 
 \subsubsection{Importing Files}
 
