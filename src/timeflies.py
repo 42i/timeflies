@@ -660,7 +660,9 @@ class Reader:
 
         d = st.toordinal()
         end = end.toordinal()
-
+        
+        current_saved = self._universe.currentday
+        
         while d <= end:
             dt = date.fromordinal(d)
             self._new_day([str(dt)])
@@ -673,6 +675,8 @@ class Reader:
                 
             d = d + 1
 
+        self._universe.currentday = current_saved
+        
     def _new_day(self, args):
         largs = len(args)
         if largs != 1 and largs != 3:
