@@ -4,6 +4,9 @@ day 2012-01-08
 must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
 day 2012-01-15
 must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
+day 2012-01-22
+must-hours mon=2.0 tue=3.0 wed=4.0 thu=4.5 fri=5.5
 leave-days 2012-01-01 2012-01-07; first
 leave-days 2012-01-08 2012-01-14; second
 leave-days 2012-01-15 2012-01-21; third
+sick-days 2012-01-23 2012-01-28; sicko

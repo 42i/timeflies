@@ -205,8 +205,8 @@ class ValueNode(Node):
     def dump_node(self, options, indent):
         desc = None if self.workpackage is None else self.workpackage.description
         adorneddesc = '' if desc is None else ('; ' + desc)
-        output('{1:s}{0:7.2f} : {2:s}{3:s}'
-               .format(self.value, indent, self.get_name(), adorneddesc))
+        output('{0:s}{1:7.2f} : {2:s}{3:s}'
+               .format(indent, self.value, self.get_name(), adorneddesc))
         
         if 'activities' in options:
             dump_activities(self.activities, '          ' + indent, options)
@@ -373,12 +373,15 @@ class Day:
 
     def add_leave(self, leave, comment=None):
         if isinstance(leave, bool):
-            self.leave = set_value(self.leave, True, comment)
+            self.leave = set_value(self.leave, leave, comment)
         else:
             self.leave = add_value(self.leave, leave, comment)
 
     def add_sick(self, sick, comment=None):
-        self.sick = add_value(self.sick, sick, comment)
+        if isinstance(sick, bool):
+            self.sick = set_value(self.sick, sick, comment)
+        else:
+            self.sick = add_value(self.sick, sick, comment)
 
     def set_hours(self, start, stop):
         if self.start is not None or self.stop is not None:
@@ -487,8 +490,15 @@ class Universe:
 
             if day.phol is not None:
                 day.leave = 0.0
-            elif isinstance(get_value(day.leave), bool):
+                day.sick = 0.0
+            
+            leave = get_value(day.leave)
+            sick = get_value(day.sick)
+            
+            if isinstance(leave, bool) and leave == True:
                 day.leave = set_value(day.leave, day.required)
+            if isinstance(sick, bool) and sick == True:
+                day.sick = set_value(day.sick, day.required)
                 
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
@@ -644,7 +654,7 @@ class Reader:
         
         self._process_instruction(tidy_whitespace(morsels[-1]), comment)
 
-    def _add_leave(self, start, end, comment):
+    def _add_leave_or_sick(self, what, start, end, comment):
         st = make_date(start)
         end = make_date(end)
 
@@ -653,11 +663,14 @@ class Reader:
 
         while d <= end:
             dt = date.fromordinal(d)
-
-            if not is_weekend(dt):
-                self._new_day([str(dt)])
+            self._new_day([str(dt)])
+            if what == 'sick':
+                self._universe.currentday.add_sick(True, comment)
+            elif what == 'leave':
                 self._universe.currentday.add_leave(True, comment)
-
+            else:
+                output('bad parameter ' + what + ' in block setter.')
+                
             d = d + 1
 
     def _new_day(self, args):
@@ -717,7 +730,11 @@ class Reader:
             return
         
         if instr == 'leave-days':
-            self._add_leave(args[0], args[1], comment)
+            self._add_leave_or_sick('leave', args[0], args[1], comment)
+            return
+        
+        if instr == 'sick-days':
+            self._add_leave_or_sick('sick', args[0], args[1], comment)
             return
         
         if instr == 'must-hours':
