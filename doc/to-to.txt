@@ -1,8 +1,6 @@
 List of Tasks
 
-- public holidays
 - user-friendly time range option handling
-- set must-work hours per day
 - find alternative to PyLint
 - leading check tab/space validity (leading whitespace of
   two consecutive lines must be a match)
@@ -13,8 +11,10 @@ List of Tasks
 - test case duplicate day start-stop
 - test case multiple day record auto-merge
 - test case multiple work package auto-merge
-- 'import' mechanism to e.g. have work packages and days in separate files
 - sort activities chronologically at the end of a file read; ascending/descending
 
 DONE:
+- 'import' mechanism to e.g. have work packages and days in separate files
+- set must-work hours per day
+- public holidays
 - rename block leave (with start and end dates) to leave-days
