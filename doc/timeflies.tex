@@ -4,6 +4,7 @@
 \usepackage{xltxtra}
 \usepackage{float}
 \usepackage{fancyvrb}
+\usepackage{scalefnt}
 \defaultfontfeatures{Scale=MatchLowercase}
 \setmainfont[Mapping=tex-text,Ligatures=TeX,Numbers=OldStyle]{Linux Libertine O}
 \setsansfont[Mapping=tex−text,Numbers=OldStyle] {Linux Biolinum O}
@@ -28,7 +29,7 @@
 %\floatname{example}{Example}
 
 \title{\timeflies\ -- A Tool for Time Keeping}
-\author{J\"org Bullmann \tt<jb@heilancoo.net>}
+\author{J\"org Bullmann \scalefont{0.9}\tt<jb@heilancoo.net>}
 \maketitle
 \begin{center}
 User Manual and Reference\\
@@ -161,7 +162,11 @@ And here the same with activities shown.
 
 \input{fly-7b.out}
 
-%\subsection{Monitor Project Progress}
+%\subsection{Working Time Arrangements}
+
+%\subsection{Multiple Input Files}
+
+%\subsection{Monitoring Project Progress}
 
 \section{Reference}
 
@@ -300,11 +305,13 @@ The current day is marked as a public holiday, i.e. a day where the required tim
 
 \subsubsection{Required Work Hours}
 
-Syntax: \verb:must-hours <weekday>=<hours> [..]: where \verb:<weekday>: is one of \verb:mon:, \verb:tue:, \verb:wed:, \verb:thu:, \verb:fri:, \verb:sat: or \verb:sun:.
+Syntax: \verb:must-hours (<day>=<hours>)*: where \verb:<day>: is one of \verb:mon:, \verb:tue:, \verb:wed:, \verb:thu:, \verb:fri:, \verb:sat: or \verb:sun:.
 
-This lets you define the times you need to work on the different days of the week. A working time arrangement consists of the hours of work for all days of a week. For one single working time arrangement, all hours have to be given in one single \verb:must-hours: statement. If a weekday is not mentioned in a \verb:must-hours: statement, the hours for that day are assumed to be 0.
+This lets you define the times you need to work on the different days of the week. A working time arrangement consists of the hours of work for all days of a week. For one single working time arrangement, all hours have to be given in one single \verb:must-hours: statement.
 
-Multiple \verb:must-hours: statements can be used to change the working time arrangements to e.g. reflect going from full time to 80\% or back.
+If a day is not mentioned in a \verb:must-hours: statement, the hours for that day are assumed to be 0. An empty \verb:must-hours: statement (without any \verb:<day>=<hours>: item) is perfectly valid. This could e.g.\ be used to declare a period of sabbatical.
+
+To change the working time arrangements (e.g.\ to reflect going from full time to 80\% or back), you use multiple \verb:must-hours: statements.
 
 The first following example defines a standard 40 hour working week (which is the default arrangement, also assumed for any day block with no applicable \verb:must-hours:):
 \begin{inputfile}
@@ -321,7 +328,7 @@ Or you work Thursdays and Fridays only half days:
 must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
 \end{inputfile}
 
-The last example shows multiple changes in working time: 
+The last example shows multiple changes in working time arrangement: 
 \begin{inputfile}
 day 2012-01-01
 must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
