@@ -19,7 +19,7 @@ day 2012-07-13 8 11:30
 - changer.input.json 3; nodes and dicts
 - changer.input.xml 0.5; added comment parsing
 
-leave-days 2012-07-14 2012-08-05 # yayy, off to the seaside
+leave-days 2012-07-14 2012-08-05; off to the seaside
 
 day 2012-08-06 10:00 15:15
 - changer.process.step2 2.5; vertex maps implemented 

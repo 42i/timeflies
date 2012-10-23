@@ -52,7 +52,7 @@ Stick your work package structure and work log data in a text file, say, ``time.
     - changer.input.json 3; nodes and dicts
     - changer.input.xml 0.5; added comment parsing
     
-    leave-days 2012-07-14 2012-08-05 # yayy, off to the seaside
+    leave-days 2012-07-14 2012-08-05; off to the seaside
     
     day 2012-08-06 10:00 15:15
     - changer.process.step2 2.5; vertex maps implemented 
@@ -136,57 +136,57 @@ And you worked in total::
 
     $ timeflies.py -t time.fly 
     Time at work overview (all):
-         when        worked   leave    sick
-    2012-07-12 Thu:    9.00 ----.-- ----.--
-    2012-07-13 Fri:    3.50 ----.-- ----.--
-      week 2012-28:   12.50 ----.-- ----.--
-    2012-07-16 Mon: ----.--    8.00 ----.--
-    2012-07-17 Tue: ----.--    8.00 ----.--
-    2012-07-18 Wed: ----.--    8.00 ----.--
-    2012-07-19 Thu: ----.--    8.00 ----.--
-    2012-07-20 Fri: ----.--    8.00 ----.--
-      week 2012-29: ----.--   40.00 ----.--
-    2012-07-23 Mon: ----.--    8.00 ----.--
-    2012-07-24 Tue: ----.--    8.00 ----.--
-    2012-07-25 Wed: ----.--    8.00 ----.--
-    2012-07-26 Thu: ----.--    8.00 ----.--
-    2012-07-27 Fri: ----.--    8.00 ----.--
-      week 2012-30: ----.--   40.00 ----.--
-    2012-07-30 Mon: ----.--    8.00 ----.--
-    2012-07-31 Tue: ----.--    8.00 ----.--
-     month 2012-07:   12.50   96.00 ----.--
-    2012-08-01 Wed: ----.--    8.00 ----.--
-    2012-08-02 Thu: ----.--    8.00 ----.--
-    2012-08-03 Fri: ----.--    8.00 ----.--
-      week 2012-31: ----.--   40.00 ----.--
-    2012-08-06 Mon:    5.25 ----.-- ----.--
-    2012-08-07 Tue:   11.00 ----.-- ----.--
-      week 2012-32:   16.25 ----.-- ----.--
-     month 2012-08:   16.25   24.00 ----.--
-             total:   28.75  120.00 ----.--
-         when        worked   leave    sick
+         when        worked   leave    sick balance
+    2012-07-12 Thu:    9.00 ----.-- ----.--    1.00
+    2012-07-13 Fri:    3.50 ----.-- ----.--   -4.50
+      week 2012-28:   12.50 ----.-- ----.--   -3.50
+    2012-07-16 Mon: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-17 Tue: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-18 Wed: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-19 Thu: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-20 Fri: ----.--    8.00 ----.-- ----.-- off to the seaside
+      week 2012-29: ----.--   40.00 ----.-- ----.--
+    2012-07-23 Mon: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-24 Tue: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-25 Wed: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-26 Thu: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-27 Fri: ----.--    8.00 ----.-- ----.-- off to the seaside
+      week 2012-30: ----.--   40.00 ----.-- ----.--
+    2012-07-30 Mon: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-07-31 Tue: ----.--    8.00 ----.-- ----.-- off to the seaside
+     month 2012-07:   12.50   96.00 ----.--   -3.50
+    2012-08-01 Wed: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-08-02 Thu: ----.--    8.00 ----.-- ----.-- off to the seaside
+    2012-08-03 Fri: ----.--    8.00 ----.-- ----.-- off to the seaside
+      week 2012-31: ----.--   40.00 ----.-- ----.--
+    2012-08-06 Mon:    5.25 ----.-- ----.--   -2.75
+    2012-08-07 Tue:   11.00 ----.-- ----.--    3.00
+      week 2012-32:   16.25 ----.-- ----.--    0.25
+     month 2012-08:   16.25   24.00 ----.--    0.25
+             total:   28.75  120.00 ----.--   -3.25
+         when        worked   leave    sick balance
 
 The same filtered by month only::
 
     $ timeflies.py -t -f month time.fly 
     Time at work overview (month):
-         when        worked   leave    sick
-     month 2012-07:   12.50   96.00 ----.--
-     month 2012-08:   16.25   24.00 ----.--
-             total:   28.75  120.00 ----.--
-         when        worked   leave    sick
+         when        worked   leave    sick balance
+     month 2012-07:   12.50   96.00 ----.--   -3.50
+     month 2012-08:   16.25   24.00 ----.--    0.25
+             total:   28.75  120.00 ----.--   -3.25
+         when        worked   leave    sick balance
 
 Or filtered by week::
 
     $ timeflies.py -t -f week time.fly 
     Time at work overview (week):
-         when        worked   leave    sick
-      week 2012-28:   12.50 ----.-- ----.--
-      week 2012-29: ----.--   40.00 ----.--
-      week 2012-30: ----.--   40.00 ----.--
-      week 2012-31: ----.--   40.00 ----.--
-      week 2012-32:   16.25 ----.-- ----.--
-             total:   28.75  120.00 ----.--
-         when        worked   leave    sick
+         when        worked   leave    sick balance
+      week 2012-28:   12.50 ----.-- ----.--   -3.50
+      week 2012-29: ----.--   40.00 ----.-- ----.--
+      week 2012-30: ----.--   40.00 ----.-- ----.--
+      week 2012-31: ----.--   40.00 ----.-- ----.--
+      week 2012-32:   16.25 ----.-- ----.--    0.25
+             total:   28.75  120.00 ----.--   -3.25
+         when        worked   leave    sick balance
 
 
