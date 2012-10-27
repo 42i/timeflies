@@ -9,7 +9,10 @@ zipfile=../../$dir.zip
 
 mkdir $dir
 
-cp $tifl timeflies.pdf change-log.txt $dir
+cp timeflies.pdf change-log.txt $dir
+
+# timeflies.py -> timeflies
+cp $tifl $dir/timeflies
 
 zip -r $zipfile $dir
 
