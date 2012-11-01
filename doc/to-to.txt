@@ -46,6 +46,8 @@ TODO:
 
 DONE:
 
+- check for duplicate day items (day blocks read twice) and flag them as errors
+- non-existent input files now have proper error messages instead of stack traces
 - packager: remove .py from timeflies script
 - manual: timeflies.pl -> timeflies
 - use lambda in leave/sick block maker
