@@ -1,20 +1,70 @@
-List of Tasks
+TODO:
 
+- complain about superfluous instruction arguments
+- filter options: sick, leave
+- show public holidays only on days with must hours != 0
+- instruction 'identity' <short_name> (<name_bit>)* (or 'id') to specify who the following day data is for
+- a project manager might want to ignore activities for other projects
+  (the definitions of which he might not have access to) => ignore-wp-ref (ignore-work-package-reference)
+- test case for above in imports
 - user-friendly time range option handling
 - find alternative to PyLint
-- leading check tab/space validity (leading whitespace of
-  two consecutive lines must be a match)
-- escape hash sign: \#
-- more test cases
-- test case leave counting
-- test case reset
+- check for negative times or 0.0?
+- leading check tab/space validity (leading whitespace of two consecutive lines must match)
+- flag comments on non-commentable instructions as errors when parsing
+- day check output: add summary line at the end
+- option to show daily/weekly/monthly allocation to work-packages over a period of time
+- work package status: pristine, active, assigned, done, percentages
+- make reset and friends commentable?
+- sort activities chronologically at the end of a file read; ascending/descending
+
 - test case duplicate day start-stop
 - test case multiple day record auto-merge
 - test case multiple work package auto-merge
-- sort activities chronologically at the end of a file read; ascending/descending
+- test cases for directives: reset, etc. + fix reset (do we need dump here?)
+- test cases for rubbish files
+- test cases for bad tab/space prefixes in lines
+
+- manual: explain what a ; comment applies to
+- manual: journal
+- manual: list all error messages and explain them
+- manual: time tracking vs. time keeping, time planning; A Tool for Planning and Tracking Time?
+- manual: \setmathfont{Asana Math} ?
+- manual: make it clear which instructions appear in day block and which don't
+- manual: file format -- log comments
+- manual: file format -- describe reset and friends
+- manual: emacs example for error message parsing?
+- manual: mention option -f means 'filter'
+- manual: tf offers different reports (digests?)
+- manual: is more of a digester/analyser than a stop-watch
+
+- gedit syntax highlighting: http://developer.gnome.org/gtksourceview/stable/lang-tutorial.html
+
+- info-ref: http://stackoverflow.com/questions/398344/best-commandline-time-tracking-application
+- info-ref: http://docutils.sourceforge.net/docs/user/rst/quickstart.html
+- info-ref: http://docutils.sourceforge.net/docs/user/rst/quickref.html
 
 DONE:
-- 'import' mechanism to e.g. have work packages and days in separate files
+
+- packager: remove .py from timeflies script
+- manual: timeflies.pl -> timeflies
+- use lambda in leave/sick block maker
 - set must-work hours per day
-- public holidays
 - rename block leave (with start and end dates) to leave-days
+- got rid of TODO -- was: to do items are no errors!
+- manual: put email address in title
+- manual: put software version in title
+- instruction 'must-hours' to set required working hours per day; this is valid from the day it is attached to
+- day check output: bring date format in line with time at work overview output
+- Day.comments init as None
+- change import logic and allow to re-import files (only look at the stack when checking for loops)
+- instruction 'import' to import another file
+- include off comment in day output and fix day output comment handling for leave and sick
+- public-holiday (phol) <date>[; <comment>] 
+- make 'off' commentable
+- day check output: 'tasked' = 'allocated', remove '***'
+- make leave, sick commentable
+- leave-days: tidy up arg list length check
+- replace -- by ; as universal non-source comment marker
+- ...dump_node() if else expression check for None and swap sides
+- make ';' the activity or work package comment delimiter so ',' has no double meaning
