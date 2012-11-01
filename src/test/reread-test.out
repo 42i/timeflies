@@ -2,6 +2,7 @@ reread-test.fly:2: ERROR : re-defining day (this file has already been read befo
 reread-test.fly:3: ERROR : re-defining sick (this file has already been read before)
 reread-test.fly:4: ERROR : re-defining day (this file has already been read before)
 reread-test.fly:4: ERROR : re-defining off (this file has already been read before)
+reread-test.fly:5: ERROR : re-defining activity (this file has already been read before)
 reread-test.fly:6: ERROR : re-defining day (this file has already been read before)
 reread-test.fly:6: ERROR : re-defining off (this file has already been read before)
 reread-test.fly:7: ERROR : re-defining leave (this file has already been read before)

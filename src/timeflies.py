@@ -640,6 +640,8 @@ class Reader:
         args = tidy_whitespace(comps[0]).split(' ')
         if len(args) < 2:
             self._msg('an activity must have a work package and a duration.')
+        elif self._already_read_before:
+            self._msg_redef('activity')
         else:
             workpackage_name = args[0]
             duration = args[1]
