@@ -457,8 +457,16 @@ class Universe:
         self.days = {}
         self.workpackage_root = WorkPackage("ALL")
         self.inputfiles = []
+        self.inputfileset = set()
         self.currentday = None
         self.musthours = None
+    
+    def remember(self, file):
+        if file in self.inputfileset:
+            return True
+        else:
+            self.inputfileset.add(file)
+            return False
         
     def add_file(self, file):
         self.inputfiles.append(file)
@@ -513,6 +521,7 @@ class Reader:
 
     def read(self, inputfile):
         self._absinputfile = os.path.abspath(inputfile)
+        self._already_read_before = self._universe.remember(self._absinputfile)
         self._inputfile = inputfile
         self._linecount = 0
         self._reset_workpackage_stack()
@@ -523,8 +532,21 @@ class Reader:
 
         self._universe.add_file(inputfile)
         
-        f = open(inputfile)
+        try:
+            with open(inputfile) as f:
+                self._read_file(f)
+            
+        except IOError as e:
+            msg = 'failed to open file; ' + str(e)
+            if self._parent is None:
+                output(msg)
+            else:
+                self._parent._msg(msg)
         
+        if self._parent is None: # top level read finished
+            self._universe.tidy_up()
+    
+    def _read_file(self, f):
         for line in f:
             self._linecount += 1
             line = re.sub(" *#.*", "", line).rstrip()
@@ -553,11 +575,7 @@ class Reader:
                     self._import_file(line[7:].strip())
                 elif line.strip() != '':
                     self._process_instructions(line)
-        f.close()
         
-        if self._parent is None: # top level read finished
-            self._universe.tidy_up()
-    
     def _have_import_loop(self):
         p = self._parent
         
@@ -579,12 +597,15 @@ class Reader:
         
         sub_reader.read(f)
 
+    def _msg_redef(self, text):
+        self._msg('re-defining ' + text + ' (this file has already been read before)')
+        
     def _msg(self, text, kind='ERROR'):
         output(self._inputfile + ':' + str(self._linecount) + ': ' + kind + ' : ' + text)
         parent = self._parent
         
         while parent is not None:
-            output(parent._inputfile + ':' + str(parent._linecount) + ': import trace ')
+            output(parent._inputfile + ':' + str(parent._linecount) + ': imported here')
             parent = parent._parent
         
     def _reset_workpackage_stack(self):
@@ -654,7 +675,7 @@ class Reader:
         
         self._process_instruction(tidy_whitespace(morsels[-1]), comment)
 
-    def _add_leave_or_sick(self, what, start, end, comment):
+    def _add_block(self, day_setter, start, end, comment):
         st = make_date(start)
         end = make_date(end)
 
@@ -666,13 +687,7 @@ class Reader:
         while d <= end:
             dt = date.fromordinal(d)
             self._new_day([str(dt)])
-            if what == 'sick':
-                self._universe.currentday.add_sick(True, comment)
-            elif what == 'leave':
-                self._universe.currentday.add_leave(True, comment)
-            else:
-                output('bad parameter ' + what + ' in block setter.')
-                
+            day_setter(self._universe.currentday, comment)
             d = d + 1
 
         self._universe.currentday = current_saved
@@ -696,10 +711,12 @@ class Reader:
 
             if start is None:
                 self._msg('bad start time argument "' + args[1] + '" in day spec.')
-            if end is None:
+            elif end is None:
                 self._msg('bad end time argument "' + args[2] + '" in day spec.')
-                
-            self._universe.currentday.set_hours(start, end)                
+            elif self._already_read_before:
+                self._msg_redef('day')
+            else:
+                self._universe.currentday.set_hours(start, end)                
 
     def _process_must_hours(self, args):
         must_hours = [0.0] * 7
@@ -734,11 +751,11 @@ class Reader:
             return
         
         if instr == 'leave-days':
-            self._add_leave_or_sick('leave', args[0], args[1], comment)
+            self._add_block(lambda day, cmnt: day.add_leave(True, cmnt), args[0], args[1], comment)
             return
         
         if instr == 'sick-days':
-            self._add_leave_or_sick('sick', args[0], args[1], comment)
+            self._add_block(lambda day, cmnt: day.add_sick(True, cmnt), args[0], args[1], comment)
             return
         
         if instr == 'must-hours':
@@ -750,25 +767,28 @@ class Reader:
         if currday is None:
             self._msg('no current day for instruction "' + argliststring + '".')
             return
-        
-        if instr == 'reset':
-            currday.add_directive(Directive().set_reset())
-        elif instr == 'add-leave':
-            currday.add_directive(Directive().set_leave(make_time(args[0])))
-        elif instr == 'balance-must':
-            currday.add_directive(Directive().set_must(make_time(args[0])))
-        elif instr == 'balance-have':
-            currday.add_directive(Directive().set_have(make_time(args[0])))
-        elif instr == 'off':
-            currday.add_off(make_time(args[0]), comment)
-        elif instr == 'sick':
-            currday.add_sick(make_time(args[0]), comment)
-        elif instr == 'phol' or instr == 'public-holiday':
+
+        if instr == 'phol' or instr == 'public-holiday':
             currday.set_phol(comment)
-        elif instr == 'leave':
-            currday.add_leave(make_time(args[0]), comment)
         else:
-            self._msg('weird instruction "' + argliststring + '".')
+            if self._already_read_before:
+                self._msg_redef(instr)
+            elif instr == 'reset':
+                currday.add_directive(Directive().set_reset())
+            elif instr == 'add-leave':
+                currday.add_directive(Directive().set_leave(make_time(args[0])))
+            elif instr == 'balance-must':
+                currday.add_directive(Directive().set_must(make_time(args[0])))
+            elif instr == 'balance-have':
+                currday.add_directive(Directive().set_have(make_time(args[0])))
+            elif instr == 'off':
+                currday.add_off(make_time(args[0]), comment)
+            elif instr == 'sick':
+                currday.add_sick(make_time(args[0]), comment)
+            elif instr == 'leave':
+                currday.add_leave(make_time(args[0]), comment)
+            else:
+                self._msg('weird instruction "' + argliststring + '".')
 
 class Status:
     def __init__(self, name):

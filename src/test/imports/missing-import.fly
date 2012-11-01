@@ -1,0 +1,2 @@
+# the following line should cause an error:
+import this-file-does-not-exist.fly

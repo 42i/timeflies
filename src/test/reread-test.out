@@ -1,0 +1,16 @@
+reread-test.fly:2: ERROR : re-defining day (this file has already been read before)
+reread-test.fly:3: ERROR : re-defining sick (this file has already been read before)
+reread-test.fly:4: ERROR : re-defining day (this file has already been read before)
+reread-test.fly:4: ERROR : re-defining off (this file has already been read before)
+reread-test.fly:6: ERROR : re-defining day (this file has already been read before)
+reread-test.fly:6: ERROR : re-defining off (this file has already been read before)
+reread-test.fly:7: ERROR : re-defining leave (this file has already been read before)
+Time at work overview (all):
+     when        worked   leave    sick balance
+2012-07-17 Tue:    9.00 ----.--    3.75    4.75
+2012-07-18 Wed:    9.00 ----.-- ----.--    1.00
+2012-07-19 Thu:    9.00    1.50 ----.--    2.50
+  week 2012-29:   27.00    1.50    3.75    8.25
+ month 2012-07:   27.00    1.50    3.75    8.25
+         total:   27.00    1.50    3.75    8.25
+     when        worked   leave    sick balance

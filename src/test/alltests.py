@@ -153,7 +153,16 @@ class EndToEndTests(TestCase):
         
     def test_block_days(self):
         self.doit('-t -C block-days-test.fly', 'block-days-test.out')
-        
+    
+    def test_re_read_file(self):
+        self.doit('-t -C reread-test.fly reread-test.fly', 'reread-test.out')
+    
+    def test_missing_file(self):
+        self.doit('this-file-does-not-exist.fly', 'this-file-does-not-exist.out')
+    
+    def test_missing_import_file(self):
+        self.doit('imports/missing-import.fly', 'imports/missing-import.out')
+
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
