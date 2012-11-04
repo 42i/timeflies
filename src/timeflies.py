@@ -114,6 +114,7 @@ def make_filter(arg):
                            int(endy), int(endm), int(endd))
     else:
         output('Bad time filter argument: ' + arg)
+        return None
 
 class Node:
     def __init__(self):
@@ -988,7 +989,9 @@ class Application:
             elif flt == 'month':
                 stats_month = True
             else:
-                self._dumpopts['time'] = make_filter(flt)
+                tf = make_filter(flt)
+                if tf is not None:
+                    self._dumpopts['time'] = tf
         
         if not 'time' in self._dumpopts:
             self._dumpopts['time'] = make_filter('all')
