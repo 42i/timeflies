@@ -1,5 +1,5 @@
-Bad time filter argument: -t
+Bad time filter argument: bad-filter-string
 Bill of materials:
 File: bad-filter-option.fly
-Day check (-t):
+Day check (bad-filter-string):
 2012-07-14 Sat: worked  8.00, allocated  6.00, delta -2.00

@@ -164,7 +164,7 @@ class EndToEndTests(TestCase):
         self.doit('imports/missing-import.fly', 'imports/missing-import.out')
     
     def test_bad_filter_option(self):
-        self.doit('-b -c -f -t bad-filter-option.fly', 'bad-filter-option.out')
+        self.doit('-b -c -f bad-filter-string bad-filter-option.fly', 'bad-filter-option.out')
 
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
