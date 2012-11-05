@@ -165,6 +165,9 @@ class EndToEndTests(TestCase):
     
     def test_bad_filter_option(self):
         self.doit('-b -c -f bad-filter-string bad-filter-option.fly', 'bad-filter-option.out')
+    
+    def test_public_holiday_on_weekend(self):
+        self.doit('-t public-holiday-on-weekend.fly', 'public-holiday-on-weekend.out')
 
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):

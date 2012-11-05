@@ -409,7 +409,10 @@ class Day:
 
     def calc_balance(self):
         return self.calc_have() - self.calc_required()
-                
+    
+    def is_workday(self):
+        return self.required != 0.0
+                    
     def dump(self, options):
         worked = self.calc_worked()
         cmnt = ''
@@ -908,7 +911,7 @@ class Statistics:
                 self.monthly.process_day(d)
                 self.totals.process_day(d)
 
-                if do_daily and (d.calc_have() > 0.0 or d.phol):
+                if do_daily and (d.calc_have() > 0.0 or (d.phol and d.is_workday())):
                     d.dump(options)
 
                 self.prev_day = d

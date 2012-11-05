@@ -2,7 +2,6 @@ TODO:
 
 - complain about superfluous instruction arguments
 - filter options: sick, leave
-- show public holidays only on days with must hours != 0
 - instruction 'identity' <short_name> (<name_bit>)* (or 'id') to specify who the following day data is for
 - a project manager might want to ignore activities for other projects
   (the definitions of which he might not have access to) => ignore-wp-ref (ignore-work-package-reference)
@@ -46,6 +45,7 @@ TODO:
 
 DONE:
 
+- show public holidays only on days with must hours != 0
 - check for duplicate day items (day blocks read twice) and flag them as errors
 - non-existent input files now have proper error messages instead of stack traces
 - packager: remove .py from timeflies script
