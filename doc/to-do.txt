@@ -25,9 +25,7 @@ TODO:
 - test cases for bad tab/space prefixes in lines
 
 - manual: explain what a ; comment applies to
-- manual: journal
 - manual: list all error messages and explain them
-- manual: time tracking vs. time keeping, time planning; A Tool for Planning and Tracking Time?
 - manual: \setmathfont{Asana Math} ?
 - manual: make it clear which instructions appear in day block and which don't
 - manual: file format -- log comments
@@ -35,7 +33,6 @@ TODO:
 - manual: emacs example for error message parsing?
 - manual: mention option -f means 'filter'
 - manual: tf offers different reports (digests?)
-- manual: is more of a digester/analyser than a stop-watch
 
 - gedit syntax highlighting: http://developer.gnome.org/gtksourceview/stable/lang-tutorial.html
 
@@ -45,6 +42,9 @@ TODO:
 
 DONE:
 
+- manual: journal
+- manual: time tracking vs. time keeping, time planning; A Tool for Planning and Tracking Time?
+- manual: is more of a digester/analyser than a stop-watch
 - show public holidays only on days with must hours != 0
 - check for duplicate day items (day blocks read twice) and flag them as errors
 - non-existent input files now have proper error messages instead of stack traces
