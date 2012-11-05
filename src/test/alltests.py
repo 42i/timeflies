@@ -78,7 +78,7 @@ class SimpleProject(TestCase):
     def test_read(self):
         u = Universe()
         r = Reader(u)
-        r.read('simple-project-1.fly')
+        r.read('simple-project-1.fly', {'indent':'    '})
         p1 = u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")
@@ -185,7 +185,7 @@ class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
         r = Reader(self.u)
-        r.read('simple-project-2.fly')
+        r.read('simple-project-2.fly', {'indent':'    '})
         p1 = self.u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")

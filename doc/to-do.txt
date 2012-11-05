@@ -41,10 +41,11 @@ TODO:
 
 DONE:
 
+- indent files in bill-of-materials output
+- work space hierarchies: check leading tab/space validity (leading whitespace of two consecutive lines must match)
 - manual: journal
 - manual: time tracking vs. time keeping, time planning; A Tool for Planning and Tracking Time?
 - manual: is more of a digester/analyser than a stop-watch
-- work space hierarchies: check leading tab/space validity (leading whitespace of two consecutive lines must match)
 - show public holidays only on days with must hours != 0
 - check for duplicate day items (day blocks read twice) and flag them as errors
 - non-existent input files now have proper error messages instead of stack traces

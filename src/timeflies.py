@@ -484,7 +484,8 @@ class Universe:
     def bill_of_materials(self, abspaths=False):
         for file in self.inputfiles:
             f = file if not abspaths else os.path.abspath(file) 
-            output('File: ' + f)
+            output(f)
+        output(str(len(self.inputfiles)) + ' file(s) processed')
 
     def tidy_up(self):
         self.currentday = None
@@ -523,7 +524,8 @@ class Reader:
         self._universe = uni
         self._parent = parent
 
-    def read(self, inputfile):
+    def read(self, inputfile, options):
+        self._options = options
         self._absinputfile = os.path.abspath(inputfile)
         self._already_read_before = self._universe.remember(self._absinputfile)
         self._inputfile = inputfile
@@ -535,7 +537,8 @@ class Reader:
             self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
             return
 
-        self._universe.add_file(inputfile)
+        bom_indent = self._options['indent'] * self._import_level()
+        self._universe.add_file(bom_indent + inputfile)
         
         try:
             with open(inputfile) as f:
@@ -550,7 +553,13 @@ class Reader:
         
         if self._parent is None: # top level read finished
             self._universe.tidy_up()
-    
+
+    def _import_level(self):
+        reader, lev = self, 0
+        while reader._parent is not None:
+            reader, lev = reader._parent, lev + 1
+        return lev
+            
     def _read_file(self, f):
         for line in f:
             self._linecount += 1
@@ -600,7 +609,7 @@ class Reader:
             folder = os.path.dirname(self._inputfile)
             f = os.path.join(folder, file)
         
-        sub_reader.read(f)
+        sub_reader.read(f, self._options)
 
     def _msg_redef(self, text):
         self._msg('re-defining ' + text + ' (this file has already been read before)')
@@ -986,7 +995,7 @@ class Application:
     def read_files(self):
         r = Reader(self._universe)
         for f in self._args:
-            r.read(f)
+            r.read(f, self._dumpopts)
     
     def _process_filter(self):
         stats_day = False
