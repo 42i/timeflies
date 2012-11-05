@@ -529,6 +529,7 @@ class Reader:
         self._inputfile = inputfile
         self._linecount = 0
         self._reset_workpackage_stack()
+        self._previous_indentation_prefix = ''
         
         if self._have_import_loop():
             self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
@@ -624,9 +625,17 @@ class Reader:
         spec = items[0].strip().split(' ')
         fullname = spec[0]
                 
-        indent = len(line) - len(line.lstrip())
+        indentation_len = len(line) - len(line.lstrip())
+        indentation_prefix = line[:indentation_len]
         
-        while indent <= self._workpackage_stack.indent:
+        if not indentation_prefix.startswith(self._previous_indentation_prefix) \
+            and not self._previous_indentation_prefix.startswith(indentation_prefix):
+            self._msg('work package indentation error')
+            return
+        
+        self._previous_indentation_prefix = indentation_prefix
+        
+        while indentation_len <= self._workpackage_stack.indent:
             self._workpackage_stack = self._workpackage_stack.parent
         
         wp = self._workpackage_stack.workpackage.get_node(fullname, create=True)
@@ -637,7 +646,7 @@ class Reader:
         if len(items) == 2: # description
             wp.description = items[1].strip()
         
-        self._workpackage_stack = WorkPackageLineBookmark(wp, indent, self._workpackage_stack)
+        self._workpackage_stack = WorkPackageLineBookmark(wp, indentation_len, self._workpackage_stack)
         
     def _process_activity(self, line):
         comps = line.split(';', 1)

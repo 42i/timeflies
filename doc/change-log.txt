@@ -1,4 +1,7 @@
 v 0.5
+2012-11-05 : check leading white spaces (tab/space problem) when reading
+             work space hierarchy
+2012-11-05 : manual updates
 2012-11-05 : show public holidays only for working days (days with
              required working hours) in time at work overview output
 2012-11-04 : proper error message for malformed filters in command line

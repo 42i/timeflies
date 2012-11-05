@@ -9,7 +9,6 @@ TODO:
 - user-friendly time range option handling
 - find alternative to PyLint
 - check for negative times or 0.0?
-- leading check tab/space validity (leading whitespace of two consecutive lines must match)
 - flag comments on non-commentable instructions as errors when parsing
 - day check output: add summary line at the end
 - option to show daily/weekly/monthly allocation to work-packages over a period of time
@@ -45,6 +44,7 @@ DONE:
 - manual: journal
 - manual: time tracking vs. time keeping, time planning; A Tool for Planning and Tracking Time?
 - manual: is more of a digester/analyser than a stop-watch
+- work space hierarchies: check leading tab/space validity (leading whitespace of two consecutive lines must match)
 - show public holidays only on days with must hours != 0
 - check for duplicate day items (day blocks read twice) and flag them as errors
 - non-existent input files now have proper error messages instead of stack traces

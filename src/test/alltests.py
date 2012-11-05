@@ -169,6 +169,18 @@ class EndToEndTests(TestCase):
     def test_public_holiday_on_weekend(self):
         self.doit('-t public-holiday-on-weekend.fly', 'public-holiday-on-weekend.out')
 
+    def test_bad_indent_1(self):
+        self.doit('indentation/bad-1.fly', 'indentation/bad-1.out')
+
+    def test_bad_indent_2(self):
+        self.doit('indentation/bad-2.fly', 'indentation/bad-2.out')
+
+    def test_bad_indent_3(self):
+        self.doit('indentation/bad-3.fly', 'indentation/bad-3.out')
+
+    def test_bad_indent_4(self):
+        self.doit('indentation/bad-4.fly', 'indentation/bad-4.out')
+        
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
