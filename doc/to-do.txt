@@ -41,6 +41,7 @@ TODO:
 
 DONE:
 
+- tidy up wrap-input.py
 - indent files in bill-of-materials output
 - work space hierarchies: check leading tab/space validity (leading whitespace of two consecutive lines must match)
 - manual: journal
