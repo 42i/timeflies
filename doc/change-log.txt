@@ -1,4 +1,8 @@
 v 0.5
+2012-11-06 : warn, if both tabs and spaces are used in work package
+             indentation
+2012-11-06 : input files that cannot be read will not show up in the
+             bill-of-materials
 2012-11-05 : indent files in bill-of-materials output to visualise
              import hierarchy
 2012-11-05 : check leading white spaces (tab/space problem) when reading

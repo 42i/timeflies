@@ -1,2 +1,3 @@
+indentation/bad-3.fly:5: WARNING : indentation contains both spaces and tabs
 indentation/bad-3.fly:5: ERROR : work package indentation error
 indentation/bad-3.fly:6: ERROR : work package indentation error

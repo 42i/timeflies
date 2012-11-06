@@ -531,7 +531,6 @@ class Reader:
         self._inputfile = inputfile
         self._linecount = 0
         self._reset_workpackage_stack()
-        self._previous_indentation_prefix = ''
         
         if self._have_import_loop():
             self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
@@ -623,7 +622,8 @@ class Reader:
         
     def _reset_workpackage_stack(self):
         self._workpackage_stack = WorkPackageLineBookmark(self._universe.workpackage_root, -1)
-
+        self._previous_indentation_prefix = ''
+        
     def _in_workpackage_definition(self):
         return self._universe.workpackage_root != self._workpackage_stack.workpackage
     
@@ -636,6 +636,9 @@ class Reader:
         indentation_len = len(line) - len(line.lstrip())
         indentation_prefix = line[:indentation_len]
         
+        if ' ' in indentation_prefix and '\t' in indentation_prefix:
+            self._msg('indentation contains both spaces and tabs', 'WARNING')
+            
         if not indentation_prefix.startswith(self._previous_indentation_prefix) \
             and not self._previous_indentation_prefix.startswith(indentation_prefix):
             self._msg('work package indentation error')

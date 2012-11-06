@@ -41,6 +41,8 @@ TODO:
 
 DONE:
 
+- warn if work package indentation uses both space and tab characters
+- test case with unevenly (but correctly) indented work packages
 - if a file cannot be opened, don't add it to bill-of-materials list
 - tidy up dump options in alltests.py
 - move dump options from Reader to Universe
