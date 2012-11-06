@@ -1,2 +1,2 @@
-indentation/bad-5.fly:8: WARNING : indentation contains both spaces and tabs
-indentation/bad-5.fly:9: WARNING : indentation contains both spaces and tabs
+indentation/bad-5.fly:8: ERROR : indentation contains both spaces and tabs
+indentation/bad-5.fly:9: ERROR : indentation contains both spaces and tabs

@@ -41,6 +41,7 @@ TODO:
 
 DONE:
 
+- manual: explain indentation space/tab rule
 - warn if work package indentation uses both space and tab characters
 - test case with unevenly (but correctly) indented work packages
 - if a file cannot be opened, don't add it to bill-of-materials list

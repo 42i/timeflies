@@ -637,8 +637,9 @@ class Reader:
         indentation_prefix = line[:indentation_len]
         
         if ' ' in indentation_prefix and '\t' in indentation_prefix:
-            self._msg('indentation contains both spaces and tabs', 'WARNING')
-            
+            self._msg('indentation contains both spaces and tabs')
+            return
+        
         if not indentation_prefix.startswith(self._previous_indentation_prefix) \
             and not self._previous_indentation_prefix.startswith(indentation_prefix):
             self._msg('work package indentation error')

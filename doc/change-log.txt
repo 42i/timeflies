@@ -1,5 +1,6 @@
 v 0.5
-2012-11-06 : warn, if both tabs and spaces are used in work package
+2012-11-06 : manual updates
+2012-11-06 : reject a mix of tabs and spaces in a work package
              indentation
 2012-11-06 : input files that cannot be read will not show up in the
              bill-of-materials
@@ -7,7 +8,6 @@ v 0.5
              import hierarchy
 2012-11-05 : check leading white spaces (tab/space problem) when reading
              work space hierarchy
-2012-11-05 : manual updates
 2012-11-05 : show public holidays only for working days (days with
              required working hours) in time at work overview output
 2012-11-04 : proper error message for malformed filters in command line

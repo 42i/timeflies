@@ -17,6 +17,9 @@ clean :
 version.txt : ../src/timeflies.py
 	$< --version > $@
 
+fly-%-spc.in : ex-%/work-log.fly
+	./wrap-input.py --spc $< > $@
+
 fly-%.in: ex-%/work-log.fly
 	./wrap-input.py $< > $@
 

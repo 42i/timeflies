@@ -21,12 +21,13 @@
     baselinestretch=0.8,
     labelposition=topline}
 
-\DefineVerbatimEnvironment{inputplain}{Verbatim}
-   {baselinestretch=0.8,
-    labelposition=topline}
-
-%\newfloat{example}{thp}{lof}[section]
-%\floatname{example}{Example}
+\DefineVerbatimEnvironment{inputfilespaces}{Verbatim}
+   {numbers=left,
+    baselinestretch=0.8,
+    labelposition=topline,
+    tabsize=4,
+    showspaces,
+    showtabs}
 
 \title{\timeflies\ -- A Tool for Time Tracking}
 \author{J\"org Bullmann \scalefont{0.9}\tt<jb@heilancoo.net>}
@@ -49,7 +50,7 @@ Do you want to make an estimate of effort for a project or work package? Would y
 
 \timeflies\ can help you with this -- and this is how: you keep a journal of what you do using \timeflies' hopefully not too overbearing markup syntax. \timeflies\ can later distill from your journal files what you did when, how much you worked and on which projects.
 
-\timeflies\ assumes you can tell what you are doing on a daily basis and it relies on you entering sound data for what you do during the day. It offers a light weight syntax for this. It does not, however, have fine grained time keeping functionality such as stop watch like features some other time keepers have. In that sense \timeflies\ is targeted at a slightly higher level of time tracking. Maybe call it \emph{macro} time tracking instead of \emph{micro} level time tracking. 
+\timeflies\ assumes you can tell what you are doing on a daily basis and it relies on you entering sound data for what you do during the day. It offers a light weight syntax for this. It does not, however, have fine grained time keeping functionality such as stop watch like features some other time keepers have. In that sense \timeflies\ is targeted at a slightly higher level of time tracking. Maybe call it \emph{macro} level time tracking instead of \emph{micro} level time tracking?
 
 \section{Tutorial by Example}
 
@@ -250,6 +251,58 @@ wp pro.bbb
     xxx; detail xxx
     yyy; detail yyy
 \end{inputfile}
+
+When defining a work package hierarchy using indentation, you must take care to not mix tab and space characters. I recommend using space characters exclusively. They are displayed the same way, no matter what tool you use to edit or view your files. If you really cannot stop yourself, \timeflies\ will let you use tab characters. Never mix tabs and spaces, however, \timeflies\ will not accept this.
+
+To illustrate this tab/space subject matter, the following examples show these normally non-printable characters.
+
+\begin{enumerate}
+
+\item Good example. Space characters used exclusively:
+
+\begin{inputfilespaces}
+wp pro
+    aaa
+    bbb
+        xxx
+        yyy
+    ccc
+\end{inputfilespaces}
+
+\item Acceptable example. Tab characters used exclusively:
+
+\begin{inputfilespaces}
+wp pro
+	aaa
+	bbb
+		xxx
+		yyy
+	ccc
+\end{inputfilespaces}
+
+\item Bad example, rejected by \timeflies. In line 4 both spaces and a tab character are used:
+
+\begin{inputfilespaces}
+wp pro
+    aaa
+    bbb
+    	xxx
+        yyy
+    ccc
+\end{inputfilespaces}
+
+\item Another bad example that \timeflies\ will reject. Line 2 and 3 are indented with spaces, line 4 and 5 use tabs:
+
+\begin{inputfilespaces}
+wp pro
+    aaa
+    bbb
+        xxx
+		yyy
+	ccc
+\end{inputfilespaces}
+
+\end{enumerate}
 
 \subsubsection{Day blocks}
 
