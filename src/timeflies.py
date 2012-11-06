@@ -536,12 +536,11 @@ class Reader:
         if self._have_import_loop():
             self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
             return
-
-        bom_indent = self._universe.dump_options['indent'] * self._import_level()
-        self._universe.add_file(bom_indent + inputfile)
         
         try:
             with open(inputfile) as f:
+                bom_indent = self._universe.dump_options['indent'] * self._import_level()
+                self._universe.add_file(bom_indent + inputfile)
                 self._read_file(f)
             
         except IOError as e:

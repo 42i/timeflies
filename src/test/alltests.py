@@ -153,10 +153,10 @@ class EndToEndTests(TestCase):
         self.doit('-t -C reread-test.fly reread-test.fly', 'reread-test.out')
     
     def test_missing_file(self):
-        self.doit('this-file-does-not-exist.fly', 'this-file-does-not-exist.out')
+        self.doit('-b this-file-does-not-exist.fly', 'this-file-does-not-exist.out')
     
     def test_missing_import_file(self):
-        self.doit('imports/missing-import.fly', 'imports/missing-import.out')
+        self.doit('-b imports/missing-import.fly', 'imports/missing-import.out')
     
     def test_bad_filter_option(self):
         self.doit('-b -c -f bad-filter-string bad-filter-option.fly', 'bad-filter-option.out')

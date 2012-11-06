@@ -41,6 +41,7 @@ TODO:
 
 DONE:
 
+- if a file cannot be opened, don't add it to bill-of-materials list
 - tidy up dump options in alltests.py
 - move dump options from Reader to Universe
 - tidy up wrap-input.py
