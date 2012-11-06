@@ -55,12 +55,7 @@ class OutputWrapper:
         
         os.remove(self._check_filename)
         return lines == 0
-        
-#class TestWithInputFile(TestCase):
-#    def __init__(self):
-#        self.uni = Universe()
-#        self.reader = Reader(self.uni)
-        
+
 class DayTests(TestCase):
     def test_createDay(self):
         d = Day('2012-08-05')
@@ -78,7 +73,7 @@ class SimpleProject(TestCase):
     def test_read(self):
         u = Universe()
         r = Reader(u)
-        r.read('simple-project-1.fly', {'indent':'    '})
+        r.read('simple-project-1.fly')
         p1 = u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")
@@ -185,7 +180,7 @@ class CalcActivitiesByMonth(TestCase):
     def test_read(self):
         self.u = Universe()
         r = Reader(self.u)
-        r.read('simple-project-2.fly', {'indent':'    '})
+        r.read('simple-project-2.fly')
         p1 = self.u.get_workpackage("project")
         self.assertEqual("project", p1.name)
         p2 = p1.get_node("sub2.bbb")

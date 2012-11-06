@@ -460,6 +460,7 @@ class Universe:
     def __init__(self):
         self.days = {}
         self.workpackage_root = WorkPackage("ALL")
+        self.dump_options = { 'indent':'    ' }
         self.inputfiles = []
         self.inputfileset = set()
         self.currentday = None
@@ -524,8 +525,7 @@ class Reader:
         self._universe = uni
         self._parent = parent
 
-    def read(self, inputfile, options):
-        self._options = options
+    def read(self, inputfile):
         self._absinputfile = os.path.abspath(inputfile)
         self._already_read_before = self._universe.remember(self._absinputfile)
         self._inputfile = inputfile
@@ -537,7 +537,7 @@ class Reader:
             self._parent._msg('file ' + inputfile + ' already processed', 'WARNING')
             return
 
-        bom_indent = self._options['indent'] * self._import_level()
+        bom_indent = self._universe.dump_options['indent'] * self._import_level()
         self._universe.add_file(bom_indent + inputfile)
         
         try:
@@ -609,7 +609,7 @@ class Reader:
             folder = os.path.dirname(self._inputfile)
             f = os.path.join(folder, file)
         
-        sub_reader.read(f, self._options)
+        sub_reader.read(f)
 
     def _msg_redef(self, text):
         self._msg('re-defining ' + text + ' (this file has already been read before)')
@@ -949,8 +949,16 @@ class Application:
         self._universe = Universe()
         self._jobs = []
         self._filter = 'all'
-        self._dumpopts = { 'indent':'    ' }
         self._args = None
+    
+    def _set_dump_option(self, key, value):
+        self._dump_options()[key] = value
+    
+    def _get_dump_option(self, key):
+        return self._dump_options()[key]
+    
+    def _dump_options(self):
+        return self._universe.dump_options
     
     def interpret_cmdline(self, argv):
         try:
@@ -981,11 +989,11 @@ class Application:
                 elif opt == '-b' or opt == '--bill-of-materials':
                     self._jobs.append('bill-of-materials')
                 elif opt == '-a' or opt == '--activities':
-                    self._dumpopts['activities'] = True
+                    self._set_dump_option('activities', True)
                 elif opt == '-C' or opt == '--comments':
-                    self._dumpopts['comments'] = True
+                    self._set_dump_option('comments', True)
                 elif opt == '-i' or opt == '--indent':
-                    self._dumpopts['indent'] = ' ' * int(val)
+                    self._set_dump_option('indent', ' ' * int(val))
     
         except getopt.GetoptError as e:
             output(argv[0] + ': ' + str(e))
@@ -995,7 +1003,7 @@ class Application:
     def read_files(self):
         r = Reader(self._universe)
         for f in self._args:
-            r.read(f, self._dumpopts)
+            r.read(f)
     
     def _process_filter(self):
         stats_day = False
@@ -1012,18 +1020,18 @@ class Application:
             else:
                 tf = make_filter(flt)
                 if tf is not None:
-                    self._dumpopts['time'] = tf
+                    self._set_dump_option('time', tf)
         
-        if not 'time' in self._dumpopts:
-            self._dumpopts['time'] = make_filter('all')
+        if not 'time' in self._dump_options():
+            self._set_dump_option('time', make_filter('all'))
             
         if not stats_week and not stats_month:
             for kind in ['day', 'week', 'month']:
-                self._dumpopts[kind] = True
+                self._set_dump_option(kind, True)
         else:
-            self._dumpopts['day'] = stats_day
-            self._dumpopts['week'] = stats_week
-            self._dumpopts['month'] = stats_month
+            self._set_dump_option('day', stats_day)
+            self._set_dump_option('week', stats_week)
+            self._set_dump_option('month', stats_month)
             
         self._filter = ", ".join(self._filter.split(','))
         
@@ -1033,17 +1041,17 @@ class Application:
         for j in self._jobs:
             if j == 'check-days':
                 output('Day check (' + self._filter + '):')
-                Statistics(self._universe).check_days(self._dumpopts['time'])
+                Statistics(self._universe).check_days(self._get_dump_option('time'))
             elif j == 'work-packages':
                 output('Work package summary (' + self._filter + '):')
-                act = self._universe.workpackage_root.calc_activity(self._dumpopts['time'])
-                act.dump(self._dumpopts)
+                act = self._universe.workpackage_root.calc_activity(self._get_dump_option('time'))
+                act.dump(self._dump_options())
             elif j == 'tally-days':
                 output('Time at work overview (' + self._filter + '):')
-                Statistics(self._universe).calc_balance(self._dumpopts)
+                Statistics(self._universe).calc_balance(self._dump_options())
             elif j == 'show-work-packages':
                 output('Work package breakdown:')
-                self._universe.workpackage_root.dump(self._dumpopts)
+                self._universe.workpackage_root.dump(self._dump_options())
             elif j == 'bill-of-materials':
                 output('Bill of materials:')
                 self._universe.bill_of_materials()
