@@ -41,6 +41,8 @@ TODO:
 
 DONE:
 
+- tidy up dump options in alltests.py
+- move dump options from Reader to Universe
 - tidy up wrap-input.py
 - indent files in bill-of-materials output
 - work space hierarchies: check leading tab/space validity (leading whitespace of two consecutive lines must match)
