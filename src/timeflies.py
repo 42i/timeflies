@@ -484,7 +484,11 @@ class Universe:
     
     def bill_of_materials(self, abspaths=False):
         for file in self.inputfiles:
-            f = file if not abspaths else os.path.abspath(file) 
+            if abspaths:
+                indent_len = len(file) - len(file.lstrip())
+                f = file[:indent_len] + os.path.abspath(file[indent_len:]) 
+            else:
+                f = file
             output(f)
         output(str(len(self.inputfiles)) + ' file(s) processed')
 
