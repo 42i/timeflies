@@ -70,7 +70,7 @@ This last file is equivalent to the following:
 
 \input{fly-3.in}
 
-This last example illustrates the notion of a \verb-day-\emph{-block}: a \verb-day-\emph{-block} extends
+Above example illustrates the notion of a \verb-day-\emph{-block}: a \verb-day-\emph{-block} extends
 from one \verb-day--keyword to the next and everything inside this day block is part of that day.
 
 The days in the file do not need to be listed chronologically. You could e.g.\ list the days in reverse order so that the present is always at the top of the file.
@@ -258,7 +258,7 @@ To illustrate this tab/space subject matter, the following examples show these n
 
 \begin{enumerate}
 
-\item Good example. Space characters used exclusively:
+\item A good example, exclusively using space characters:
 
 \begin{inputfilespaces}
 wp pro
@@ -269,7 +269,7 @@ wp pro
     ccc
 \end{inputfilespaces}
 
-\item Acceptable example. Tab characters used exclusively:
+\item An acceptable example, exclusively using tab characters:
 
 \begin{inputfilespaces}
 wp pro
@@ -280,7 +280,25 @@ wp pro
 	ccc
 \end{inputfilespaces}
 
-\item Bad example, rejected by \timeflies. In line 4 both spaces and a tab character are used:
+\item A mildly annoying example where the first work package hierarchy uses spaces and the second one uses tabs:
+
+\begin{inputfilespaces}
+wp pro1
+    sub1
+    sub2
+        sub2a
+        sub2b
+    sub3
+
+wp pro2
+	aaa
+	bbb
+		xxx
+		yyy
+	ccc
+\end{inputfilespaces}
+
+\item A bad example, rejected by \timeflies. In line 4 both spaces and a tab character are used:
 
 \begin{inputfilespaces}
 wp pro
@@ -291,7 +309,7 @@ wp pro
     ccc
 \end{inputfilespaces}
 
-\item Another bad example that \timeflies\ will reject. Line 2 and 3 are indented with spaces, line 4 and 5 use tabs:
+\item Another bad example that \timeflies\ will reject. Lines 2 through to 4 are indented with spaces, line 5 and 6 use tabs:
 
 \begin{inputfilespaces}
 wp pro
