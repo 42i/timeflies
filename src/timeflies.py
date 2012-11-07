@@ -490,7 +490,7 @@ class Universe:
             else:
                 f = file
             output(f)
-        output(str(len(self.inputfiles)) + ' file(s) processed')
+        output(str(len(self.inputfiles)) + ' file(s) processed.')
 
     def tidy_up(self):
         self.currentday = None
@@ -898,14 +898,18 @@ class Statistics:
             d = d + 1
 
     def check_days(self, dayfilter):
+        delta_count = 0
         for d in self.days:
             if dayfilter.passes(d):
                 worked = d.calc_worked()
                 allocated = d.calc_activity()
                 delta = allocated - worked
                 if delta != 0.0:
+                    delta_count += 1
                     output('{0:s}: worked {1:5.2f}, allocated {2:5.2f}, delta {3:5.2f}'
                           .format(d.date.strftime('%Y-%m-%d %a'), worked, allocated, delta))
+        if delta_count != 0:
+            output(str(delta_count) + ' problem(s) detected.')
         
     def calc_balance(self, options):
         dayfilter = options['time']

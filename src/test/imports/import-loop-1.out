@@ -7,4 +7,4 @@ imports/import-loop-1.fly
     imports/import-loop-1a.fly
         imports/import-loop-1b.fly
             imports/import-loop-1c.fly
-4 file(s) processed
+4 file(s) processed.

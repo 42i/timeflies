@@ -1,5 +1,6 @@
 v 0.5
-2012-11-06 : manual updates
+2012-11-07 : manual updates
+2012-11-07 : add summary line at the end of day check output
 2012-11-06 : reject a mix of tabs and spaces in a work package
              indentation
 2012-11-06 : input files that cannot be read will not show up in the
