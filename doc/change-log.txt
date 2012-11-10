@@ -1,3 +1,5 @@
+v 0.6
+
 v 0.5
 2012-11-10 : manual updates
 2012-11-07 : add summary line at the end of day check output

@@ -40,6 +40,7 @@ TODO:
 
 DONE:
 
+- put link to change log on main page
 - activity: first complain about invalid wp, then about invalid time
 - manual: 2.1 source comment -> emph
 - manual: space/tab examples 4, 5: show timeflies error messages
