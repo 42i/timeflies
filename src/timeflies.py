@@ -43,6 +43,11 @@ def output(text=None, dest=None):
         dest = _outputdest
     print(text, file=dest)
 
+def plural(number, unit, plural='s'):
+    pl = '' if number == 1 else plural   
+    num = 'no' if number == 0 else str(number) 
+    return num + ' ' + unit + pl
+
 def tidy_whitespace(mess):
     '''Truncates leading and trailing white spaces and
     replaces each other sequence of white spaces by a single space.'''
@@ -490,7 +495,7 @@ class Universe:
             else:
                 f = file
             output(f)
-        output(str(len(self.inputfiles)) + ' file(s) processed.')
+        output(plural(len(self.inputfiles), 'file') + ' processed.')
 
     def tidy_up(self):
         self.currentday = None
@@ -909,7 +914,7 @@ class Statistics:
                     output('{0:s}: worked {1:5.2f}, allocated {2:5.2f}, delta {3:5.2f}'
                           .format(d.date.strftime('%Y-%m-%d %a'), worked, allocated, delta))
         if delta_count != 0:
-            output(str(delta_count) + ' problem(s) detected.')
+            output(plural(delta_count, 'problem') + ' detected.')
         
     def calc_balance(self, options):
         dayfilter = options['time']
