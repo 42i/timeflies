@@ -11,18 +11,21 @@ Installation
 
 From packaged ZIP files containing both timeflies.py and the PDF manual:
 
+- TimeFlies-0.5-2012-11-10.zip_
 - TimeFlies-0.4-2012-10-16.zip_
 - TimeFlies-0.3-2012-09-27.zip_
 
+.. _TimeFlies-0.5-2012-11-10.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.5-2012-11-10.zip
 .. _TimeFlies-0.4-2012-10-16.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.4-2012-10-16.zip
 .. _TimeFlies-0.3-2012-09-27.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.3-2012-09-27.zip
 
 Straight out of the repository:
 
-- timeflies.py_, timeflies.pdf_
+- timeflies.py_, timeflies.pdf_, change-log.txt_
 
 .. _timeflies.py: https://raw.github.com/42i/timeflies/master/src/timeflies.py
 .. _timeflies.pdf: https://raw.github.com/42i/timeflies/master/doc/timeflies.pdf
+.. _change-log.txt: https://raw.github.com/42i/timeflies/master/doc/change-log.txt
 
 Required: Python 3 in ``/usr/bin/python3``.
 
