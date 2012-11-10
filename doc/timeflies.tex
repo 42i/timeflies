@@ -374,17 +374,17 @@ The current day is marked as a public holiday, i.e. a day where the required tim
 
 \subsubsection{Required Work Hours}
 
-Syntax: \verb:must-hours (<day>=<hours>)*: where \verb:<day>: is one of \verb:mon:, \verb:tue:, \verb:wed:, \verb:thu:, \verb:fri:, \verb:sat: or \verb:sun:.
+Syntax: \verb:must-hours ((<day>|<start>..<end>)=<hours>)*: where \verb:<day>:, \verb:<start>: and \verb:<end>:, must one of \verb:mon:, \verb:tue:, \verb:wed:, \verb:thu:, \verb:fri:, \verb:sat: or \verb:sun:.
 
-This lets you define the times you need to work on the different days of the week. A working time arrangement consists of the hours of work for all days of a week. For one single working time arrangement, all hours have to be given in one single \verb:must-hours: statement.
+This lets you define the times you need to work on the different days of the week. A working time arrangement consists of the hours of work for all days of a week. For one single working time arrangement, all hours have to be given in one single \verb:must-hours: statement. Day ranges using the \verb:<start>..<end>=<hours>: notation and single day specifications using the \verb:<day>=<hours>: notation can be freely combined.
 
-If a day is not mentioned in a \verb:must-hours: statement, the hours for that day are assumed to be 0. An empty \verb:must-hours: statement (without any \verb:<day>=<hours>: item) is perfectly valid. This could e.g.\ be used to declare a period of sabbatical.
+If a day is not covered in a \verb:must-hours: statement, the hours for that day are assumed to be 0. Thus, an empty \verb:must-hours: statement (not containing any day range or single day item) is perfectly valid. This could e.g.\ be used to declare a period of sabbatical.
 
 To change the working time arrangements (e.g.\ to reflect going from full time to 80\% or back), you use multiple \verb:must-hours: statements.
 
 The first following example defines a standard 40 hour working week (which is the default arrangement, also assumed for any day block with no applicable \verb:must-hours:):
 \begin{inputfile}
-must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
+must-hours mon..fri=8.0
 \end{inputfile}
 
 This example defines an 80\% working time week with Mondays off:
@@ -394,13 +394,13 @@ must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
 
 Or you work Thursdays and Fridays only half days:
 \begin{inputfile}
-must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
+must-hours mon..wed=8.0 thu..fri=4.0
 \end{inputfile}
 
 The last example shows multiple changes in working time arrangement: 
 \begin{inputfile}
 day 2012-01-01
-must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
+must-hours tue..fri=8.0
 
 # ...
 
