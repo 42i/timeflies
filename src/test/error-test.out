@@ -12,4 +12,7 @@ error-test.fly:12: ERROR : weird instruction "10".
 error-test.fly:13: ERROR : unexpected day argument list: "2012-09-07 8 10 12".
 error-test.fly:14: ERROR : bad must-hours argument "5".
 error-test.fly:15: ERROR : unknown day "MON".
-error-test.fly:16: ERROR : bad time argument "gogo" for day "mon".
+error-test.fly:16: ERROR : bad time duration "gogo" ("mon").
+error-test.fly:19: ERROR : bad must-hours day range "tue..mon".
+error-test.fly:20: ERROR : unknown day "aaa".
+error-test.fly:21: ERROR : bad time duration "yayy" ("mon..fri").

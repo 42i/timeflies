@@ -1,7 +1,7 @@
 day 2012-01-01
 must-hours tue=8.0 wed=8.0 thu=8.0 fri=8.0
 day 2012-01-08
-must-hours mon=8.0 tue=8.0 wed=8.0 thu=4.0 fri=4.0
+must-hours mon..wed=8.0 thu..fri=4.0
 day 2012-01-15
 must-hours mon=8.0 tue=8.0 wed=8.0 thu=8.0 fri=8.0
 day 2012-01-22

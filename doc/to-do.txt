@@ -40,7 +40,7 @@ TODO:
 
 DONE:
 
-- put link to change log on main page
+- accept day ranges in must-hours so one can write e.g. must-hours mon..fri=8- put link to change log on main page
 - activity: first complain about invalid wp, then about invalid time
 - manual: 2.1 source comment -> emph
 - manual: space/tab examples 4, 5: show timeflies error messages

@@ -755,6 +755,13 @@ class Reader:
             else:
                 self._universe.currentday.set_hours(start, end)                
 
+    def _make_weekday(self, day):
+        if not day in day_map:
+            self._msg('unknown day "' + day + '".')
+            return None
+        else:
+            return day_map[day]
+        
     def _process_must_hours(self, args):
         must_hours = [0.0] * 7
         
@@ -764,14 +771,27 @@ class Reader:
             if equals != '=':
                 self._msg('bad must-hours argument "' + arg + '".')
             else:
-                if not day in day_map:
-                    self._msg('unknown day "' + day + '".')
+                first, dots, last = day.partition('..')
+                
+                if dots == '..':
+                    first_day = self._make_weekday(first)
+                    last_day = self._make_weekday(last)
+                else:
+                    first_day = self._make_weekday(day)
+                    last_day = first_day
+                
+                if first_day == None or last_day == None:
+                    pass
+                elif last_day < first_day:
+                    self._msg('bad must-hours day range "' + day + '".')
                 else:
                     hrs = make_time(hours)
+
                     if hrs is None:
-                        self._msg('bad time argument "' + hours + '" for day "' + day + '".')
+                        self._msg('bad time duration "' + hours + '" ("' + day + '").')
                     else:
-                        must_hours[day_map[day]] = make_time(hours)
+                        for d in range(first_day, last_day + 1):
+                            must_hours[d] = make_time(hours)
     
         if self._universe.currentday is None:
             self._universe.musthours = must_hours
