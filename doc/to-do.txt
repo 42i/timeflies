@@ -15,7 +15,6 @@ TODO:
 - make reset and friends commentable?
 - sort activities chronologically at the end of a file read; ascending/descending
 
-- test case duplicate day start-stop
 - test case multiple day record auto-merge
 - test case multiple work package auto-merge
 - test cases for directives: reset, etc. + fix reset (do we need dump here?)
@@ -40,6 +39,7 @@ TODO:
 
 DONE:
 
+- test case duplicate day start-stop
 - accept day ranges in must-hours so one can write e.g. must-hours mon..fri=8- put link to change log on main page
 - activity: first complain about invalid wp, then about invalid time
 - manual: 2.1 source comment -> emph

@@ -1,4 +1,6 @@
 v 0.6
+2012-11-10 : fixed error message in case of duplicate day blocks
+             with start and stop times
 2012-11-10 : accept day ranges in must-hours so one can write
              e.g. must-hours mon..fri=8
 
