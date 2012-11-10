@@ -391,10 +391,11 @@ class Day:
 
     def set_hours(self, start, stop):
         if self.start is not None or self.stop is not None:
-            raise Exception('day start and stop times can only be set once.')
+            return False
         self.start = start
         self.stop = stop
-
+        return True
+    
     def calc_activity(self):
         totals = 0.0
         if self.activities is not None:
@@ -752,8 +753,8 @@ class Reader:
                 self._msg('bad end time argument "' + args[2] + '" in day spec.')
             elif self._already_read_before:
                 self._msg_redef('day')
-            else:
-                self._universe.currentday.set_hours(start, end)                
+            elif not self._universe.currentday.set_hours(start, end): 
+                self._msg('day ' + str(self._universe.currentday.date) + ' redefined.')             
 
     def _make_weekday(self, day):
         if not day in day_map:

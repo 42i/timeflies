@@ -181,6 +181,9 @@ class EndToEndTests(TestCase):
 
     def test_invalid_activities(self):
         self.doit('invalid-activities.fly', 'invalid-activities.out')
+
+    def test_duplicate_day_definition(self):
+        self.doit('day-defined-again.fly', 'day-defined-again.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
