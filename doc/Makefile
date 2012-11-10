@@ -3,7 +3,8 @@ EXAMPLES = fly-1.in fly-2.in fly-3.in fly-4.in \
 		   fly-5.in fly-5a.out fly-5b.out \
 		   fly-6.in fly-6a.out fly-6b.out fly-6c.out \
 		   fly-7.in fly-7-wp.in fly-7a.out fly-7b.out \
-		   fly-8.in fly-8a.out fly-8b.out fly-8c.out fly-8d.out
+		   fly-8.in fly-8a.out fly-8b.out fly-8c.out fly-8d.out \
+		   fly-9-bad-wp.in fly-9-bad-wp.out fly-10-bad-wp.in fly-10-bad-wp.out 
 
 show : timeflies.pdf
 	evince $<
@@ -16,9 +17,6 @@ clean :
 
 version.txt : ../src/timeflies.py
 	$< --version > $@
-
-fly-%-spc.in : ex-%/work-log.fly
-	./wrap-input.py --spc $< > $@
 
 fly-%.in: ex-%/work-log.fly
 	./wrap-input.py $< > $@
@@ -58,5 +56,11 @@ fly-8c.out : ex-8/work-log.fly
 
 fly-8d.out : ex-8/work-log.fly
 	./generate-output.py -t -f week,2012-09 $^ > $@
+
+fly-%-bad-wp.out : ex-%/bad-wp-def.fly
+	./generate-output.py $^ > $@
+
+fly-%-bad-wp.in: ex-%/bad-wp-def.fly
+	./wrap-input.py --spc $< > $@
 
 

@@ -19,7 +19,8 @@
 \DefineVerbatimEnvironment{inputfile}{Verbatim}
    {numbers=left,
     baselinestretch=0.8,
-    labelposition=topline}
+    labelposition=topline,
+    fontsize=\small}
 
 \DefineVerbatimEnvironment{inputfilespaces}{Verbatim}
    {numbers=left,
@@ -27,7 +28,8 @@
     labelposition=topline,
     tabsize=4,
     showspaces,
-    showtabs}
+    showtabs,
+    fontsize=\small}
 
 \title{\timeflies\ -- A Tool for Time Tracking}
 \author{J\"org Bullmann \scalefont{0.9}\tt<jb@heilancoo.net>}
@@ -75,7 +77,7 @@ from one \verb-day--keyword to the next and everything inside this day block is 
 
 The days in the file do not need to be listed chronologically. You could e.g.\ list the days in reverse order so that the present is always at the top of the file.
 
-If you want to mask out part of your log temporarily you can use the \verb-#- source comment marker. \timeflies\ ignores the \verb-#- and everything following it until the end of line. It works just the same as e.g.\ a Python comment.
+If you want to mask out part of your log temporarily you can use the \verb-#- \emph{source comment} marker. \timeflies\ ignores the \verb-#- and everything following it until the end of line. It works just the same as e.g.\ a Python comment.
 
 \input{fly-4.in}
 
@@ -300,25 +302,19 @@ wp pro2
 
 \item A bad example, rejected by \timeflies. In line 4 both spaces and a tab character are used:
 
-\begin{inputfilespaces}
-wp pro
-    aaa
-    bbb
-    	xxx
-        yyy
-    ccc
-\end{inputfilespaces}
+\input{fly-9-bad-wp.in}
+
+This is what \timeflies\ has to say about it:
+
+\input{fly-9-bad-wp.out}
 
 \item Another bad example that \timeflies\ will reject. Lines 2 through to 4 are indented with spaces, line 5 and 6 use tabs:
 
-\begin{inputfilespaces}
-wp pro
-    aaa
-    bbb
-        xxx
-		yyy
-	ccc
-\end{inputfilespaces}
+\input{fly-10-bad-wp.in}
+
+And \timeflies\ says:
+
+\input{fly-10-bad-wp.out}
 
 \end{enumerate}
 

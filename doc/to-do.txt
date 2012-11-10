@@ -40,6 +40,8 @@ TODO:
 
 DONE:
 
+- manual: 2.1 source comment -> emph
+- manual: space/tab examples 4, 5: show timeflies error messages
 - day check output: add summary line at the end
 - manual: explain indentation space/tab rule
 - warn if work package indentation uses both space and tab characters
