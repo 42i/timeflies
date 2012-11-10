@@ -178,6 +178,9 @@ class EndToEndTests(TestCase):
 
     def test_bad_indent_5(self):
         self.doit('indentation/bad-5.fly', 'indentation/bad-5.out')
+
+    def test_invalid_activities(self):
+        self.doit('invalid-activities.fly', 'invalid-activities.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):

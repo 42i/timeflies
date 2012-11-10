@@ -1,0 +1,4 @@
+invalid-activities.fly:5: ERROR : invalid activity work package "hotcat".
+invalid-activities.fly:6: ERROR : invalid activity work package "blueant".
+invalid-activities.fly:6: ERROR : invalid activity duration "three".
+invalid-activities.fly:9: ERROR : invalid activity duration "oneandahalf".

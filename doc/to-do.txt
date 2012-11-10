@@ -40,6 +40,7 @@ TODO:
 
 DONE:
 
+- activity: first complain about invalid wp, then about invalid time
 - manual: 2.1 source comment -> emph
 - manual: space/tab examples 4, 5: show timeflies error messages
 - day check output: add summary line at the end

@@ -685,17 +685,18 @@ class Reader:
                 desc = None
 
             duration_float = make_time(duration)
+            wp = self._universe.get_workpackage(workpackage_name)
             
+            if wp is None:
+                self._msg('invalid activity work package "' + workpackage_name + '".')  
+
             if duration_float is None:
                 self._msg('invalid activity duration "' + duration + '".')
-            else:
+            
+            if wp is not None and duration_float is not None:
                 activity = Activity(duration_float, desc)
-                wp = self._universe.get_workpackage(workpackage_name)
-                if wp is None:
-                    self._msg('invalid activity work package "' + workpackage_name + '".')
-                else:
-                    activity.attach_to(wp)
-                    activity.attach_to(self._universe.currentday)
+                activity.attach_to(wp)
+                activity.attach_to(self._universe.currentday)
         
     def _process_comment(self, comment):
         self._universe.currentday.add_comment(comment)
