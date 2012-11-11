@@ -19,7 +19,6 @@ TODO:
 - test case multiple work package auto-merge
 - test cases for directives: reset, etc. + fix reset (do we need dump here?)
 - test cases for rubbish files
-- test cases for bad tab/space prefixes in lines
 
 - manual: explain what a ; comment applies to
 - manual: list all error messages and explain them
@@ -48,6 +47,7 @@ DONE:
 - manual: explain indentation space/tab rule
 - warn if work package indentation uses both space and tab characters
 - test case with unevenly (but correctly) indented work packages
+- test cases for bad tab/space prefixes in lines
 - if a file cannot be opened, don't add it to bill-of-materials list
 - tidy up dump options in alltests.py
 - move dump options from Reader to Universe
