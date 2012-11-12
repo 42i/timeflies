@@ -1,0 +1,16 @@
+wp aa
+    bbb
+        xxx
+        yyy
+    ccc
+    ddd
+
+wp aa.bbb.xxx
+    sss
+    ttt
+    uuu
+    
+wp aa.ccc
+    gogo
+    gugu
+    gaga
