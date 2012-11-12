@@ -81,11 +81,6 @@ class SimpleProject(TestCase):
         a = p2.activities[0]
         self.assertEqual(date(2012, 7, 14), a.day().date)
 
-#class EndToEnd(TestCase):
-#    def test_read(self):
-#        main('run -w 2012-08 example1.log'.split(' '))
-
-
 class EndToEndTests(TestCase):
     def doit(self, cmdline, expected):
         ow = OutputWrapper(expected)
@@ -184,6 +179,9 @@ class EndToEndTests(TestCase):
 
     def test_duplicate_day_definition(self):
         self.doit('day-defined-again.fly', 'day-defined-again.out')
+
+    def test_day_merge(self):
+        self.doit('-c -t -w -a day-merge.fly', 'day-merge.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):
