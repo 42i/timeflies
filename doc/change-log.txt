@@ -1,5 +1,6 @@
 v 0.6
 2012-11-14 : manual updates
+2012-11-14 : fixed error checking for 'leave' and 'sick' instructions
 2012-11-14 : report overall number of errors and warnings after
              reading the inputs
 2012-11-14 : check days says 'ok' if there was no problem found

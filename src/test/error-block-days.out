@@ -1,0 +1,6 @@
+error-block-days.fly:1: ERROR : no current day for instruction "leave 2012-02-05 2012-02-12 Jake".
+error-block-days.fly:2: ERROR : no current day for instruction "sick 2012-02-13 2012-02-17 Elwood".
+error-block-days.fly:4: ERROR : bad time "aaa" in instruction "off aaa".
+error-block-days.fly:5: ERROR : bad time "2012-02-05" in instruction "leave 2012-02-05 2012-02-12 Bilbo".
+error-block-days.fly:6: ERROR : bad time "2012-02-13" in instruction "sick 2012-02-13 2012-02-17 Gollum".
+5 errors.

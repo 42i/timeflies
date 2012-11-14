@@ -146,6 +146,9 @@ class EndToEndTests(TestCase):
         
     def test_block_days(self):
         self.doit('-t -C block-days-test.fly', 'block-days-test.out')
+        
+    def test_block_days_bad(self):
+        self.doit('error-block-days.fly', 'error-block-days.out')
     
     def test_re_read_file(self):
         self.doit('-t -C reread-test.fly reread-test.fly', 'reread-test.out')

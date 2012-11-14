@@ -821,6 +821,14 @@ class Reader:
             self._msg('no current day for instruction "' + instruction + '".')
         return currday_ok
     
+    def _set_time(self, timeStr, comment, instruction, setter):
+        if self._current_day_ok(instruction):
+            tm = make_time(timeStr)
+            if tm is None:
+                self._msg('bad time "' + timeStr + '" in instruction "' + instruction + '".')
+            else:
+                setter(self._universe.currentday, tm, comment)
+    
     def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
         instr = arglist[0]
@@ -863,14 +871,11 @@ class Reader:
                 if self._current_day_ok(argliststring):
                     currday.add_directive(Directive().set_have(make_time(args[0])))
             elif instr == 'off':
-                if self._current_day_ok(argliststring):
-                    currday.add_off(make_time(args[0]), comment)
+                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_off(tm, cmnt))
             elif instr == 'sick':
-                if self._current_day_ok(argliststring):
-                    currday.add_sick(make_time(args[0]), comment)
+                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_sick(tm, cmnt))
             elif instr == 'leave':
-                if self._current_day_ok(argliststring):
-                    currday.add_leave(make_time(args[0]), comment)
+                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_leave(tm, cmnt))
             else:
                 self._msg('weird instruction "' + argliststring + '".')
 

@@ -19,4 +19,5 @@ error-test.fly:20: ERROR : unknown day "aaa".
 error-test.fly:21: ERROR : bad time duration "yayy" ("mon..fri").
 error-test.fly:22: ERROR : weird instruction "another-unknown-instruction ha ha ha".
 error-test.fly:23: WARNING : file error-test.fly already processed
-20 errors, 1 warning.
+error-test.fly:25: ERROR : bad time "wow" in instruction "off wow".
+21 errors, 1 warning.
