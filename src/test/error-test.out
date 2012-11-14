@@ -1,3 +1,4 @@
+error-test.fly:2: ERROR : weird instruction "unknown-instruction ha ha ha".
 error-test.fly:3: ERROR : no current day for instruction "off 1".
 error-test.fly:5: ERROR : invalid activity work package "a.b".
 error-test.fly:6: ERROR : an activity must have a work package and a duration.
@@ -16,3 +17,4 @@ error-test.fly:16: ERROR : bad time duration "gogo" ("mon").
 error-test.fly:19: ERROR : bad must-hours day range "tue..mon".
 error-test.fly:20: ERROR : unknown day "aaa".
 error-test.fly:21: ERROR : bad time duration "yayy" ("mon..fri").
+error-test.fly:22: ERROR : weird instruction "another-unknown-instruction ha ha ha".

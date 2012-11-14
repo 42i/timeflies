@@ -1,5 +1,5 @@
 wp a
-
+unknown-instruction ha ha ha
 off 1
 day 2012-09-01 8 10
 - a.b 2
@@ -19,3 +19,4 @@ must-hours mon..mon=1
 must-hours tue..mon=5
 must-hours aaa..fri=3
 must-hours mon..fri=yayy
+another-unknown-instruction ha ha ha

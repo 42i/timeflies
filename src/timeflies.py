@@ -798,6 +798,12 @@ class Reader:
             self._universe.musthours = must_hours
         else:
             self._universe.currentday.musthours = must_hours
+
+    def _current_day_ok(self, instruction):
+        currday_ok = self._universe.currentday is not None
+        if not currday_ok:
+            self._msg('no current day for instruction "' + instruction + '".')
+        return currday_ok
     
     def _process_instruction(self, argliststring, comment=None):
         arglist = argliststring.split(' ')
@@ -821,30 +827,34 @@ class Reader:
             return
 
         currday = self._universe.currentday
-        
-        if currday is None:
-            self._msg('no current day for instruction "' + argliststring + '".')
-            return
 
         if instr == 'phol' or instr == 'public-holiday':
-            currday.set_phol(comment)
+            if self._current_day_ok(argliststring):
+                currday.set_phol(comment)
         else:
             if self._already_read_before:
                 self._msg_redef(instr)
             elif instr == 'reset':
-                currday.add_directive(Directive().set_reset())
+                if self._current_day_ok(argliststring):
+                    currday.add_directive(Directive().set_reset())
             elif instr == 'add-leave':
-                currday.add_directive(Directive().set_leave(make_time(args[0])))
+                if self._current_day_ok(argliststring):
+                    currday.add_directive(Directive().set_leave(make_time(args[0])))
             elif instr == 'balance-must':
-                currday.add_directive(Directive().set_must(make_time(args[0])))
+                if self._current_day_ok(argliststring):
+                    currday.add_directive(Directive().set_must(make_time(args[0])))
             elif instr == 'balance-have':
-                currday.add_directive(Directive().set_have(make_time(args[0])))
+                if self._current_day_ok(argliststring):
+                    currday.add_directive(Directive().set_have(make_time(args[0])))
             elif instr == 'off':
-                currday.add_off(make_time(args[0]), comment)
+                if self._current_day_ok(argliststring):
+                    currday.add_off(make_time(args[0]), comment)
             elif instr == 'sick':
-                currday.add_sick(make_time(args[0]), comment)
+                if self._current_day_ok(argliststring):
+                    currday.add_sick(make_time(args[0]), comment)
             elif instr == 'leave':
-                currday.add_leave(make_time(args[0]), comment)
+                if self._current_day_ok(argliststring):
+                    currday.add_leave(make_time(args[0]), comment)
             else:
                 self._msg('weird instruction "' + argliststring + '".')
 
