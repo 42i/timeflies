@@ -937,6 +937,8 @@ class Statistics:
                           .format(d.date.strftime('%Y-%m-%d %a'), worked, allocated, delta))
         if delta_count != 0:
             output(plural(delta_count, 'problem') + ' detected.')
+        else:
+            output('ok.')
         
     def calc_balance(self, options):
         dayfilter = options['time']

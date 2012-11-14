@@ -141,6 +141,9 @@ class EndToEndTests(TestCase):
     def test_check_days(self):
         self.doit('-c check-days-test.fly', 'check-days-test.out')
         
+    def test_check_days_ok(self):
+        self.doit('-c check-days-ok.fly', 'check-days-ok.out')
+        
     def test_block_days(self):
         self.doit('-t -C block-days-test.fly', 'block-days-test.out')
     

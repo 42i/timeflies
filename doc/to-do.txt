@@ -36,6 +36,7 @@ TODO:
 
 DONE:
 
+- if day check succeeds without problems, it should print 'ok' at the end
 - test case multiple work package auto-merge
 - test case multiple day record auto-merge
 - test case duplicate day start-stop
