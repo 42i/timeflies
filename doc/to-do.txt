@@ -36,6 +36,7 @@ TODO:
 
 DONE:
 
+- count the errors when reading
 - add must-hours to example on title page
 - manual: 3.2.13: This allows you to e.g. ... or ... or ... -> ..., ... or ...
 - if day check succeeds without problems, it should print 'ok' at the end

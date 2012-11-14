@@ -18,3 +18,5 @@ error-test.fly:19: ERROR : bad must-hours day range "tue..mon".
 error-test.fly:20: ERROR : unknown day "aaa".
 error-test.fly:21: ERROR : bad time duration "yayy" ("mon..fri").
 error-test.fly:22: ERROR : weird instruction "another-unknown-instruction ha ha ha".
+error-test.fly:23: WARNING : file error-test.fly already processed
+20 errors, 1 warning.

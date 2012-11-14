@@ -1,4 +1,5 @@
 imports/missing-import.fly:2: ERROR : failed to open file; [Errno 2] No such file or directory: 'imports/this-file-does-not-exist.fly'
+1 error.
 Bill of materials:
 imports/missing-import.fly
 1 file processed.

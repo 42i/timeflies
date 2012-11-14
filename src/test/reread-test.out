@@ -6,6 +6,7 @@ reread-test.fly:5: ERROR : re-defining activity (this file has already been read
 reread-test.fly:6: ERROR : re-defining day (this file has already been read before)
 reread-test.fly:6: ERROR : re-defining off (this file has already been read before)
 reread-test.fly:7: ERROR : re-defining leave (this file has already been read before)
+8 errors.
 Time at work overview (all):
      when        worked   leave    sick balance
 2012-07-17 Tue:    9.00 ----.--    3.75    4.75

@@ -471,7 +471,9 @@ class Universe:
         self.inputfileset = set()
         self.currentday = None
         self.musthours = None
-    
+        self.errors = 0
+        self.warnings = 0
+        
     def remember(self, file):
         if file in self.inputfileset:
             return True
@@ -561,6 +563,13 @@ class Reader:
         
         if self._parent is None: # top level read finished
             self._universe.tidy_up()
+            msg = ''
+            if self._universe.errors > 0:
+                msg += ", " + plural(self._universe.errors, "error")
+            if self._universe.warnings > 0:
+                msg += ", " + plural(self._universe.warnings, "warning")
+            if len(msg) > 0:
+                output(msg[2:] + '.')
 
     def _import_level(self):
         reader, lev = self, 0
@@ -630,6 +639,13 @@ class Reader:
             output(parent._inputfile + ':' + str(parent._linecount) + ': imported here')
             parent = parent._parent
         
+        if kind == 'ERROR':
+            self._universe.errors += 1
+        elif kind == 'WARNING':
+            self._universe.warnings += 1
+        else:
+            output('*** Bad msg type ' + kind)
+            
     def _reset_workpackage_stack(self):
         self._workpackage_stack = WorkPackageLineBookmark(self._universe.workpackage_root, -1)
         self._previous_indentation_prefix = ''

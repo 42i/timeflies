@@ -2,6 +2,7 @@ imports/import-loop-1c.fly:3: WARNING : file imports/import-loop-1.fly already p
 imports/import-loop-1b.fly:10: imported here
 imports/import-loop-1a.fly:5: imported here
 imports/import-loop-1.fly:1: imported here
+1 warning.
 Bill of materials:
 imports/import-loop-1.fly
     imports/import-loop-1a.fly
