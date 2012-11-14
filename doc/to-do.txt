@@ -36,6 +36,7 @@ TODO:
 
 DONE:
 
+- manual: 3.2.13: This allows you to e.g. ... or ... or ... -> ..., ... or ...
 - if day check succeeds without problems, it should print 'ok' at the end
 - test case multiple work package auto-merge
 - test case multiple day record auto-merge

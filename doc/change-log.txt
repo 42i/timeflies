@@ -1,4 +1,5 @@
 v 0.6
+2012-11-14 : manual updates
 2012-11-14 : check days says 'ok' if there was no problem found
 2012-11-10 : fixed error message in case of duplicate day blocks
              with start and stop times
