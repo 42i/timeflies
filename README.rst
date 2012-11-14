@@ -34,6 +34,8 @@ Examples
 
 Stick your work package structure and work log data in a text file, say, ``time.fly``::
 
+    # The project you're working on is the changer here.
+    
     work-package changer; does some heavy changing
         input
             xml
@@ -45,6 +47,12 @@ Stick your work package structure and work log data in a text file, say, ``time.
         output
             bin
             txt
+  
+    # You have standard 8 hour work days.
+    
+    must-hours mon..fri=8
+    
+    # And here your work log.
     
     day 2012-07-12 8 17 # worked from 8 in the morning till 5 in the afternoon
     - changer.input.xml 2; simple nodes and vertices
@@ -69,7 +77,7 @@ Now let TimeFlies loose on this.
 
 The effort spent on each work package::
 
-    $ timeflies.py -w time.fly 
+    $ timeflies -w time.fly 
     Work package summary (all):
       28.75 : ALL
           28.75 : changer; does some heavy changing
@@ -86,7 +94,7 @@ The effort spent on each work package::
 
 The same annotated with the daily comments::
 
-    $ timeflies.py -w -a time.fly 
+    $ timeflies -w -a time.fly 
     Work package summary (all):
       28.75 : ALL
           28.75 : changer; does some heavy changing
@@ -112,7 +120,7 @@ The same annotated with the daily comments::
                           
 Now without comments, by month::
 
-    $ timeflies.py -w -f 2012-07 time.fly 
+    $ timeflies -w -f 2012-07 time.fly 
     Work package summary (2012-07):
       12.50 : ALL
           12.50 : changer; does some heavy changing
@@ -124,7 +132,7 @@ Now without comments, by month::
                4.00 : output
                    4.00 : txt
     
-    $ timeflies.py -w -f 2012-08 time.fly 
+    $ timeflies -w -f 2012-08 time.fly 
     Work package summary (2012-08):
       16.25 : ALL
           16.25 : changer; does some heavy changing
@@ -137,7 +145,7 @@ Now without comments, by month::
 
 And you worked in total::
 
-    $ timeflies.py -t time.fly 
+    $ timeflies -t time.fly 
     Time at work overview (all):
          when        worked   leave    sick balance
     2012-07-12 Thu:    9.00 ----.-- ----.--    1.00
@@ -171,7 +179,7 @@ And you worked in total::
 
 The same filtered by month only::
 
-    $ timeflies.py -t -f month time.fly 
+    $ timeflies -t -f month time.fly 
     Time at work overview (month):
          when        worked   leave    sick balance
      month 2012-07:   12.50   96.00 ----.--   -3.50
@@ -181,7 +189,7 @@ The same filtered by month only::
 
 Or filtered by week::
 
-    $ timeflies.py -t -f week time.fly 
+    $ timeflies -t -f week time.fly 
     Time at work overview (week):
          when        worked   leave    sick balance
       week 2012-28:   12.50 ----.-- ----.--   -3.50

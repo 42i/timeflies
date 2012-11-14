@@ -1,3 +1,5 @@
+# The project you're working on is the changer here.
+
 work-package changer; does some heavy changing
     input
         xml
@@ -10,6 +12,12 @@ work-package changer; does some heavy changing
         bin
         txt
 
+# You have standard 8 hour work days.
+
+must-hours mon..fri=8
+
+# And here your work log.
+    
 day 2012-07-12 8 17 # worked from 8 in the morning till 5 in the afternoon
 - changer.input.xml 2; simple nodes and vertices
 - changer.process.step1 3; simple node list handling
