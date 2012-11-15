@@ -1,4 +1,7 @@
 v 0.6
+2012-11-15 : leave and sick insturctions can be used without parameter
+             which implies they mean the whole day
+2012-11-15 : leave and sick plausibility checking
 2012-11-14 : manual updates
 2012-11-14 : fixed error checking for 'leave' and 'sick' instructions
 2012-11-14 : report overall number of errors and warnings after

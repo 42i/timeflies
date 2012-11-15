@@ -36,6 +36,8 @@ TODO:
 
 DONE:
 
+- leave and sick insturctions can be used without parameter which implies they mean the whole day
+- leave and sick plausibility checking
 - fix "leave 2012-02-05 2012-02-12 blabla"
 - fix "sick 2012-02-05 2012-02-12 yoyo"
 - count the errors when reading
