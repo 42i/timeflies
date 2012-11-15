@@ -322,7 +322,7 @@ And \timeflies\ says:
 
 Syntax: \verb:day <date> [<in> <out>]:
 
-A day block starts with a the keyword \verb:day: followed by the day's date and optionally the arrival and leaving times at work. Either both times must be given or none at all. If they are not given, no time at work is assumed for that day. This is used e.g. for leave days or sick days. A day block ends at the next \verb:day: keyword, i.e.\ at the beginning of a new day block.
+A day block starts with a the keyword \verb:day: followed by the day's date and optionally the arrival and leaving times at work which, when given, define the day's \emph{working period}. Either both times must be given or none at all. If they are not given, no time at work is assumed for that day. This is used e.g. for leave days or sick days. A day block ends at the next \verb:day: keyword, i.e.\ at the beginning of a new day block.
 
 % contains instructions
 % instructions can be comma delimited
@@ -335,17 +335,23 @@ Syntax: \verb:- <wpid> <time> [; <comment>]:
 
 An \emph{activity} is a period of time spent working on a work package. An activity must appear in a day block. The work package id \verb:<wpid>: must be a valid fully qualified work package id, i.e. a matching work package must have been defined before.
 
+An activity can only appear in a day block.
+
 \subsubsection{Time off Work}
 
 Syntax: \verb:off <time> [; <comment>]:
 
 Declare times off work in a day block, yet inside the time span of that day.
  
+An \verb:off: statement can only appear in a day block.
+
 \subsubsection{Sickness}
 
-Syntax: \verb:sick <time> [; <comment>]:
+Syntax: \verb:sick [<time>] [; <comment>]:
 
-Declare sick time in a day block, yet outside the time span of that day.
+Declare sick time for a day, yet outside the day's working period.  If \verb:<time>: is not given, then the day's required working time is assumed, i.e. a full day of sick leave.
+
+A \verb:sick: statement can only appear in a day block.
 
 \subsubsection{Block Sickness (Several Days)}
 
@@ -355,9 +361,11 @@ This is a short form to define an extended period of sickness, i.e.\ several day
 
 \subsubsection{Leave}
 
-Syntax: \verb:leave <time> [; <comment>]:
+Syntax: \verb:leave [<time>] [; <comment>]:
 
-Declare leave in a day block, yet outside the time span of that day. Use this for leave periods in order of hours.
+Declare leave for a day, yet outside the day's working period. Use this for leave periods in order of hours. If \verb:<time>: is not given, then the day's required working time is assumed, i.e. a full day of leave.
+
+A \verb:leave: statement can only appear in a day block.
 
 \subsubsection{Block Leave (Several Days)}
 
@@ -371,6 +379,8 @@ Syntax: \verb:public-holiday [; <comment>]:.
 The keyword \verb:public-holiday: can be abbreviated as \verb:phol:.
 
 The current day is marked as a public holiday, i.e. a day where the required time at work is null.
+
+An \verb:public-holiday: statement can only appear in a day block.
 
 \subsubsection{Required Work Hours}
 
