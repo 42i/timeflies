@@ -2,3 +2,9 @@ day 2012-07-26, phol; Badger's Day
 leave-days 2012-07-24 2012-07-31; watch grass grow
 leave-days 2012-08-01 2012-08-08; watch Aurora Borealis
 day 2012-08-02, phol; Troll's Day
+sick 4
+day 2012-08-09, leave 5
+sick 5
+day 2012-08-10, sick 8.5
+day 2012-08-11, leave 4
+ 

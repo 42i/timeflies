@@ -20,4 +20,9 @@ error-test.fly:21: ERROR : bad time duration "yayy" ("mon..fri").
 error-test.fly:22: ERROR : weird instruction "another-unknown-instruction ha ha ha".
 error-test.fly:23: WARNING : file error-test.fly already processed
 error-test.fly:25: ERROR : bad time "wow" in instruction "off wow".
-21 errors, 1 warning.
+error-test.fly:26: ERROR : argument missing in instruction "off".
+error-test.fly:27: ERROR : bad time "x" in instruction "leave x".
+error-test.fly:28: ERROR : bad time "y" in instruction "sick y".
+error-test.fly:29: ERROR : too many arguments in instruction "sick ha ha".
+error-test.fly:30: ERROR : too many arguments in instruction "leave ha ha".
+26 errors, 1 warning.

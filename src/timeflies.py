@@ -525,6 +525,32 @@ class Universe:
                 day.leave = set_value(day.leave, day.required)
             if isinstance(sick, bool) and sick == True:
                 day.sick = set_value(day.sick, day.required)
+            
+            sick = get_value(day.sick)
+            leave = get_value(day.leave)
+            more_sick = sick > day.required
+            more_leave = leave > day.required
+            
+            if more_sick:
+                output('WARNING : on day ' + str(day.date) + ' more sick time ('
+                        + str(sick) + ') taken than required working time ('
+                        + str(day.required) + ').')
+                self.warnings += 1
+            
+            if more_leave:
+                output('WARNING : on day ' + str(day.date) + ' more leave time ('
+                        + str(leave) + ') taken than required working time ('
+                        + str(day.required) + ').')
+                self.warnings += 1
+            
+            if (not more_leave) and (not more_sick) and sick + leave > day.required:
+                output('WARNING : on day ' + str(day.date) + ' more leave and sick time ('
+                        + str(leave + sick) + ') taken than required working time ('
+                        + str(day.required) + ').')
+                self.warnings += 1
+                
+                
+            
                 
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
@@ -815,17 +841,28 @@ class Reader:
         else:
             self._universe.currentday.musthours = must_hours
 
-    def _current_day_ok(self, instruction):
+    def _current_day_ok(self, args):
         currday_ok = self._universe.currentday is not None
         if not currday_ok:
-            self._msg('no current day for instruction "' + instruction + '".')
+            self._msg('no current day for instruction "' + ' '.join(args) + '".')
         return currday_ok
     
-    def _set_time(self, timeStr, comment, instruction, setter):
-        if self._current_day_ok(instruction):
-            tm = make_time(timeStr)
+    def _set_time(self, args, comment, setter, default_ok=False):
+        if self._current_day_ok(args):
+            if len(args) == 1:
+                if default_ok:
+                    tm = True
+                else:
+                    self._msg('argument missing in instruction "' + ' '.join(args) + '".')
+                    return
+            elif len(args) == 2:
+                tm = make_time(args[1])
+            else:
+                self._msg('too many arguments in instruction "' + ' '.join(args) + '".')
+                return
+            
             if tm is None:
-                self._msg('bad time "' + timeStr + '" in instruction "' + instruction + '".')
+                self._msg('bad time "' + args[1] + '" in instruction "' + ' '.join(args) + '".')
             else:
                 setter(self._universe.currentday, tm, comment)
     
@@ -853,29 +890,29 @@ class Reader:
         currday = self._universe.currentday
 
         if instr == 'phol' or instr == 'public-holiday':
-            if self._current_day_ok(argliststring):
+            if self._current_day_ok(arglist):
                 currday.set_phol(comment)
         else:
             if self._already_read_before:
                 self._msg_redef(instr)
             elif instr == 'reset':
-                if self._current_day_ok(argliststring):
+                if self._current_day_ok(arglist):
                     currday.add_directive(Directive().set_reset())
             elif instr == 'add-leave':
-                if self._current_day_ok(argliststring):
+                if self._current_day_ok(arglist):
                     currday.add_directive(Directive().set_leave(make_time(args[0])))
             elif instr == 'balance-must':
-                if self._current_day_ok(argliststring):
+                if self._current_day_ok(arglist):
                     currday.add_directive(Directive().set_must(make_time(args[0])))
             elif instr == 'balance-have':
-                if self._current_day_ok(argliststring):
+                if self._current_day_ok(arglist):
                     currday.add_directive(Directive().set_have(make_time(args[0])))
             elif instr == 'off':
-                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_off(tm, cmnt))
+                self._set_time(arglist, comment, lambda day, tm, cmnt: day.add_off(tm, cmnt))
             elif instr == 'sick':
-                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_sick(tm, cmnt))
+                self._set_time(arglist, comment, lambda day, tm, cmnt: day.add_sick(tm, cmnt), True)
             elif instr == 'leave':
-                self._set_time(args[0], comment, argliststring, lambda day, tm, cmnt: day.add_leave(tm, cmnt))
+                self._set_time(arglist, comment, lambda day, tm, cmnt: day.add_leave(tm, cmnt), True)
             else:
                 self._msg('weird instruction "' + argliststring + '".')
 
@@ -1000,7 +1037,7 @@ class Statistics:
                 self.monthly.process_day(d)
                 self.totals.process_day(d)
 
-                if do_daily and (d.calc_have() > 0.0 or (d.phol and d.is_workday())):
+                if do_daily and (d.calc_have() > 0.0 or d.is_workday()):
                     d.dump(options)
 
                 self.prev_day = d

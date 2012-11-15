@@ -191,6 +191,9 @@ class EndToEndTests(TestCase):
 
     def test_work_package_merge(self):
         self.doit('-s work-package-merge.fly', 'work-package-merge.out')
+
+    def test_default_sick_and_leave(self):
+        self.doit('-t default-leave-and-sick.fly', 'default-leave-and-sick.out')
         
 class CalcActivitiesByMonth(TestCase):
     def test_read(self):

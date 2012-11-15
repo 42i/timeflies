@@ -1,0 +1,11 @@
+default-leave-and-sick.fly:3: ERROR : argument missing in instruction "off".
+1 error.
+Time at work overview (all):
+     when        worked   leave    sick balance
+2012-04-16 Mon: ----.-- ----.--    8.00 ----.-- Fritz runs
+2012-04-17 Tue: ----.--    8.00 ----.-- ----.-- Long walk
+2012-04-18 Wed: ----.-- ----.-- ----.--   -8.00
+  week 2012-16: ----.--    8.00    8.00   -8.00
+ month 2012-04: ----.--    8.00    8.00   -8.00
+         total: ----.--    8.00    8.00   -8.00
+     when        worked   leave    sick balance
