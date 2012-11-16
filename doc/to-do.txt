@@ -13,7 +13,6 @@ TODO:
 - option to show daily/weekly/monthly allocation to work-packages over a period of time
 - work package status: pristine, active, assigned, done, percentages
 - make reset and friends commentable?
-- sort activities chronologically at the end of a file read; ascending/descending
 
 - test cases for directives: reset, etc. + fix reset (do we need dump here?)
 - test cases for rubbish files
@@ -36,6 +35,7 @@ TODO:
 
 DONE:
 
+- sort activities chronologically at the end of a file read
 - manual: leave and sick instructions can be used without parameter
 - manual: clarify which instructions appear in day block and which don't
 - leave and sick instructions can be used without parameter which implies they mean the whole day

@@ -205,6 +205,8 @@ class CalcActivitiesByMonth(TestCase):
         p2 = p1.get_node("sub2.bbb")
         self.assertEqual("bbb", p2.name)
         a = p2.activities[0]
+        self.assertEqual(date(2012, 7, 12), a.day().date)
+        a = p2.activities[1]
         self.assertEqual(date(2012, 7, 14), a.day().date)
         act = self.doStats(7)
         self.assertEqual(2.0, act.get_node('project.sub1.aa').value)

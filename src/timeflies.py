@@ -184,6 +184,14 @@ class Node:
             for c in self._children:
                 c.dump(options, indent)
     
+    def tidy_up(self):
+        if self.activities is not None:
+            self.activities.sort(key=lambda a: a.day().date)
+        
+        if self._children is not None:
+            for c in self._children:
+                c.tidy_up()
+        
     def create_node(self, name):
         pass
 
@@ -525,7 +533,9 @@ class Universe:
                 day.leave = set_value(day.leave, day.required)
             if isinstance(sick, bool) and sick == True:
                 day.sick = set_value(day.sick, day.required)
-                
+        
+        self.workpackage_root.tidy_up()
+        
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
         self.indent = indent
