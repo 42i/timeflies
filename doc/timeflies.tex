@@ -177,21 +177,38 @@ And here the same with activities shown.
 
 \subsection{Command Line Options}
 
-Time filters
+Here you find all of \timeflies' command line options explained.
 
-Summary filters
+\subsubsection{Filters}
 
-User filters
+Filters are used with \timeflies\ to restrict the processing or output generation. The command line option for filters is \verb:-f: or \verb:--filter: Multiple filters can be combined in form of a comma separated list.
 
-Show work packages
+\paragraph{Time Filters}
 
-calculate work packages
+Without any \emph{time filter} given, \timeflies\ will process all the input that is passed to it in form of data files. To limit \timeflies\ to certain time ranges, use a time filter that can be any of the following:
 
-check days
+\begin{enumerate}
+\item A month filter of the form \verb:<YYYY>-<MM>: limits processing to the given month.
+\item A time range filter of the form \verb:<YYYY>-<MM>-<DD>..<YYYY>-<MM>-<DD>: limits processing to the given time range; the time range includes both the given start and end date.
+\end{enumerate}
 
-tally days
+\paragraph{Summary Filters}
 
-indentation
+When generating time at work overviews using the \verb:-t: (or \verb:--tally-days:) option, by default weekly and montly summaries are generated in addition to the daily records and the overall totals.
+
+Use a \emph{summary filter} of \verb:day:, \verb:week:, \verb:month: or a combination of them to change this behaviour. If any of those summary filters is given, \timeflies\ will only generate output for the given filter(s).
+
+%User filters
+
+\subsubsection{Show Work Packages}
+
+\subsubsection{Calculate Work Packages}
+
+\subsubsection{Tally Days}
+
+\subsubsection{Check Days}
+
+\subsubsection{Output Indentation}
 
 \subsection{File Syntax}
 
