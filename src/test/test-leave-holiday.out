@@ -1,7 +1,8 @@
-WARNING : on day 2012-08-09 more leave and sick time (10.0) taken than required working time (8.0).
-WARNING : on day 2012-08-10 more sick time (8.5) taken than required working time (8.0).
-WARNING : on day 2012-08-11 more leave time (4.0) taken than required working time (0.0).
-3 warnings.
+Day check (all):
+2012-08-09 Thu: more leave and sick time (10.0) taken than required working time (8.0).
+2012-08-10 Fri: more sick time (8.5) taken than required working time (8.0).
+2012-08-11 Sat: more leave time (4.0) taken than required working time (0.0).
+3 problems detected.
 Time at work overview (all):
      when        worked   leave    sick balance
 2012-07-24 Tue: ----.--    8.00 ----.-- ----.-- watch grass grow

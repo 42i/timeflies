@@ -115,7 +115,7 @@ class EndToEndTests(TestCase):
         self.doit('-t -C test-day-comment.fly', 'test-day-comment.out')
     
     def test_leave_holiday(self):
-        self.doit('-t -C test-leave-holiday.fly', 'test-leave-holiday.out')
+        self.doit('-c -t -C test-leave-holiday.fly', 'test-leave-holiday.out')
     
     def test_must_hours(self):
         self.doit('-t test-must-hours.fly', 'test-must-hours.out')

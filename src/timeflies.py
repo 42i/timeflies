@@ -525,32 +525,6 @@ class Universe:
                 day.leave = set_value(day.leave, day.required)
             if isinstance(sick, bool) and sick == True:
                 day.sick = set_value(day.sick, day.required)
-            
-            sick = get_value(day.sick)
-            leave = get_value(day.leave)
-            more_sick = sick > day.required
-            more_leave = leave > day.required
-            
-            if more_sick:
-                output('WARNING : on day ' + str(day.date) + ' more sick time ('
-                        + str(sick) + ') taken than required working time ('
-                        + str(day.required) + ').')
-                self.warnings += 1
-            
-            if more_leave:
-                output('WARNING : on day ' + str(day.date) + ' more leave time ('
-                        + str(leave) + ') taken than required working time ('
-                        + str(day.required) + ').')
-                self.warnings += 1
-            
-            if (not more_leave) and (not more_sick) and sick + leave > day.required:
-                output('WARNING : on day ' + str(day.date) + ' more leave and sick time ('
-                        + str(leave + sick) + ') taken than required working time ('
-                        + str(day.required) + ').')
-                self.warnings += 1
-                
-                
-            
                 
 class WorkPackageLineBookmark:
     def __init__(self, workpackage, indent, parent=None):
@@ -993,18 +967,45 @@ class Statistics:
             d = d + 1
 
     def check_days(self, dayfilter):
-        delta_count = 0
+        warnings = 0
         for d in self.days:
             if dayfilter.passes(d):
+                dt_str = d.date.strftime('%Y-%m-%d %a')
+
                 worked = d.calc_worked()
                 allocated = d.calc_activity()
                 delta = allocated - worked
+                
                 if delta != 0.0:
-                    delta_count += 1
+                    warnings += 1
                     output('{0:s}: worked {1:5.2f}, allocated {2:5.2f}, delta {3:5.2f}'
-                          .format(d.date.strftime('%Y-%m-%d %a'), worked, allocated, delta))
-        if delta_count != 0:
-            output(plural(delta_count, 'problem') + ' detected.')
+                          .format(dt_str, worked, allocated, delta))
+
+                sick = get_value(d.sick)
+                leave = get_value(d.leave)
+                more_sick = sick > d.required
+                more_leave = leave > d.required
+                
+                if more_sick:
+                    output(dt_str + ': more sick time ('
+                            + str(sick) + ') taken than required working time ('
+                            + str(d.required) + ').')
+                    warnings += 1
+                
+                if more_leave:
+                    output(dt_str + ': more leave time ('
+                            + str(leave) + ') taken than required working time ('
+                            + str(d.required) + ').')
+                    warnings += 1
+                
+                if (not more_leave) and (not more_sick) and sick + leave > d.required:
+                    output(dt_str + ': more leave and sick time ('
+                            + str(leave + sick) + ') taken than required working time ('
+                            + str(d.required) + ').')
+                    warnings += 1
+
+        if warnings != 0:
+            output(plural(warnings, 'problem') + ' detected.')
         else:
             output('ok.')
         

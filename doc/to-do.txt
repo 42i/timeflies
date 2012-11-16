@@ -39,7 +39,7 @@ DONE:
 - manual: leave and sick instructions can be used without parameter
 - manual: clarify which instructions appear in day block and which don't
 - leave and sick instructions can be used without parameter which implies they mean the whole day
-- leave and sick plausibility checking
+- leave and sick plausibility checking as part of check days
 - fix "leave 2012-02-05 2012-02-12 blabla"
 - fix "sick 2012-02-05 2012-02-12 yoyo"
 - count the errors when reading
