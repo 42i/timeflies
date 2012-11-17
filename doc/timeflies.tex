@@ -175,52 +175,84 @@ And here the same with activities shown.
 
 \section{Reference}
 
-\subsection{Command Line Options}
+\subsection{Command Line Syntax}
 
-Here you find all of \timeflies' command line options explained.
+This section explains all of \timeflies' command line options and arguments. Different combinations of these allow you to run consistency checks on the given input files or to generate the output reports from them.
+
+\subsubsection{Show Work Packages}
+
+...
+
+\subsubsection{Calculate Work Packages}
+
+...
+
+\subsubsection{Tally Days}
+
+...
+
+\subsubsection{Check Days}
+
+Use command line option \verb:-c: or \verb:--check: to check the plausibility of the entered work log data for each day in the input. The check will flag the following problems:
+
+\paragraph{Activities vs. Work Time}
+If you use work packages and activities to break down your daily work, for each day the sum of all your activities will be compared to your given time at work. There should be no difference.
+
+\paragraph{Leave and Sick Times vs. Required Work Time}
+If you have declared more \verb:leave: or \verb:sick: time for a day than the required working hours of that day, this will be flagged.
 
 \subsubsection{Filters}
 
 Filters are used with \timeflies\ to restrict the processing or output generation. The command line option for filters is \verb:-f: or \verb:--filter: Multiple filters can be combined in form of a comma separated list.
 
+Examples:
+
+\begin{inputfile}
+> timeflies -c -f 2012-08 work-log.fly # check August 2012
+> timeflies -t -f 2012-08,week work-log.fly # tally days for August 2012
+                                            # with weekly summaries
+\end{inputfile}
+
 \paragraph{Time Filters}
 
-Without any \emph{time filter} given, \timeflies\ will process all the input that is passed to it in form of data files. To limit \timeflies\ to certain time ranges, use a time filter that can be any of the following:
+Without any \emph{time filter}, all given input is processed.
 
-\begin{enumerate}
-\item A month filter of the form \verb:<YYYY>-<MM>: limits processing to the given month.
-\item A time range filter of the form \verb:<YYYY>-<MM>-<DD>..<YYYY>-<MM>-<DD>: limits processing to the given time range; the time range includes both the given start and end date.
-\end{enumerate}
+To limit processing to certain time periods, use a time filter. A \emph{month filter} is of the form \verb:<YYYY>-<MM>: and limits processing to the specified month. A \emph{time range filter} is of the form \verb:<YYYY>-<MM>-<DD>..<YYYY>-<MM>-<DD>: and limits processing to the given time range. The time range extends from the beginning of the first given day to the end of the last given day.
 
 \paragraph{Summary Filters}
 
-When generating time at work overviews using the \verb:-t: (or \verb:--tally-days:) option, by default weekly and montly summaries are generated in addition to the daily records and the overall totals.
+Time at work overviews generated using the \verb:-t: (or \verb:--tally-days:) option can include daily, weekly and monthly summary records. If no \emph{summary filter} keyword is given, then all three are assumed per default.
 
-Use a \emph{summary filter} of \verb:day:, \verb:week:, \verb:month: or a combination of them to change this behaviour. If any of those summary filters is given, \timeflies\ will only generate output for the given filter(s).
+Use a summary filter of \verb:day:, \verb:week: or \verb:month: (or any combination) to reduce the generated output. If at least one of those summary filters is given, \timeflies\ will only generate output for the given filter or filters.
+
+Examples:
+
+\begin{inputfile}
+> timeflies -t -f 2012-08,week work-log.fly # tally days for August 2012
+                                            # with weekly summaries
+> timeflies -t -f week,month work-log.fly # tally days for all input with
+                                          # weekly and monthly summaries
+\end{inputfile}
 
 %User filters
 
-\subsubsection{Show Work Packages}
-
-\subsubsection{Calculate Work Packages}
-
-\subsubsection{Tally Days}
-
-\subsubsection{Check Days}
-
 \subsubsection{Output Indentation}
 
+When generating output of work package hierarchies per default each hierarchy level is indented by 4 space characters. To change that indentation use option \verb:-i <num>: or \verb:--indent <num>:.
+
 \subsection{File Syntax}
+
+This section describs the \timeflies\ input file syntax and explains of the associated semantics.
 
 \subsubsection{Source Comments and Persistent Comments}
 
 \timeflies\ knows two kinds of comments: \emph{source comments} and \emph{persistent comments}.
 
-\begin{description}
-\item[Source comments] are marked by a hash sign (\verb:#:) and extend from it to the end of the line. \timeflies\ ignores these comments and treats them as if they did not exist.
+\paragraph{Source Comments}
+These are marked by a hash sign (\verb:#:) and extend from it to the end of the line. \timeflies\ ignores these comments and treats them as if they did not exist.
 
-\item[Persistent comments] are marked by a semicolon (\verb:;:) and extend to the end of the line (or a possibly following source comment in that line). A persistent comment is processed and will show up in the generated output. E.g.\ comments on leave or sick days will show up in the time at work output summaries. Comments on activities or work packages can show up in the work package outputs. 
-\end{description}
+\paragraph{Persistent Comments}
+These are marked by a semicolon (\verb:;:) and extend to the end of the line (or a possibly following source comment in that line). A persistent comment is processed and will show up in the generated output. E.g.\ comments on leave or sick days will show up in the time at work output summaries. Comments on activities or work packages can show up in the work package outputs. 
 
 \subsubsection{Time and Date Formats}
 
