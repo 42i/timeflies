@@ -11,10 +11,12 @@ Installation
 
 From packaged ZIP files containing both timeflies.py and the PDF manual:
 
+- TimeFlies-0.6-2012-11-17.zip_
 - TimeFlies-0.5-2012-11-10.zip_
 - TimeFlies-0.4-2012-10-16.zip_
 - TimeFlies-0.3-2012-09-27.zip_
 
+.. _TimeFlies-0.6-2012-11-17.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.6-2012-11-17.zip
 .. _TimeFlies-0.5-2012-11-10.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.5-2012-11-10.zip
 .. _TimeFlies-0.4-2012-10-16.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.4-2012-10-16.zip
 .. _TimeFlies-0.3-2012-09-27.zip: https://github.com/downloads/42i/timeflies/TimeFlies-0.3-2012-09-27.zip
